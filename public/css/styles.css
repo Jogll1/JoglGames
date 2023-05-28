@@ -35,16 +35,22 @@ body{
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    height: 650px;
-    background-color: #202020;
+    height: 675px;
+    /* background-color: #202020; */
 }
 
 .gameContainer{
     background-color: white;
-    margin: 85px;
-    padding: 150px 140px;
-    border-radius: 50px;
+    margin: 80px;
+    padding: 155px 165px;
+    border-radius: 45px;
     font-size: 20px;
+    transition: 0.3s;
+}
+
+.gameContainer:hover {
+    margin: 65px;
+    padding: 170px 180px;
 }
 /*#endregion */
 
