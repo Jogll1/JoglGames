@@ -6,11 +6,29 @@
     <meta charset="UTF-8">
     <title>New page</title>
 
+    <!-- CSS -->
     <link rel="stylesheet" href="css/styles.css" type="text/css">
+
+    <!-- JS -->
+    <script src="./js/homePage.js"></script>
 </head>
 
 <body>
-    <h1>Hello World!</h1>
+    <div class="topnav">
+        <p id="centre">Website</p>
+        <div class="mIconContainer" onclick="toggleMenu(this)">
+            <!-- <img src="/images/hbgr_menu_icon.png" alt="Menu Icon" width="30" height="25"> -->
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
+        </div>
+    </div>
+
+    <!-- <script>
+        function toggleMenu(x) {
+          x.classList.toggle("change");
+        }
+    </script> -->
 </body>
 
 </html>
