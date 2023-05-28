@@ -3,22 +3,17 @@
     padding: 0;
 }
 
-.topnav {
-    background-color: #333;
-    overflow: hidden;
+body{
+    background-color: #222222;
     font-family: Arial, Helvetica, sans-serif;
 }
 
-/* .topnav p {
-    float: left;
-    color: #f2f2f2;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    font-size: 20px;
-} */
+.topnav {
+    background-color: #333333;
+    overflow: hidden;
+}
 
-#centre{
+.centre{
     /* text */
     color: #f2f2f2;
     font-size: 27px;
@@ -34,22 +29,29 @@
     width: 120px;
 }
 
-#menuIconContainer{
-    position: absolute;
-    padding: 21px;
-    text-align: center;
-    top: 0px;
-    left: 0px;
-    /* border: 5px solid green; */
-    width: 30px;
-    height: 30px;
+/*#region flex-container */
+.flex-container{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    height: 650px;
+    background-color: #202020;
 }
 
-/* for the animated menu icon */
+.gameContainer{
+    background-color: white;
+    margin: 85px;
+    padding: 150px 140px;
+    border-radius: 50px;
+    font-size: 20px;
+}
+/*#endregion */
+
+/*#region Animated menu icon */
 .mIconContainer{
     /* display: inline-block; */
     cursor: pointer;
-
     position: absolute;
     padding: 14px;
     text-align: center;
@@ -66,7 +68,7 @@
     border-radius: 2px;
     background-color: #f2f2f2;
     margin: 6px 0;
-    transition: 0.4s;
+    transition: 0.35s;
 }
 
 .change .bar1 {
@@ -78,4 +80,4 @@ transform: translate(0, 11px) rotate(-45deg);
 .change .bar3 {
 transform: translate(0, -11px) rotate(45deg);
 }
-
+/*#endregion*/
