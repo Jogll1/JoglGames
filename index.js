@@ -7,7 +7,7 @@ const { dirname } = require('path');
 const server = http.createServer(app);
 
 //using the public folder
-app.use(express.static('./public'));
+app.use(express.static(__dirname + '/public'));
 
 //send html page
 app.get('/', (req, res) => {

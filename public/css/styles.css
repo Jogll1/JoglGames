@@ -41,16 +41,16 @@ body{
 
 .gameContainer{
     background-color: white;
-    margin: 80px;
-    padding: 155px 165px;
+    margin: 70px;
+    padding: 155px 175px;
     border-radius: 45px;
     font-size: 20px;
-    transition: 0.3s;
+    transition: 0.25s;
 }
 
 .gameContainer:hover {
-    margin: 65px;
-    padding: 170px 180px;
+    margin: 60px;
+    padding: 165px 185px;
 }
 /*#endregion */
 
