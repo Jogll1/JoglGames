@@ -13,6 +13,7 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/html/index.html');
 });
 
+//hmm
 // //redirect /html/test.html/ -> /test
 // app.get('/test', (req, res) => {
 //     res.redirect(301, __dirname + '/public/html/test.html');
