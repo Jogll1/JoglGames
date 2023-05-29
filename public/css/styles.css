@@ -36,21 +36,21 @@ body{
     justify-content: center;
     align-items: center;
     height: 675px;
+    gap: 140px;
     /* background-color: #202020; */
 }
 
 .gameContainer{
     background-color: white;
-    margin: 70px;
     padding: 155px 175px;
-    border-radius: 45px;
+    border-radius: 40px;
     font-size: 20px;
     transition: 0.25s;
 }
 
 .gameContainer:hover {
-    margin: 60px;
-    padding: 165px 185px;
+    margin: -15px;
+    padding: 170px 190px;
 }
 /*#endregion */
 
