@@ -32,12 +32,26 @@ body{
     transform: translate(-50%, -50%);
     /* border: 5px solid green; */
 }
+/*#endregion*/
 
-.topnav .topLeft{
-    display: flex;
-    align-items: center;
-    height: 65px;
-    padding: 0px 15px;
+/*#region Home Icon Container */
+.homeIconContainer{
+    position: absolute;
+    width: 37.5px;
+    height: 37.5px;
+    transform: translate(50%, 37.5%);
+}
+
+.homeIconContainer img{
+    width: 100%;
+    height: 100%;
+    transition: 0.35s;
+}
+
+.homeIconContainer img:hover{
+    width: 116%;
+    height: 116%;
+    margin: -3px;
 }
 /*#endregion*/
 
