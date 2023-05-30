@@ -1,0 +1,58 @@
+#mainContainer {
+    width: 100vw;
+    height: 100vh;
+
+    /* centre div */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%)
+}
+
+#boardContainer{
+    /* centre div */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#board {
+    width: 630px;
+    height: 540px;
+
+    background-color: #333333;
+    border-radius: 25px;
+    border: 10px solid #333333;
+
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* what is this for? */
+.squareTile { 
+    position: relative;
+    height: 65px;
+    width: 65px;
+
+    margin: 0px;
+    background-color: #333333;
+    border: 12.5px solid #333333;
+}
+
+.tile{
+    position: relative;
+    height: 65px;
+    width: 65px;
+    
+    margin: 0px;
+    background-color: #222222;
+    border-radius: 50%;
+    border: 12.5px solid #333333;
+
+    /* centre */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
