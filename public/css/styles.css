@@ -115,3 +115,73 @@ transform: translate(0, 11px) rotate(-45deg);
 transform: translate(0, -11px) rotate(45deg);
 }
 /*#endregion*/
+
+/*#region Play option menu */
+/* add a transparent background behind menu */
+.menuBackground {
+    width: 100vw;
+    height: 100vh;
+
+    position: absolute;
+
+    opacity: 25%;
+    background-color: #c1c1c1;
+}
+
+.friendOrAIMenu {
+    opacity: 100%;
+    width: 29vw;
+    height: 37.5vh;
+
+    background-color: #282828;
+    border-radius: 40px;
+    border: 25px solid #282828;
+
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+
+    /* centre div */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.playButton {
+    background-color: #4ea9d0;
+    border: none;
+    border-radius: 7.5px;
+    padding: 12.5px 25px;
+    width: 60%;
+
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+
+    text-align: center;
+    display: inline-block;
+
+    /* position: absolute; */
+    /* transform: translate(-50%, 0);
+    bottom: 0; */
+}
+
+.playButton:hover{
+    background-color: #4090b2;
+}
+
+#playFriendButton {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 120%);
+}
+
+#playRobotButton {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -20%);
+}
+/*#endregion*/

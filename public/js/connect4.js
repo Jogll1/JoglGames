@@ -4,6 +4,11 @@ const columns = 7;
 // When document loads up call setGame()
 $(document).ready(function() {
     setGame();
+
+    $('.playButton').click(function() {
+        $('.menuBackground').hide();
+        $('.friendOrAIMenu').hide();
+    })
 });
 
 function setGame() {
@@ -48,7 +53,8 @@ function setGame() {
 }
 
 // function that console.logs the values in a 2d array (or normal array)
-function logArray(array){
+function logArray(array)
+{
     let output = "";
     for (let r = 0; r < array.length; r++) 
     {
