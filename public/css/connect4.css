@@ -18,43 +18,49 @@
 }
 
 #board {
-    width: 630px;
-    height: 540px;
+    /* width: 630px;
+    height: 540px; */
+    width: 644px;
+    height: 552px;
 
-    background-color: white;
+    background-color:#333333;
     border-radius: 25px;
     border: 10px solid #333333;
 
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 90px 90px 90px 90px 90px 90px 90px;
-    /* display: flex */
-    /* flex-wrap: wrap; */
+    /* grid-template-columns: 92px 92px 92px 92px 92px 92px 92px;
+    grid-template-rows: 92px 92px 92px 92px 92px 92px; */
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+
+    /* display: flex;
+    flex-wrap: wrap; */
 }
 
 /* For hovering region */
 .squareTile { 
     position: relative;
-    /* height: 65px; */
-    /* width: 65px; */
+    /* height: 65px;
+    width: 65px; */
     height: 90px;
     width: 90px;
 
     margin: 0px;
-    background-color: #333333;
+    /* background-color: #333333; */
     border: none;
-    /* border: 12.5px solid #333333; */
+    /* border: 1px solid white; */
 }
 
 .tile{
     position: relative;
-    height: 65px;
-    width: 65px;
+    height: 75px;
+    width: 75px;
     
     margin: 0px;
     background-color: #222222;
     border-radius: 50%;
-    border: 12.5px solid #333333;
+    /* border: 7.5px solid white; */
 
     /* centre */
     top: 50%;
