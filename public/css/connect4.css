@@ -30,7 +30,7 @@
     flex-wrap: wrap;
 }
 
-/* what is this for? */
+/* For hovering region */
 .squareTile { 
     position: relative;
     height: 65px;
