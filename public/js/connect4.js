@@ -8,12 +8,17 @@ $(document).ready(function() {
     $('#playRobotButton').click(function() {
         $('.menuBackground').hide();
         $('.friendOrAIMenu').hide();
-    })
+    });
 
     $('#playFriendButton').click(function() {
         $('.onlinePlayMenu').show();
         $('.friendOrAIMenu').hide();
-    })
+    });
+
+    $('#playOnlineButton').click(function() {
+        $('.menuBackground').hide();
+        $('.onlinePlayMenu').hide();
+    });
 });
 
 function setGame() {
