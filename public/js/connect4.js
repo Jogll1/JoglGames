@@ -5,8 +5,13 @@ const columns = 7;
 $(document).ready(function() {
     setGame();
 
-    $('.playButton').click(function() {
+    $('#playRobotButton').click(function() {
         $('.menuBackground').hide();
+        $('.friendOrAIMenu').hide();
+    })
+
+    $('#playFriendButton').click(function() {
+        $('.onlinePlayMenu').show();
         $('.friendOrAIMenu').hide();
     })
 });

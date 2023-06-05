@@ -102,7 +102,7 @@ body{
     border-radius: 2px;
     background-color: #f2f2f2;
     margin: 6px 0;
-    transition: 0.35s;
+    transition: 0.3s;
 }
 
 .change .bar1 {
@@ -116,7 +116,7 @@ transform: translate(0, -11px) rotate(45deg);
 }
 /*#endregion*/
 
-/*#region Play option menu */
+/*#region Play options menu */
 /* add a transparent background behind menu */
 .menuBackground {
     width: 100vw;
@@ -130,8 +130,10 @@ transform: translate(0, -11px) rotate(45deg);
 
 .friendOrAIMenu {
     opacity: 100%;
-    width: 21vw;
-    height: 26.5vh;
+    /* width: 20vw;
+    height: 24.5vh; */
+    width: 350px;
+    height: 200px;
 
     background-color: #282828;
     border-radius: 40px;
@@ -153,7 +155,7 @@ transform: translate(0, -11px) rotate(45deg);
     border: none;
     border-radius: 7.5px;
     padding: 12.5px 25px;
-    width: 60%;
+    /* width: 62.5%; */
 
     color: white;
     font-weight: bold;
@@ -172,6 +174,8 @@ transform: translate(0, -11px) rotate(45deg);
 }
 
 #playFriendButton {
+    width: 62.5%;
+
     position: absolute;
     top: 50%;
     left: 50%;
@@ -179,9 +183,91 @@ transform: translate(0, -11px) rotate(45deg);
 }
 
 #playRobotButton {
+    width: 62.5%;
+
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -30%);
+}
+
+#playOnlineButton {
+    width: 35%;
+
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%, -70%);
+}
+
+.onlinePlayMenu {
+    opacity: 100%;
+    display: none;
+    /* width: 20vw;
+    height: 24.5vh; */
+    width: 350px;
+    height: 400px;
+
+    background-color: #282828;
+    border-radius: 40px;
+    border: 35px solid #282828;
+
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+
+    /* centre div */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.onlineMenuInputs {
+    border: none;
+    border-radius: 7.5px;
+    padding: 12.5px 25px;
+    /* width: 62.5%; */
+
+    color: black;
+    font-weight: bold;
+    font-size: 18px;
+
+    /* text-align: center;
+    display: inline-block; */
+}
+
+#usernameInput {
+    width: 72.5%;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -90%);
+}
+
+#roomNameInput {
+    width: 72.5%;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+}
+
+#infoText1 {
+    width: 100%;
+    /* position: absolute;
+    top: 50%;
+    left: 50%; */
+    transform: translate(0%, 25%);
+}
+
+#infoText2 {
+    width: 80%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 205%);
 }
 /*#endregion*/
