@@ -128,6 +128,7 @@ transform: translate(0, -11px) rotate(45deg);
     background-color: #c1c1c1;
 }
 
+/* Friend or AI menu */
 .friendOrAIMenu {
     opacity: 100%;
     /* width: 20vw;
@@ -191,15 +192,7 @@ transform: translate(0, -11px) rotate(45deg);
     transform: translate(-50%, -30%);
 }
 
-#playOnlineButton {
-    width: 35%;
-
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translate(-50%, -70%);
-}
-
+/* Online play menu */
 .onlinePlayMenu {
     opacity: 100%;
     display: none;
@@ -223,6 +216,15 @@ transform: translate(0, -11px) rotate(45deg);
     transform: translate(-50%, -50%);
 }
 
+#playOnlineButton {
+    width: 45%;
+
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%, -100%);
+}
+
 .onlineMenuInputs {
     border: none;
     border-radius: 7.5px;
@@ -243,7 +245,7 @@ transform: translate(0, -11px) rotate(45deg);
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -90%);
+    transform: translate(-50%, -85%);
 }
 
 #roomNameInput {
@@ -252,7 +254,7 @@ transform: translate(0, -11px) rotate(45deg);
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, 50%);
+    transform: translate(-50%, 40%);
 }
 
 #infoText1 {
@@ -260,7 +262,7 @@ transform: translate(0, -11px) rotate(45deg);
     /* position: absolute;
     top: 50%;
     left: 50%; */
-    transform: translate(0%, 25%);
+    transform: translate(0%, 10%);
 }
 
 #infoText2 {
