@@ -47,6 +47,7 @@ $(document).ready(function() {
     });
 });
 
+//note - should probably wrap these functions in a module?
 function setGame() {
     //board will be a 2d array
     board = [];
