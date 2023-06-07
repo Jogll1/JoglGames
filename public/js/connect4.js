@@ -58,7 +58,7 @@ $(document).ready(function() {
     $('.squareTile').click(function() {
         let id = $(this).attr("id"); //get the squaretile's id
         let columnNo = id.substring(2).split("-")[1]; //remove the SQ from the front
-        setPiece(columnNo);
+        setPiece(columnNo, "Y");
     });
 
     //when hovering over a column
@@ -149,7 +149,7 @@ function setBoardHovers() {
     $('#boardColumnHoversParent').append(rightBoardHoverDiv); //make the boardColumnHoversParent this div's parent
 }
 
-function setPiece(column) {
+function setPiece(column, playerPiece) {
     if(!c4_gameStarted.getGameStarted()) return;
 
     let board = c4_board.getBoard();
@@ -165,7 +165,7 @@ function setPiece(column) {
     if(tilesInColumn < ROWS) { //if there's room in the column
         let id = (ROWS - tilesInColumn - 1) + "-" + column; //get the id of the tile to change
         $('#' + id).addClass("yellowTile"); //spawn the tile
-        board[tilesInColumn][column] = 'Y'; //update board
+        board[ROWS - 1 - tilesInColumn][column] = playerPiece; //update board
         c4_board.updateBoard(board); //update the board global
 
         console.log("clicked at " + column + ", " + (tilesInColumn + 1) + " tile(s) in this column");
@@ -173,6 +173,8 @@ function setPiece(column) {
     else {
         console.log("Column full");
     }
+
+    logArray(c4_board.getBoard());
 }
 
 // function that console.logs the values in a 2d array (or normal array)
@@ -183,7 +185,12 @@ function logArray(array)
     {
         for (let c = 0; c < array[r].length; c++) 
         {
-            output = output + "0 "; //swap the zero for the value of the array
+            if(array[r][c] == " ") {
+                output = output + "0 "; //output a 0 representing an empty string (" ")
+            }
+            else {
+                output = output + array[r][c] + " ";
+            }
         }
         output = output + "\n";
     }
