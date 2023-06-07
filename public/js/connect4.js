@@ -1,9 +1,9 @@
-const rows = 6;
-const columns = 7;
-//const currentColumns = [5, 5, 5, 5, 5, 5, 5];
+const ROWS = 6;
+const COLUMNS = 7;
 
+//#region globals
 //test for using global modules
-var c4_module = (function(){ //create a module
+var c4_gameStarted = (function(){ //create a module
     var gameStarted = false; //create a variable inside the module (within scope)
 
     return { //return a fuction that sets the variable
@@ -17,6 +17,21 @@ var c4_module = (function(){ //create a module
     }
 })();
 
+var c4_board = (function() {
+    var board = [];
+
+    return {
+        updateBoard : function(array) {
+            return board = array;
+        },
+
+        getBoard : function() {
+            return board;
+        }
+    }
+})();
+//#endregion
+
 // When document loads up call setGame()
 $(document).ready(function() {
     setGame();
@@ -25,7 +40,7 @@ $(document).ready(function() {
         $('.menuBackground').hide();
         $('.friendOrAIMenu').hide();
 
-        c4_module.setGameStarted(true);
+        c4_gameStarted.setGameStarted(true);
         // console.log(c4_module.getGameStarted());
     });
 
@@ -42,8 +57,8 @@ $(document).ready(function() {
     //change the colour of the tile when its clicked on
     $('.squareTile').click(function() {
         let id = $(this).attr("id"); //get the squaretile's id
-        let coords = id.substring(2); //remove the SQ from the front
-        setPiece(coords);
+        let columnNo = id.substring(2).split("-")[1]; //remove the SQ from the front
+        setPiece(columnNo);
     });
 
     //when hovering over a column
@@ -71,12 +86,12 @@ function setGame() {
     board = [];
 
     //rows
-    for (let r = 0; r < rows; r++) {
+    for (let r = 0; r < ROWS; r++) {
         //each row
         let row = [];
 
         //columns
-        for (let c = 0; c < columns; c++) {
+        for (let c = 0; c < COLUMNS; c++) {
             row.push(' '); //add an empty value to each column of a row
 
             //#region Creating tiles
@@ -104,7 +119,8 @@ function setGame() {
     }
 
     setBoardHovers();
-    logArray(board);
+    c4_board.updateBoard(board);
+    logArray(c4_board.getBoard());
 }
 
 //function to create the column hover divs over the board
@@ -117,7 +133,7 @@ function setBoardHovers() {
     $('#boardColumnHoversParent').append(leftBoardHoverDiv); //make the boardColumnHoversParent this div's parent
 
     //centre hovers
-    for (let i = 0; i < columns - 2; i++) {
+    for (let i = 0; i < COLUMNS - 2; i++) {
         let boardHoverDiv = document.createElement("div"); //create a new div
         boardHoverDiv.id = "Hover" + (i + 1); //give it the correct indexed id
         boardHoverDiv.classList.add("boardColumnHover"); //add the class to style it
@@ -133,12 +149,30 @@ function setBoardHovers() {
     $('#boardColumnHoversParent').append(rightBoardHoverDiv); //make the boardColumnHoversParent this div's parent
 }
 
-function setPiece(id) {
-    if(!c4_module.getGameStarted()) return;
+function setPiece(column) {
+    if(!c4_gameStarted.getGameStarted()) return;
 
-    console.log("clicked at " + id);
+    let board = c4_board.getBoard();
+    let tilesInColumn = 0;
 
-    $('#' + id).addClass("yellowTile");
+    //work out which row to put the tile at based on how empty the column is
+    for (let i = 0; i < ROWS; i++) {
+        if(board[i][column] != ' ') { //if the row at column is empty
+            tilesInColumn++; //increment tilesInColumn
+        }
+    }
+
+    if(tilesInColumn < ROWS) { //if there's room in the column
+        let id = (ROWS - tilesInColumn - 1) + "-" + column; //get the id of the tile to change
+        $('#' + id).addClass("yellowTile"); //spawn the tile
+        board[tilesInColumn][column] = 'Y'; //update board
+        c4_board.updateBoard(board); //update the board global
+
+        console.log("clicked at " + column + ", " + (tilesInColumn + 1) + " tile(s) in this column");
+    }
+    else {
+        console.log("Column full");
+    }
 }
 
 // function that console.logs the values in a 2d array (or normal array)
