@@ -36,6 +36,7 @@ var c4_board = (function() {
 $(document).ready(function() {
     setGame();
 
+    //#region Menu functions
     $('#playRobotButton').click(function() {
         $('.menuBackground').hide();
         $('.friendOrAIMenu').hide();
@@ -53,12 +54,27 @@ $(document).ready(function() {
         $('.menuBackground').hide();
         $('.onlinePlayMenu').hide();
     });
+    //#endregion
+
+    //#region Tile functions
+    let isPlayerOneTurn = true;
 
     //change the colour of the tile when its clicked on
     $('.squareTile').click(function() {
         let id = $(this).attr("id"); //get the squaretile's id
         let columnNo = id.substring(2).split("-")[1]; //remove the SQ from the front
-        setPiece(columnNo, "Y");
+
+        //check if the column is full
+        if(!isColumnFull(columnNo)) {
+            if(isPlayerOneTurn){
+                setPiece(columnNo, "Y"); //yellow is player one
+            } 
+            else {
+                setPiece(columnNo, "R"); //red is player two
+            }
+        }
+
+        isPlayerOneTurn = !isPlayerOneTurn; //alternate player
     });
 
     //when hovering over a column
@@ -78,9 +94,10 @@ $(document).ready(function() {
         //select the correct column hover to hide
         $('#Hover' + columnNo).removeClass("hoverSelected");
     });
+    //#endregion
 });
 
-//note - should probably wrap these functions in a module?
+//initialise the game
 function setGame() {
     //board will be a 2d array
     board = [];
@@ -149,7 +166,8 @@ function setBoardHovers() {
     $('#boardColumnHoversParent').append(rightBoardHoverDiv); //make the boardColumnHoversParent this div's parent
 }
 
-function setPiece(column, playerPiece) {
+//set a tile's colour
+function setPiece(columnNo, playerPiece) {
     if(!c4_gameStarted.getGameStarted()) return;
 
     let board = c4_board.getBoard();
@@ -157,24 +175,191 @@ function setPiece(column, playerPiece) {
 
     //work out which row to put the tile at based on how empty the column is
     for (let i = 0; i < ROWS; i++) {
-        if(board[i][column] != ' ') { //if the row at column is empty
+        if(board[i][columnNo] != ' ') { //if the row at column is empty
+            tilesInColumn++; //increment tilesInColumn
+        }
+    }
+
+    let id = (ROWS - tilesInColumn - 1) + "-" + columnNo; //get the id of the tile to change
+
+    //change colour based on player
+    if(playerPiece == "Y"){
+        $('#' + id).addClass("yellowTile"); //spawn the tile (yellow)
+    }
+    else if(playerPiece == "R") {
+        $('#' + id).addClass("redTile"); //spawn the tile (red)
+    }
+
+    board[ROWS - 1 - tilesInColumn][columnNo] = playerPiece; //update board
+    c4_board.updateBoard(board); //update the board global
+
+    // console.log("clicked at " + columnNo + ", " + (tilesInColumn + 1) + " tile(s) in this column");
+    // logArray(c4_board.getBoard());
+}
+
+//function to check if a column is full
+function isColumnFull(columnNo) {
+    let board = c4_board.getBoard();
+    let tilesInColumn = 0;
+
+    //work out which row to put the tile at based on how empty the column is
+    for (let i = 0; i < ROWS; i++) {
+        if(board[i][columnNo] != ' ') { //if the row at column is empty
             tilesInColumn++; //increment tilesInColumn
         }
     }
 
     if(tilesInColumn < ROWS) { //if there's room in the column
-        let id = (ROWS - tilesInColumn - 1) + "-" + column; //get the id of the tile to change
-        $('#' + id).addClass("yellowTile"); //spawn the tile
-        board[ROWS - 1 - tilesInColumn][column] = playerPiece; //update board
-        c4_board.updateBoard(board); //update the board global
-
-        console.log("clicked at " + column + ", " + (tilesInColumn + 1) + " tile(s) in this column");
-    }
+        // console.log("Room in column");
+        return false; //room in column
+    } 
     else {
-        console.log("Column full");
+        // console.log("Column full");
+        return true; //column full
+    }
+}
+
+//function to check if a player has won after they play a piece
+function checkWinner(coords, playerPiece) {
+    let board = c4_board.getBoard();
+
+    let rowNo = coords.substring(2).split("-")[0]; //get the row number of the tile
+    let colNo = coords.substring(2).split("-")[1]; //get the column number of the tile
+
+    let n = 1; //number of tiles in a row
+
+    //check all directions
+    //#region Horizontal
+    //horizontal left
+    for (let i = 1; i < 4; i++) {
+        if((colNo - i) > 0) {
+            if(board[rowNo][(colNo - i)] == playerPiece){
+                n++;
+    
+                getWinningCoords(coords, n);
+            }
+            else {
+                return;
+            }
+        }
+        else {
+            return;
+        }
     }
 
-    logArray(c4_board.getBoard());
+    //horizontal right
+    for (let i = 1; i < 4; i++) {
+        if((colNo + i) < COLUMNS) {
+            if(board[rowNo][(colNo + i)] == playerPiece){
+                n++;
+    
+                getWinningCoords(coords, n);
+            }
+            else {
+                return;
+            }
+        }
+        else {
+            return;
+        }
+    }
+    //#endregion
+
+    //#region Vertical
+    //Vertical up
+    for (let i = 1; i < 4; i++) {
+        if((rowNo + i) < ROWS) {
+            if(board[rowNo + i][(colNo)] == playerPiece){
+                n++;
+    
+                getWinningCoords(coords, n);
+            }
+            else {
+                return;
+            }
+        }
+        else {
+            return;
+        }
+    }
+
+    //Vertical down
+    for (let i = 1; i < 4; i++) {
+        if((rowNo - i) > 0) {
+            if(board[rowNo - i][(colNo)] == playerPiece){
+                n++;
+    
+                getWinningCoords(coords, n);
+            }
+            else {
+                return;
+            }
+        }
+        else {
+            return;
+        }
+    }
+    //#endregion
+
+    //#region Diagonal up
+    //diagonal left up
+    for (let i = 1; i < 4; i++) {
+        if((rowNo + i) < ROWS && (colNo - i) > 0) {
+            if(board[rowNo + i][(colNo - i)] == playerPiece){
+                n++;
+    
+                getWinningCoords(coords, n);
+            }
+            else {
+                return;
+            }
+        }
+        else {
+            return;
+        }
+    }
+
+    //diagonal right up
+    for (let i = 1; i < 4; i++) {
+        if((rowNo + i) < ROWS && (colNo + i) < COLUMNS) {
+            if(board[rowNo + i][(colNo + i)] == playerPiece){
+                n++;
+    
+                getWinningCoords(coords, n);
+            }
+            else {
+                return;
+            }
+        }
+        else {
+            return;
+        }
+    }
+    //#endregion
+}
+
+//function to get the winning coords
+function getWinningCoords(coords, n) {
+    let rowNo = coords.substring(2).split("-")[0]; //get the row number of the tile
+    let colNo = coords.substring(2).split("-")[1]; //get the column number of the tile
+
+    if(n >= 4) {
+        //get the winning tile coords
+        let winningCoords = [];
+        for (let i = 0; i < 4; i++) {
+            winningCoords.push(rowNo + "-" + (colNo + i));
+        }
+        setWinner(winningCoords);
+    }
+}
+
+//function to set the winning tiles
+function setWinner(winningTiles) {
+    c4_gameStarted.setGameStarted(false);
+
+    for (let i = 0; i < winningTiles.length; i++) {
+        $("#" + winningTiles[i]).addClass("winningTile");
+    }
 }
 
 // function that console.logs the values in a 2d array (or normal array)
