@@ -233,216 +233,75 @@ function checkWinner(coords, playerPiece) {
 
     let n = 1; //number of tiles in a row
 
-    //check all directions
-    //#region Horizontal
-    //horizontal left
-    for (let i = 1; i < 4; i++) {
-        if((colNo - i) > 0) {
-            if(board[rowNo][(colNo - i)] == playerPiece){
-                n++;
-    
-                if(n >= 4) {
-                    //get the winning tile coords
-                    let winningCoords = [];
-                    for (let i = 0; i < 4; i++) {
-                        let newColNo = (parseInt(colNo) - parseInt(i));
-                        winningCoords.push(rowNo + "-" + newColNo);
-                    }
-                    setWinner(winningCoords);
+    //check all directions - this can probably be optimised
+    //#region Horizontally
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < (COLUMNS - 3); c++) {
+            if(board[r][c] != ' ') {
+                if(board[r][c] == board[r][c + 1] && board[r][c + 1] == board[r][c + 2] && board[r][c + 2] == board[r][c + 3]) {
+                    //add the winning tiles to an array
+                    let winningTiles = [(r).toString() + "-" + (c).toString(),
+                                        (r).toString() + "-" + (c + 1).toString(),
+                                        (r).toString() + "-" + (c + 2).toString(),
+                                        (r).toString() + "-" + (c + 3).toString()];
+                    setWinner(winningTiles);
+                    return;
                 }
             }
-            else {
-                console.log("Nope");
-                return;
-            }
-        }
-        else {
-            return;
-        }
-    }
-
-    //horizontal right
-    for (let i = 1; i < 4; i++) {
-        if((colNo + i) < COLUMNS) {
-            if(board[rowNo][(colNo + i)] == playerPiece){
-                n++;
-    
-                if(n >= 4) {
-                    //get the winning tile coords
-                    let winningCoords = [];
-                    for (let i = 0; i < 4; i++) {
-                        let newColNo = (parseInt(colNo) + parseInt(i));
-                        winningCoords.push(rowNo + "-" + newColNo);
-                    }
-                    setWinner(winningCoords);
-                }
-            }
-            else {
-                return;
-            }
-        }
-        else {
-            return;
         }
     }
     //#endregion
 
-    //#region Vertical
-    //Vertical up
-    for (let i = 1; i < 4; i++) {
-        if((rowNo + i) < ROWS) {
-            if(board[rowNo + i][(colNo)] == playerPiece){
-                n++;
-    
-                if(n >= 4) {
-                    //get the winning tile coords
-                    let winningCoords = [];
-                    for (let i = 0; i < 4; i++) {
-                        let newRowNo = (parseInt(rowNo) + parseInt(i));
-                        winningCoords.push(newRowNo + "-" + colNo);
-                    }
-                    setWinner(winningCoords);
+    //#region Vertically
+    for (let c = 0; c < COLUMNS; c++) {
+        for (let r = 0; r < (ROWS - 3); r++) {
+            if(board[r][c] != ' ') {
+                if(board[r][c] == board[r + 1][c] && board[r + 1][c] == board[r + 2][c] && board[r + 2][c] == board[r + 3][c]) {
+                    //add the winning tiles to an array
+                    let winningTiles = [(r).toString() + "-" + (c).toString(),
+                                        (r + 1).toString() + "-" + (c).toString(),
+                                        (r + 2).toString() + "-" + (c).toString(),
+                                        (r + 3).toString() + "-" + (c).toString()];
+                    setWinner(winningTiles);
+                    return;
                 }
             }
-            else {
-                return;
-            }
-        }
-        else {
-            return;
-        }
-    }
-
-    //Vertical down
-    for (let i = 1; i < 4; i++) {
-        if((rowNo - i) > 0) {
-            if(board[rowNo - i][(colNo)] == playerPiece){
-                n++;
-    
-                if(n >= 4) {
-                    //get the winning tile coords
-                    let winningCoords = [];
-                    for (let i = 0; i < 4; i++) {
-                        let newRowNo = (parseInt(rowNo) - parseInt(i));
-                        winningCoords.push(newRowNo + "-" + colNo);
-                    }
-                    setWinner(winningCoords);
-                }
-            }
-            else {
-                return;
-            }
-        }
-        else {
-            return;
         }
     }
     //#endregion
 
-    //#region Diagonal up
-    //diagonal left up
-    for (let i = 1; i < 4; i++) {
-        if((rowNo + i) < ROWS && (colNo - i) > 0) {
-            if(board[rowNo + i][(colNo - i)] == playerPiece){
-                n++;
-    
-                if(n >= 4) {
-                    //get the winning tile coords
-                    let winningCoords = [];
-                    for (let i = 0; i < 4; i++) {
-                        let newRowNo = (parseInt(rowNo) + parseInt(i));
-                        let newColNo = (parseInt(rowNo) - parseInt(i));
-                        winningCoords.push(newRowNo + "-" + newColNo);
-                    }
-                    setWinner(winningCoords);
+    //#region Diagonally left
+    for (let r = 0; r < (ROWS - 3); r++) {
+        for (let c = 0; c < COLUMNS; c++) {
+            if(board[r][c] != ' ') {
+                if(board[r][c] == board[r + 1][c + 1] && board[r + 1][c + 1] == board[r + 2][c + 2] && board[r + 2][c + 2] == board[r + 3][c + 3]) {
+                    //add the winning tiles to an array
+                    let winningTiles = [(r).toString() + "-" + (c).toString(),
+                                        (r + 1).toString() + "-" + (c + 1).toString(),
+                                        (r + 2).toString() + "-" + (c + 2).toString(),
+                                        (r + 3).toString() + "-" + (c + 3).toString()];
+                    setWinner(winningTiles);
+                    return;
                 }
             }
-            else {
-                return;
-            }
-        }
-        else {
-            return;
-        }
-    }
-
-    //diagonal right up
-    for (let i = 1; i < 4; i++) {
-        if((rowNo + i) < ROWS && (colNo + i) < COLUMNS) {
-            if(board[rowNo + i][(colNo + i)] == playerPiece){
-                n++;
-    
-                if(n >= 4) {
-                    //get the winning tile coords
-                    let winningCoords = [];
-                    for (let i = 0; i < 4; i++) {
-                        let newRowNo = (parseInt(rowNo) + parseInt(i));
-                        let newColNo = (parseInt(rowNo) + parseInt(i));
-                        winningCoords.push(newRowNo + "-" + newColNo);
-                    }
-                    setWinner(winningCoords);
-                }
-            }
-            else {
-                return;
-            }
-        }
-        else {
-            return;
         }
     }
     //#endregion
 
-    //#region Diagonal down
-    //diagonal left down
-    for (let i = 1; i < 4; i++) {
-        if((rowNo - i) > 0 && (colNo - i) > 0) {
-            if(board[rowNo - i][(colNo - i)] == playerPiece){
-                n++;
-    
-                if(n >= 4) {
-                    //get the winning tile coords
-                    let winningCoords = [];
-                    for (let i = 0; i < 4; i++) {
-                        let newRowNo = (parseInt(rowNo) - parseInt(i));
-                        let newColNo = (parseInt(rowNo) - parseInt(i));
-                        winningCoords.push(newRowNo + "-" + newColNo);
-                    }
-                    setWinner(winningCoords);
+    //#region Diagonally right
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < (COLUMNS - 3); c++) {
+            if(board[r][c] != ' ') {
+                if(board[r][c] == board[r - 1][c + 1] && board[r - 1][c + 1] == board[r - 2][c + 2] && board[r - 2][c + 2] == board[r - 3][c + 3]) {
+                    //add the winning tiles to an array
+                    let winningTiles = [(r).toString() + "-" + (c).toString(),
+                                        (r - 1).toString() + "-" + (c + 1).toString(),
+                                        (r - 2).toString() + "-" + (c + 2).toString(),
+                                        (r - 3).toString() + "-" + (c + 3).toString()];
+                    setWinner(winningTiles);
+                    return;
                 }
             }
-            else {
-                return;
-            }
-        }
-        else {
-            return;
-        }
-    }
-
-    //diagonal right down
-    for (let i = 1; i < 4; i++) {
-        if((rowNo - i) > 0 && (colNo + i) < COLUMNS) {
-            if(board[rowNo - i][(colNo + i)] == playerPiece){
-                n++;
-    
-                if(n >= 4) {
-                    //get the winning tile coords
-                    let winningCoords = [];
-                    for (let i = 0; i < 4; i++) {
-                        let newRowNo = (parseInt(rowNo) - parseInt(i));
-                        let newColNo = (parseInt(rowNo) + parseInt(i));
-                        winningCoords.push(newRowNo + "-" + newColNo);
-                    }
-                    setWinner(winningCoords);
-                }
-            }
-            else {
-                return;
-            }
-        }
-        else {
-            return;
         }
     }
     //#endregion
@@ -457,6 +316,11 @@ function setWinner(winningTiles) {
     for (let i = 0; i < winningTiles.length; i++) {
         console.log(winningTiles[i]);
         $("#" + winningTiles[i]).addClass("winningTile");
+    }
+
+    //remove hovers
+    for (let i = 0; i < 7; i++) {
+        $('#Hover' + i).removeClass("hoverSelected");
     }
 }
 
