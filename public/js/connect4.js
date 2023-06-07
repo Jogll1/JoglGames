@@ -79,6 +79,8 @@ $(document).ready(function() {
 
     //when hovering over a column
     $('.squareTile').mouseenter(function() {
+        if(!c4_gameStarted.getGameStarted()) return;
+
         let id = $(this).attr("id"); //get the squaretile's id
         let columnNo = id.substring(2).split("-")[1]; //get the column number of the tile
 
@@ -195,6 +197,9 @@ function setPiece(columnNo, playerPiece) {
 
     // console.log("clicked at " + columnNo + ", " + (tilesInColumn + 1) + " tile(s) in this column");
     // logArray(c4_board.getBoard());
+
+    //check if the player has won
+    checkWinner(id, playerPiece);
 }
 
 //function to check if a column is full
@@ -223,8 +228,8 @@ function isColumnFull(columnNo) {
 function checkWinner(coords, playerPiece) {
     let board = c4_board.getBoard();
 
-    let rowNo = coords.substring(2).split("-")[0]; //get the row number of the tile
-    let colNo = coords.substring(2).split("-")[1]; //get the column number of the tile
+    let rowNo = coords.split("-")[0]; //get the row number of the tile
+    let colNo = coords.split("-")[1]; //get the column number of the tile
 
     let n = 1; //number of tiles in a row
 
@@ -236,9 +241,18 @@ function checkWinner(coords, playerPiece) {
             if(board[rowNo][(colNo - i)] == playerPiece){
                 n++;
     
-                getWinningCoords(coords, n);
+                if(n >= 4) {
+                    //get the winning tile coords
+                    let winningCoords = [];
+                    for (let i = 0; i < 4; i++) {
+                        let newColNo = (parseInt(colNo) - parseInt(i));
+                        winningCoords.push(rowNo + "-" + newColNo);
+                    }
+                    setWinner(winningCoords);
+                }
             }
             else {
+                console.log("Nope");
                 return;
             }
         }
@@ -253,7 +267,15 @@ function checkWinner(coords, playerPiece) {
             if(board[rowNo][(colNo + i)] == playerPiece){
                 n++;
     
-                getWinningCoords(coords, n);
+                if(n >= 4) {
+                    //get the winning tile coords
+                    let winningCoords = [];
+                    for (let i = 0; i < 4; i++) {
+                        let newColNo = (parseInt(colNo) + parseInt(i));
+                        winningCoords.push(rowNo + "-" + newColNo);
+                    }
+                    setWinner(winningCoords);
+                }
             }
             else {
                 return;
@@ -272,7 +294,15 @@ function checkWinner(coords, playerPiece) {
             if(board[rowNo + i][(colNo)] == playerPiece){
                 n++;
     
-                getWinningCoords(coords, n);
+                if(n >= 4) {
+                    //get the winning tile coords
+                    let winningCoords = [];
+                    for (let i = 0; i < 4; i++) {
+                        let newRowNo = (parseInt(rowNo) + parseInt(i));
+                        winningCoords.push(newRowNo + "-" + colNo);
+                    }
+                    setWinner(winningCoords);
+                }
             }
             else {
                 return;
@@ -289,7 +319,15 @@ function checkWinner(coords, playerPiece) {
             if(board[rowNo - i][(colNo)] == playerPiece){
                 n++;
     
-                getWinningCoords(coords, n);
+                if(n >= 4) {
+                    //get the winning tile coords
+                    let winningCoords = [];
+                    for (let i = 0; i < 4; i++) {
+                        let newRowNo = (parseInt(rowNo) - parseInt(i));
+                        winningCoords.push(newRowNo + "-" + colNo);
+                    }
+                    setWinner(winningCoords);
+                }
             }
             else {
                 return;
@@ -308,7 +346,16 @@ function checkWinner(coords, playerPiece) {
             if(board[rowNo + i][(colNo - i)] == playerPiece){
                 n++;
     
-                getWinningCoords(coords, n);
+                if(n >= 4) {
+                    //get the winning tile coords
+                    let winningCoords = [];
+                    for (let i = 0; i < 4; i++) {
+                        let newRowNo = (parseInt(rowNo) + parseInt(i));
+                        let newColNo = (parseInt(rowNo) - parseInt(i));
+                        winningCoords.push(newRowNo + "-" + newColNo);
+                    }
+                    setWinner(winningCoords);
+                }
             }
             else {
                 return;
@@ -325,7 +372,70 @@ function checkWinner(coords, playerPiece) {
             if(board[rowNo + i][(colNo + i)] == playerPiece){
                 n++;
     
-                getWinningCoords(coords, n);
+                if(n >= 4) {
+                    //get the winning tile coords
+                    let winningCoords = [];
+                    for (let i = 0; i < 4; i++) {
+                        let newRowNo = (parseInt(rowNo) + parseInt(i));
+                        let newColNo = (parseInt(rowNo) + parseInt(i));
+                        winningCoords.push(newRowNo + "-" + newColNo);
+                    }
+                    setWinner(winningCoords);
+                }
+            }
+            else {
+                return;
+            }
+        }
+        else {
+            return;
+        }
+    }
+    //#endregion
+
+    //#region Diagonal down
+    //diagonal left down
+    for (let i = 1; i < 4; i++) {
+        if((rowNo - i) > 0 && (colNo - i) > 0) {
+            if(board[rowNo - i][(colNo - i)] == playerPiece){
+                n++;
+    
+                if(n >= 4) {
+                    //get the winning tile coords
+                    let winningCoords = [];
+                    for (let i = 0; i < 4; i++) {
+                        let newRowNo = (parseInt(rowNo) - parseInt(i));
+                        let newColNo = (parseInt(rowNo) - parseInt(i));
+                        winningCoords.push(newRowNo + "-" + newColNo);
+                    }
+                    setWinner(winningCoords);
+                }
+            }
+            else {
+                return;
+            }
+        }
+        else {
+            return;
+        }
+    }
+
+    //diagonal right down
+    for (let i = 1; i < 4; i++) {
+        if((rowNo - i) > 0 && (colNo + i) < COLUMNS) {
+            if(board[rowNo - i][(colNo + i)] == playerPiece){
+                n++;
+    
+                if(n >= 4) {
+                    //get the winning tile coords
+                    let winningCoords = [];
+                    for (let i = 0; i < 4; i++) {
+                        let newRowNo = (parseInt(rowNo) - parseInt(i));
+                        let newColNo = (parseInt(rowNo) + parseInt(i));
+                        winningCoords.push(newRowNo + "-" + newColNo);
+                    }
+                    setWinner(winningCoords);
+                }
             }
             else {
                 return;
@@ -338,26 +448,14 @@ function checkWinner(coords, playerPiece) {
     //#endregion
 }
 
-//function to get the winning coords
-function getWinningCoords(coords, n) {
-    let rowNo = coords.substring(2).split("-")[0]; //get the row number of the tile
-    let colNo = coords.substring(2).split("-")[1]; //get the column number of the tile
-
-    if(n >= 4) {
-        //get the winning tile coords
-        let winningCoords = [];
-        for (let i = 0; i < 4; i++) {
-            winningCoords.push(rowNo + "-" + (colNo + i));
-        }
-        setWinner(winningCoords);
-    }
-}
-
 //function to set the winning tiles
 function setWinner(winningTiles) {
     c4_gameStarted.setGameStarted(false);
 
+    console.log("setWinner");
+
     for (let i = 0; i < winningTiles.length; i++) {
+        console.log(winningTiles[i]);
         $("#" + winningTiles[i]).addClass("winningTile");
     }
 }
