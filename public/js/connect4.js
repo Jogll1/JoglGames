@@ -270,9 +270,9 @@ function checkWinner(coords, playerPiece) {
     }
     //#endregion
 
-    //#region Diagonally left
+    //#region Diagonally (top-left to bottom-right)
     for (let r = 0; r < (ROWS - 3); r++) {
-        for (let c = 0; c < COLUMNS; c++) {
+        for (let c = 0; c < (COLUMNS - 3); c++) {
             if(board[r][c] != ' ') {
                 if(board[r][c] == board[r + 1][c + 1] && board[r + 1][c + 1] == board[r + 2][c + 2] && board[r + 2][c + 2] == board[r + 3][c + 3]) {
                     //add the winning tiles to an array
@@ -288,8 +288,8 @@ function checkWinner(coords, playerPiece) {
     }
     //#endregion
 
-    //#region Diagonally right
-    for (let r = 0; r < ROWS; r++) {
+    //#region Diagonally (bottom-left to top-right)
+    for (let r = 3; r < ROWS; r++) {
         for (let c = 0; c < (COLUMNS - 3); c++) {
             if(board[r][c] != ' ') {
                 if(board[r][c] == board[r - 1][c + 1] && board[r - 1][c + 1] == board[r - 2][c + 2] && board[r - 2][c + 2] == board[r - 3][c + 3]) {
@@ -310,8 +310,6 @@ function checkWinner(coords, playerPiece) {
 //function to set the winning tiles
 function setWinner(winningTiles) {
     c4_gameStarted.setGameStarted(false);
-
-    console.log("setWinner");
 
     for (let i = 0; i < winningTiles.length; i++) {
         console.log(winningTiles[i]);
