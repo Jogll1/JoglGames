@@ -199,7 +199,7 @@ function setPiece(columnNo, playerPiece) {
     // logArray(c4_board.getBoard());
 
     //check if the player has won
-    checkWinner(id, playerPiece);
+    checkWinner();
 }
 
 //function to check if a column is full
@@ -225,13 +225,8 @@ function isColumnFull(columnNo) {
 }
 
 //function to check if a player has won after they play a piece
-function checkWinner(coords, playerPiece) {
+function checkWinner() {
     let board = c4_board.getBoard();
-
-    let rowNo = coords.split("-")[0]; //get the row number of the tile
-    let colNo = coords.split("-")[1]; //get the column number of the tile
-
-    let n = 1; //number of tiles in a row
 
     //check all directions - this can probably be optimised
     //#region Horizontally
