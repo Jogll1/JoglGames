@@ -1,62 +1,190 @@
-function minimaxab(board, depth, a, b, maximisingPlayer) { //minimax with alpha beta pruning
-    //validPositions = getValidPositions(board) //get valid positions of the board function
-    //isTerminal = isTerminalNode(board); //check to see if this node is the terminal position
-    if(depth == 0) { //or isTerminal
-        //return heuristic value of teminal node
-        //if(isTerminal) {
-        //    if(isWinningMove(board, AIPiece)) {
-        //        return (null, 100000000000000);
-        //    }
-        //    else if(isWinningMove(board, PlayerPiece)) {
-        //        return (null, -100000000000000);
-        //    }
-        //    else { //game is over, no valid moves
-        //        return (null, 0);
-        //    } 
-        //}
-        //else { //depth is 0
-        //    return (null, scorePosition(board, AIPiece))
-        //}
+//function to make ai move
+function aiMove(board, depth, aiPiece) {
+    //call minimax to get the best move (this returns a column number)
+    const bestMove = minimax(board, depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).index;
+
+    console.log(bestMove);
+
+    //column shouldn't be full so call setPiece, also game shouldn't be drawn
+    // if(!isDraw) {
+    //     setPiece(bestMove, aiPiece);
+    //     console.log("ai played");
+    // }
+
+    setPiece(bestMove, aiPiece);
+}
+
+//minimax function to get ai's best move
+function minimax(board, depth, alpha, beta, isMaximisingPlayer) { //minimax with alpha beta pruning
+    //if a player has won or drawn, or depth limit is reached
+    terminalState = isTerminalState(board);
+
+    if(isTerminalState || depth === 0) {
+        if(terminalState === "R") { //ai wins, assign high score
+            return {eval: 1000, index: null}; 
+        }  
+        else if(terminalState === "Y") { //player wins, assign low score
+            return {eval: -1000, index: null}; 
+        }
+        else { //game is a draw, assign neutral score
+            return {eval: 0, index: null}; 
+        }
     }
 
-    if(maximisingPlayer) { //maximising player
-        let value = -Infinity;
-        //column = board[Math.floor(Math.random() * array.length)];
+    if(isMaximisingPlayer) { //if maximising player, meaning checking all the player's moves
+        //initial values
+        let maxEval = Number.NEGATIVE_INFINITY; //value of the current state of the board
+        let bestMove = null; //best column to play in
 
-        //for (let i = 0; i < validPositions.length; i++) {
-        //    let row = getNextOpenRow(board);
-        //    let boardCopy = board;
-        //    setPiece(columnNo, AIPiece);
-        //    let newScore = minimaxab(boardCopy, (depth - 1), a, b, false)[1]
-        //    if(newScore > value) {
-        //        value = newScore
-        //        column = board[i];
-        //    }
-        //    a = max(a, value);
-        //    if(a >= b) {
-        //        break;
-        //    }
-        //}
-        //return (column, value);
-    }
-    else { //minimising player
-        let value = Infinity;
-        //column = board[Math.floor(Math.random() * array.length)];
+        //generate all possible moves
+        for (let col = 0; col < COLUMNS; col++) {
+            if(board[0][col] === ' ') { //top of column is empty
+                //apply the move to a copy of the game
+                let boardCopy = JSON.parse(JSON.stringify(board)); //copy the board
+                
+                //get next available slot in row
+                let row = 5;
+                while(row >= 0 && boardCopy[row][col] !== ' ') {
+                    row--;
+                }
 
-        //for (let i = 0; i < validPositions.length; i++) {
-        //    let row = getNextOpenRow(board);
-        //    let boardCopy = board;
-        //    setPiece(columnNo, playerPiece);
-        //    let newScore = minimaxab(boardCopy, (depth - 1), a, b, true)[1]
-        //    if(newScore < value) {
-        //        value = newScore
-        //        column = board[i];
-        //    }
-        //    b = min(b, value);
-        //    if(a >= b) {
-        //        break;
-        //    }
-        //}
-        //return (column, value);
+                //update the board copy
+                boardCopy[row][col] = "R"; //for now, ai is always red and player is always yellow as player goes first
+
+                //recursive call to minimax
+                let eval = minimax(boardCopy, (depth - 1), alpha, beta, false).eval;
+
+                //update best move and max eval
+                if(eval > maxEval) {
+                    maxEval = eval;
+                    bestMove = col;
+                }
+
+                //perform alpha-beta pruning
+                alpha = Math.max(alpha, eval);
+                if(beta <= alpha) {
+                    break;
+                }
+            }
+        }
+
+        console.log("max = " + maxEval);
+        return { eval: maxEval, index: bestMove}; //return values
+    } 
+    else { //if minimising player, meaning checking all the ai's moves
+        //initial values
+        let minEval = Number.POSITIVE_INFINITY; //value of the current state of the board
+        let bestMove = null; //best column to play in
+
+        //generate all possible moves
+        for (let col = 0; col < COLUMNS; col++) {
+            if(board[0][col] === ' ') { //top of column is empty
+                //apply the move to a copy of the game
+                let boardCopy = JSON.parse(JSON.stringify(board)); //copy the board
+                
+                //get next available slot in row
+                let row = 5;
+                while(row >= 0 && boardCopy[row][col] !== ' ') {
+                    row--;
+                }
+
+                //update the board copy
+                boardCopy[row][col] = "Y"; //for now, ai is always red and player is always yellow as player goes first
+
+                //recursive call to minimax
+                let eval = minimax(boardCopy, (depth - 1), alpha, beta, true).eval;
+
+                //update best move and max eval
+                if(eval < minEval) {
+                    minEval = eval;
+                    bestMove = col;
+                }
+
+                //perform alpha-beta pruning
+                beta = Math.min(beta, eval);
+                if(beta <= alpha) {
+                    break;
+                }
+            }
+        }
+
+        console.log("min = " + minEval);
+        return { eval: minEval, index: bestMove}; //return values
     }
+}
+
+//function to check if a game is at a terminal state (win or draw)
+function isTerminalState(board) {
+    //check all directions - this can probably be optimised
+    //#region Horizontally
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < (COLUMNS - 3); c++) {
+            if(board[r][c] != ' ') {
+                if(board[r][c] == board[r][c + 1] && board[r][c + 1] == board[r][c + 2] && board[r][c + 2] == board[r][c + 3]) {
+                    return board[r][c];
+                }
+            }
+        }
+    }
+    //#endregion
+
+    //#region Vertically
+    for (let c = 0; c < COLUMNS; c++) {
+        for (let r = 0; r < (ROWS - 3); r++) {
+            if(board[r][c] != ' ') {
+                if(board[r][c] == board[r + 1][c] && board[r + 1][c] == board[r + 2][c] && board[r + 2][c] == board[r + 3][c]) {
+                    return board[r][c];
+                }
+            }
+        }
+    }
+    //#endregion
+
+    //#region Diagonally (top-left to bottom-right)
+    for (let r = 0; r < (ROWS - 3); r++) {
+        for (let c = 0; c < (COLUMNS - 3); c++) {
+            if(board[r][c] != ' ') {
+                if(board[r][c] == board[r + 1][c + 1] && board[r + 1][c + 1] == board[r + 2][c + 2] && board[r + 2][c + 2] == board[r + 3][c + 3]) {
+                    return board[r][c];
+                }
+            }
+        }
+    }
+    //#endregion
+
+    //#region Diagonally (bottom-left to top-right)
+    for (let r = 3; r < ROWS; r++) {
+        for (let c = 0; c < (COLUMNS - 3); c++) {
+            if(board[r][c] != ' ') {
+                if(board[r][c] == board[r - 1][c + 1] && board[r - 1][c + 1] == board[r - 2][c + 2] && board[r - 2][c + 2] == board[r - 3][c + 3]) {
+                    return board[r][c];
+                }
+            }
+        }
+    }
+
+    //check for a draw
+    if(isDraw) return "draw";
+
+    //default
+    return null;
+}
+
+//function to check for a draw
+function isDraw(board) {
+    console.log("called");
+    let filledPositions = 0;
+
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLUMNS; c++) {
+            if(board[r][c] != ' ') { //if the tile isn't empty
+                filledPositions++;
+            }
+        }
+    }
+
+    if(filledPositions >= (ROWS * COLUMNS)) {
+        return true; //return true if whole board is full
+    }
+    return false;
 }

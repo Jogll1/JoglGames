@@ -30,6 +30,20 @@ var c4_board = (function() {
         }
     }
 })();
+
+var c4_isPlayerOneTurn = (function(){ //check if it is the first (human) player's go
+    var isPlayerOneTurn = false; //create a variable inside the module (within scope)
+
+    return { //return a fuction that sets the variable
+        setState: function(bToSet) {
+            return isPlayerOneTurn = bToSet;
+        },
+
+        getState : function() {
+            return isPlayerOneTurn;
+        }
+    }
+})();
 //#endregion
 
 // When document loads up call setGame()
@@ -42,7 +56,7 @@ $(document).ready(function() {
         $('.friendOrAIMenu').hide();
 
         c4_gameStarted.setGameStarted(true);
-        // console.log(c4_module.getGameStarted());
+        c4_isPlayerOneTurn.setState(true);
     });
 
     $('#playFriendButton').click(function() {
@@ -57,24 +71,28 @@ $(document).ready(function() {
     //#endregion
 
     //#region Tile functions
-    let isPlayerOneTurn = true;
-
     //change the colour of the tile when its clicked on
     $('.squareTile').click(function() {
+        if(!c4_isPlayerOneTurn.getState()) return; //if it isn't the player's turn
+
         let id = $(this).attr("id"); //get the squaretile's id
         let columnNo = id.substring(2).split("-")[1]; //remove the SQ from the front
 
         //check if the column is full
         if(!isColumnFull(columnNo)) {
-            if(isPlayerOneTurn){
-                setPiece(columnNo, "Y"); //yellow is player one
-            } 
-            else {
-                setPiece(columnNo, "R"); //red is player two
+            // if(isPlayerOneTurn){
+            //     setPiece(columnNo, "Y"); //yellow is player one
+            // } 
+            // else {
+            //     setPiece(columnNo, "R"); //red is player two
+            // }
+
+            setPiece(columnNo, "Y"); //yellow is player one (human)
+
+            if(!c4_isPlayerOneTurn.getState()) { //if not player one's turn, call ai turn
+                aiMove(c4_board.getBoard(), 3, "R");
             }
         }
-
-        isPlayerOneTurn = !isPlayerOneTurn; //alternate player
     });
 
     //when hovering over a column
@@ -200,6 +218,8 @@ function setPiece(columnNo, playerPiece) {
 
     //check if the player has won
     checkWinner();
+
+    c4_isPlayerOneTurn.setState(!c4_isPlayerOneTurn.getState()); //alternate player
 }
 
 //function to check if a column is full
@@ -299,6 +319,8 @@ function checkWinner() {
             }
         }
     }
+
+    //return false; //return false if no one won
     //#endregion
 }
 
