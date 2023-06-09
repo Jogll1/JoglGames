@@ -146,19 +146,33 @@ function evaluateBoard(board, col, pieceToCheck) {
     }
     let row = ROWS - tilesInColumn; //get row of last placed tile
 
+    //check if won
+    terminalState = isTerminalState(board);
+    if(terminalState == pieceToCheck) {
+        return 1000;
+    }  
+
     //check if in centre
     if(col == ((COLUMNS - 1) / 2)) {
         score += 4;
     }
 
-    //check for lines of 2 from the last placed piece
+    //check if in column 2 places either side of the middle
+    if(col == ((COLUMNS - 1) / 2) - 2 || col == ((COLUMNS - 1) / 2) + 2) {
+        score += 1;
+    }
+
+    //#region lines of 2 or 3
+    //check for lines of 2 and 3 from the last placed piece
+    let n = 1;
+
+    //#region horizontal
     //horizontally right
-    for (let i = 0; i < 3; i++) { //no point of checking past 3 places over
-        if((col + i) < COLUMNS ) { //check if the next column over is valid
+    for (let i = 1; i < 4; i++) { //no point of checking past 3 places over
+        if((col + i) < COLUMNS) { //check if the next column over is valid
             if(board[row][(col + i)] == pieceToCheck || board[row][(col + i)] == ' ') { //if the piece i columns over isn't the opponent's piece
                 if(board[row][(col + i)] == pieceToCheck) { //if it is our piece
-                    score += 2;
-                    break; //break as this is only for checking 2 away
+                    n += 1; //increment n
                 }
             } 
             else { //if it is, break
@@ -169,6 +183,228 @@ function evaluateBoard(board, col, pieceToCheck) {
             break;
         }
     }
+    
+    //calculate score of 
+    if(n == 2) {
+        score += 2;
+        console.log("2 h r");
+        n = 1;
+    }
+    else if(n == 3) {
+        score += 3;
+        console.log("3 h r");
+        n = 1;
+    }
+
+    //horizontally left
+    for (let i = 1; i < 4; i++) { //no point of checking past 3 places over
+        if((col - i) >= 0) { //check if the previous column over is valid
+            if(board[row][(col - i)] == pieceToCheck || board[row][(col - i)] == ' ') { //if the piece i columns previous isn't the opponent's piece
+                if(board[row][(col - i)] == pieceToCheck) { //if it is our piece
+                    n += 1; //increment n
+                }
+            } 
+            else { //if it is, break
+                break;
+            }
+        }
+        else { //if its not, break
+            break;
+        }
+    }
+
+    //calculate score of 
+    if(n == 2) {
+        score += 2;
+        console.log("2 h l");
+        n = 1;
+    }
+    else if(n == 3) {
+        score += 3;
+        console.log("3 h l");
+        n = 1;
+    }
+    //#endregion
+
+    //#region vertical
+    //vertically down
+    for (let i = 1; i < 4; i++) { //no point of checking past 3 places over
+        if((row + i) < ROWS) { //check if the next row down is valid
+            if(board[(row + i)][col] == pieceToCheck || board[(row + i)][col] == ' ') { //if the piece i rows down isn't the opponent's piece
+                if(board[(row + i)][col] == pieceToCheck) { //if it is our piece
+                    n += 1; //increment n
+                }
+            } 
+            else { //if it is, break
+                break;
+            }
+        }
+        else { //if its not, break
+            break;
+        }
+    }
+
+    //calculate score of 
+    if(n == 2) {
+        score += 2;
+        console.log("2 v d");
+        n = 1;
+    }
+    else if(n == 3) {
+        score += 3;
+        console.log("3 v d");
+        n = 1;
+    }
+
+    //vertically up
+    for (let i = 1; i < 4; i++) { //no point of checking past 3 places over
+        if((row - i) >= 0) { //check if the next row up is valid
+            if(board[(row - i)][col] == pieceToCheck || board[(row - i)][col] == ' ') { //if the piece i row up isn't the opponent's piece
+                if(board[(row - i)][col] == pieceToCheck) { //if it is our piece
+                    n += 1; //increment n
+                }
+            } 
+            else { //if it is, break
+                break;
+            }
+        }
+        else { //if its not, break
+            break;
+        }
+    }
+
+    //calculate score of 
+    if(n == 2) {
+        score += 2;
+        console.log("2 v u");
+        n = 1;
+    }
+    else if(n == 3) {
+        score += 3;
+        console.log("3 v u");
+        n = 1;
+    }
+    //#endregion
+
+    //#region diagonally down
+    //diagonally down right
+    for (let i = 1; i < 4; i++) { //no point of checking past 3 places over
+        if((col + i) < COLUMNS && (row + i) < ROWS) { //check if the next diagonal down right is valid
+            if(board[(row + i)][(col + i)] == pieceToCheck || board[(row + i)][(col + i)] == ' ') { //if the piece i next diagonal down right isn't the opponent's piece
+                if(board[(row + i)][(col + i)] == pieceToCheck) { //if it is our piece
+                    n += 1; //increment n
+                }
+            } 
+            else { //if it is, break
+                break;
+            }
+        }
+        else { //if its not, break
+            break;
+        }
+    }
+
+    //calculate score of 
+    if(n == 2) {
+        score += 2;
+        console.log("2 d d r");
+        n = 1;
+    }
+    else if(n == 3) {
+        score += 3;
+        console.log("3 d d r");
+        n = 1;
+    }
+
+    //diagonally down left
+    for (let i = 1; i < 4; i++) { //no point of checking past 3 places over
+        if((col - i) >= 0 && (row + i) < ROWS) { //check if the next diagonal up left is valid
+            if(board[(row + i)][(col - i)] == pieceToCheck || board[(row + i)][(col - i)] == ' ') { //if the piece i next diagonal up left isn't the opponent's piece
+                if(board[(row + i)][(col - i)] == pieceToCheck) { //if it is our piece
+                    n += 1; //increment n
+                }
+            } 
+            else { //if it is, break
+                break;
+            }
+        }
+        else { //if its not, break
+            break;
+        }
+    }
+
+    //calculate score of 
+    if(n == 2) {
+        score += 2;
+        console.log("2 d d l");
+        n = 1;
+    }
+    else if(n == 3) {
+        score += 3;
+        console.log("3 d d l");
+        n = 1;
+    }
+    //#endregion
+
+    //#region diagonally up
+    //diagonally up right
+    for (let i = 1; i < 4; i++) { //no point of checking past 3 places over
+        if((col + i) < COLUMNS && (row - i) >= 0) { //check if the next diagonal up right is valid
+            if(board[(row - i)][(col + i)] == pieceToCheck || board[(row - i)][(col + i)] == ' ') { //if the piece i next diagonal up right isn't the opponent's piece
+                if(board[(row - i)][(col + i)] == pieceToCheck) { //if it is our piece
+                    n += 1; //increment n
+                }
+            } 
+            else { //if it is, break
+                break;
+            }
+        }
+        else { //if its not, break
+            break;
+        }
+    }
+
+    //calculate score of 
+    if(n == 2) {
+        score += 2;
+        console.log("2 d u r");
+        n = 1;
+    }
+    else if(n == 3) {
+        score += 3;
+        console.log("3 d u r");
+        n = 1;
+    }
+
+    //diagonally up left
+    for (let i = 1; i < 4; i++) { //no point of checking past 3 places over
+        if((col - i) >= 0 && (row - i) >= 0) { //check if the next diagonal up left is valid
+            if(board[(row - i)][(col - i)] == pieceToCheck || board[(row - i)][(col - i)] == ' ') { //if the piece i next diagonal up left isn't the opponent's piece
+                if(board[(row - i)][(col - i)] == pieceToCheck) { //if it is our piece
+                    n += 1; //increment n
+                }
+            } 
+            else { //if it is, break
+                break;
+            }
+        }
+        else { //if its not, break
+            break;
+        }
+    }
+    
+    //calculate score of 
+    if(n == 2) {
+        score += 2;
+        console.log("2 d u l");
+        n = 1;
+    }
+    else if(n == 3) {
+        score += 3;
+        console.log("3 d u l");
+        n = 1;
+    }
+    //#endregion
 
     return score;
 }
