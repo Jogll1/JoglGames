@@ -1,7 +1,8 @@
 //function to make ai move
 function aiMove(board, depth, aiPiece) {
     //call minimax to get the best move (this returns a column number)
-    const bestMove = minimax(board, depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).index;
+    //const bestMove = minimax(board, depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).index;
+    const bestMove = 0;
 
     console.log(bestMove);
 
@@ -113,6 +114,50 @@ function minimax(board, depth, alpha, beta, isMaximisingPlayer) { //minimax with
     }
 }
 
+//#region test
+//simplified minimax function to get ai's best move
+// function negamax(board, depth, alpha, beta) {
+//     //check for draw
+//     if(isDraw) return 0;
+
+//     //check if player can win next go:
+//     //create copy of the board
+//     let boardCopy = JSON.parse(JSON.stringify(board));
+//     //play a piece in each column of the copy
+//     //check if that played piece is a terminal state
+//     for (let col = 0; col < COLUMNS; col++) {
+//         if(!isColumnFull(boardCopy)) {
+//             playPiece(boardCopy, col, "R"); //play ai's turn
+
+//             if(isTerminalState(boardCopy)) {
+//                 return (ROWS * COLUMNS + 1 - noMovesFromStart(boardCopy)) / 2; //possible logic error
+//             }
+//         }
+//     }
+
+//     let max = (ROWS*COLUMNS - 1 - noMovesFromStart(boardCopy)) / 2; //init bestScore with lower bound of score
+
+//     if(beta > max) {
+//         beta = max; //no need for beta to be bigger than max score
+
+//         if(alpha >= beta) return beta; //prune the exploration
+//     }
+
+//     //compute all next moves and keep the next one
+//     for (let col = 0; col < COLUMNS; col++) {
+//         if(!isColumnFull(col)) { //if you can play this move
+//             playPiece(boardCopy, col, "Y"); //play opponent's turn
+//             let score = -negamax(boardCopy, depth, -beta, -alpha); //opponent's score is negative ai's
+
+//             if(score >= beta) return score; //prune the exploration if we find a move better than what we weer looking for
+//             if(score > alpha) alpha = score; //reduce the score window
+//         }
+//     }
+
+//     return alpha;
+// }
+//#endregion
+
 //function to check if a game is at a terminal state (win or draw)
 function isTerminalState(board) {
     //check all directions - this can probably be optimised
@@ -170,9 +215,22 @@ function isTerminalState(board) {
     return null;
 }
 
+//function to play a piece in a board array
+function playPiece(board, columnNo, piece) {
+    let tilesInColumn = 0;
+
+    //work out which row to put the tile at based on how empty the column is
+    for (let i = 0; i < ROWS; i++) {
+        if(board[i][columnNo] != ' ') { //if the row at column is empty
+            tilesInColumn++; //increment tilesInColumn
+        }
+    }
+
+    board[(ROWS - tilesInColumn - 1)][columnNo] = piece;
+}
+
 //function to check for a draw
 function isDraw(board) {
-    console.log("called");
     let filledPositions = 0;
 
     for (let r = 0; r < ROWS; r++) {
@@ -187,4 +245,19 @@ function isDraw(board) {
         return true; //return true if whole board is full
     }
     return false;
+}
+
+//get number of moves since the beginning of the game
+function noMovesFromStart(board) {
+    let filledPositions = 0;
+
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLUMNS; c++) {
+            if(board[r][c] != ' ') { //if the tile isn't empty
+                filledPositions++;
+            }
+        }
+    }
+
+    return filledPositions;
 }
