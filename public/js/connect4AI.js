@@ -120,7 +120,7 @@ function minimax2(board, depth, alpha, beta, isMaximisingPlayer) {
 
 }
 
-function evaluateBoard(board, columnNo, pieceToCheck) {
+function evaluateBoard(board, col, pieceToCheck) {
     //this function will generate a score for any inputted go, 
     //column should be checked to see if its empty first
 
@@ -134,18 +134,40 @@ function evaluateBoard(board, columnNo, pieceToCheck) {
     //get a copy of the board
     //let boardCopy = [...board];
 
-    //get the value
+    //set the score value
     let score = 0;
 
+    //get the row of the last tile placed
+    let tilesInColumn = 0;
+    for (let r = 0; r < ROWS; r++) {
+        if(board[r][col] != ' ') {
+            tilesInColumn++;
+        }
+    }
+    let row = ROWS - tilesInColumn; //get row of last placed tile
+
     //check if in centre
-    if(columnNo == ((COLUMNS - 1) / 2)) {
-        score += 2;
+    if(col == ((COLUMNS - 1) / 2)) {
+        score += 4;
     }
 
-    //check for lines of 2
-    //horizontally
-    for (let c = 0; c < COLUMNS; c++) {
-        
+    //check for lines of 2 from the last placed piece
+    //horizontally right
+    for (let i = 0; i < 3; i++) { //no point of checking past 3 places over
+        if((col + i) < COLUMNS ) { //check if the next column over is valid
+            if(board[row][(col + i)] == pieceToCheck || board[row][(col + i)] == ' ') { //if the piece i columns over isn't the opponent's piece
+                if(board[row][(col + i)] == pieceToCheck) { //if it is our piece
+                    score += 2;
+                    break; //break as this is only for checking 2 away
+                }
+            } 
+            else { //if it is, break
+                break;
+            }
+        }
+        else { //if its not, break
+            break;
+        }
     }
 
     return score;
