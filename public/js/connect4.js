@@ -73,27 +73,27 @@ $(document).ready(function() {
     //#region Tile functions
     //change the colour of the tile when its clicked on
     $('.squareTile').click(function() {
-        //if(!c4_isPlayerOneTurn.getState()) return; //if it isn't the player's turn
+        if(!c4_isPlayerOneTurn.getState()) return; //if it isn't the player's turn
 
         let id = $(this).attr("id"); //get the squaretile's id
         let columnNo = id.substring(2).split("-")[1]; //remove the SQ from the front
 
         //check if the column is full
         if(!isColumnFull(columnNo)) {
-            if(c4_isPlayerOneTurn.getState()){
-                setPiece(columnNo, "Y"); //yellow is player one
-                console.log("The score for yellow's go is: " + evaluateBoard(board,columnNo, "Y"));
-            } 
-            else {
-                setPiece(columnNo, "R"); //red is player two
-            }
+            // if(c4_isPlayerOneTurn.getState()){
+            //     setPiece(columnNo, "Y"); //yellow is player one
+            //     console.log("The score for yellow's go is: " + evaluatePos(board, columnNo, "Y"));
+            // } 
+            // else {
+            //     setPiece(columnNo, "R"); //red is player two
+            // }
             
             //this commented code needs to be uncommented aswell as the first line of this function for allowing ai turns
-            // setPiece(columnNo, "Y"); //yellow is player one (human)
+            setPiece(columnNo, "Y"); //yellow is player one (human)
 
-            // if(!c4_isPlayerOneTurn.getState()) { //if not player one's turn, call ai turn
-            //     aiMove(c4_board.getBoard(), 3, "R");
-            // }
+            if(!c4_isPlayerOneTurn.getState()) { //if not player one's turn, call ai turn
+                aiMove(c4_board.getBoard(), 3, "R");
+            }
         }
     });
 

@@ -1,8 +1,9 @@
 //function to make ai move
 function aiMove(board, depth, aiPiece) {
     //call minimax to get the best move (this returns a column number)
-    //const bestMove = minimax(board, depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).index;
-    const bestMove = 0;
+    const bestMove = minimax3(board, depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true);
+    //console.log(bestMove);
+    //const bestMove = 0;
 
     //console.log(bestMove);
 
@@ -12,7 +13,7 @@ function aiMove(board, depth, aiPiece) {
     //     console.log("ai played");
     // }
 
-    //setPiece(bestMove, aiPiece);
+    setPiece(bestMove, aiPiece);
 }
 
 //#region chatgpt test
@@ -21,7 +22,7 @@ function minimax(board, depth, alpha, beta, isMaximisingPlayer) { //minimax with
     //if a player has won or drawn, or depth limit is reached
     terminalState = isTerminalState(board);
 
-    if(isTerminalState || depth === 0) {
+    if(isTerminalState(board) || depth === 0) {
         if(terminalState === "R") { //ai wins, assign high score
             return {eval: 1000, index: null}; 
         }  
@@ -116,23 +117,150 @@ function minimax(board, depth, alpha, beta, isMaximisingPlayer) { //minimax with
 }
 //#endregion
 
-function minimax2(board, depth, alpha, beta, isMaximisingPlayer) {
+//minimax function to get ai's best move
+function minimax2(board, colNo, depth, alpha, beta, maximisingPlayer) {
+    //get initial score of board
+    //let score = evaluateBoard(boardCopy, col, checkPiece);
 
+    //if a player has won or drawn, or depth limit is reached
+    //let terminalState = isTerminalState(board);
+
+    if(depth == 0) { //if depth is 0, return value of current position
+        let checkPiece = (maximisingPlayer) ? "R" : "Y"; //determine checkPiece
+        let score = evaluatePos(board, colNo, checkPiece); //get the score of this node
+        console.log(score);
+        return { eval: score, index: colNo}; //return values
+    }
+
+    if(maximisingPlayer) {
+        let maxEval = Number.NEGATIVE_INFINITY; //current value of the board
+        let bestMove = null; //best column to play in
+
+        for (let col = 0; col < COLUMNS; col++) { //for each column
+            if(!isColumnFull(col)) { //if room in column
+                //make a move in next node
+                //get a copy of the board
+                let boardCopy = [...board];
+
+                //get next available slot in row
+                let row = 5;
+                while(row >= 0 && boardCopy[row][col] !== ' ') {
+                    row--;
+                }
+
+                //update the board copy
+                boardCopy[row][col] = "R"; //for now, ai is always red and player is always yellow as player goes first
+
+                //get the score of this move
+                let eval = minimax2(boardCopy, col, (depth - 1), alpha, beta, false).eval;
+                
+                //set maxEval to bigger of between maxEval or eval and set bestMove
+                if(eval > maxEval) {
+                    maxEval = eval;
+                    bestMove = col;
+                }
+
+                //set alpha to bigger of alpha and eval
+                alpha = Math.max(alpha, eval);
+
+                //beta cutoff
+                if(beta >= alpha) break;
+            }
+        }
+
+        return { eval: maxEval, index: bestMove}; //return values
+    }
+    else { //minimising player
+        let minEval = Number.POSITIVE_INFINITY; //current value of the board
+        let bestMove = null; //best column to play in
+
+        for (let col = 0; col < COLUMNS; col++) { //for each column
+            if(board[0][col] === ' ') { //if room in column
+                //make a move in next node
+                //get a copy of the board
+                let boardCopy = [...board];
+
+                //get next available slot in row
+                let row = 5;
+                while(row >= 0 && boardCopy[row][col] !== ' ') {
+                    row--;
+                }
+
+                //update the board copy
+                boardCopy[row][col] = "Y"; //for now, ai is always red and player is always yellow as player goes first
+
+                //get the score of this move
+                let eval = minimax2(boardCopy, col, (depth - 1), alpha, beta, true).eval;
+                
+                //set minEval to bigger of between minEval or eval and set bestMove
+                if(eval < minEval) {
+                    minEval = eval;
+                    bestMove = col;
+                }
+
+                //set alpha to bigger of alpha and eval
+                beta = Math.max(beta, eval);
+
+                //alpha cutoff
+                if(beta <= alpha) break;
+            }
+        }
+
+        return { eval: minEval, index: bestMove}; //return values
+    }
 }
 
-function evaluateBoard(board, col, pieceToCheck) {
+//minimax function to get ai's best move - so far perform minimax of depth 1
+function minimax3(board, depth, alpha, beta, maximisingPlayer) {
+    let maxEval = Number.NEGATIVE_INFINITY; //current value of the board
+    let bestMove = null; //best column to play in
+
+    for (let col = 0; col < COLUMNS; col++) { //check each column
+        if(board[0][col] == ' ') { //check if column empty
+            //get a copy of the board
+            let boardCopy = [...board];
+
+            //get next available slot in row
+            let row = 5;
+            while(row >= 0 && boardCopy[row][col] !== ' ') {
+                row--;
+            }
+
+            //update the board copy
+            boardCopy[row][col] = "R";
+
+            //get score of new board
+            let eval = evaluatePos(boardCopy, col, "R");
+            console.log(eval);
+
+            if(eval > maxEval) {
+                maxEval = eval;
+                bestMove = col;
+            }
+            
+            //undo the move
+            boardCopy[row][col] = " "; 
+        }
+    }
+
+    return bestMove; //return best move
+}
+
+//function to get the score of the board after playing a piece
+function evaluatePos(board, col, pieceToCheck) {
     //this function will generate a score for any inputted go, 
     //column should be checked to see if its empty first
 
     //this is based on weighted values that i will assign
     //for example:
     //centre pieces: +4
+    //in column 2 away from centre: +1
     //lines of 2: +2
     //lines of 3: +5
     //win: +1000
 
-    //get a copy of the board
-    //let boardCopy = [...board];
+    //make sure col is an int
+    col = parseInt(col);
 
     //set the score value
     let score = 0;
@@ -145,6 +273,11 @@ function evaluateBoard(board, col, pieceToCheck) {
         }
     }
     let row = ROWS - tilesInColumn; //get row of last placed tile
+
+    //if column is full, return 0
+    if(tilesInColumn >= ROWS) {
+        return 0;
+    }
 
     //check if won
     terminalState = isTerminalState(board);
@@ -187,12 +320,12 @@ function evaluateBoard(board, col, pieceToCheck) {
     //calculate score of 
     if(n == 2) {
         score += 2;
-        console.log("2 h r");
+        //console.log("2 h r");
         n = 1;
     }
     else if(n == 3) {
         score += 3;
-        console.log("3 h r");
+        //console.log("3 h r");
         n = 1;
     }
 
@@ -216,12 +349,12 @@ function evaluateBoard(board, col, pieceToCheck) {
     //calculate score of 
     if(n == 2) {
         score += 2;
-        console.log("2 h l");
+        //console.log("2 h l");
         n = 1;
     }
     else if(n == 3) {
         score += 3;
-        console.log("3 h l");
+        //console.log("3 h l");
         n = 1;
     }
     //#endregion
@@ -247,12 +380,12 @@ function evaluateBoard(board, col, pieceToCheck) {
     //calculate score of 
     if(n == 2) {
         score += 2;
-        console.log("2 v d");
+        //console.log("2 v d");
         n = 1;
     }
     else if(n == 3) {
         score += 3;
-        console.log("3 v d");
+        //console.log("3 v d");
         n = 1;
     }
 
@@ -276,12 +409,12 @@ function evaluateBoard(board, col, pieceToCheck) {
     //calculate score of 
     if(n == 2) {
         score += 2;
-        console.log("2 v u");
+        //console.log("2 v u");
         n = 1;
     }
     else if(n == 3) {
         score += 3;
-        console.log("3 v u");
+        //console.log("3 v u");
         n = 1;
     }
     //#endregion
@@ -336,12 +469,12 @@ function evaluateBoard(board, col, pieceToCheck) {
     //calculate score of 
     if(n == 2) {
         score += 2;
-        console.log("2 d d l");
+        //console.log("2 d d l");
         n = 1;
     }
     else if(n == 3) {
         score += 3;
-        console.log("3 d d l");
+        //console.log("3 d d l");
         n = 1;
     }
     //#endregion
@@ -367,12 +500,12 @@ function evaluateBoard(board, col, pieceToCheck) {
     //calculate score of 
     if(n == 2) {
         score += 2;
-        console.log("2 d u r");
+        //console.log("2 d u r");
         n = 1;
     }
     else if(n == 3) {
         score += 3;
-        console.log("3 d u r");
+        //console.log("3 d u r");
         n = 1;
     }
 
@@ -396,12 +529,12 @@ function evaluateBoard(board, col, pieceToCheck) {
     //calculate score of 
     if(n == 2) {
         score += 2;
-        console.log("2 d u l");
+        //console.log("2 d u l");
         n = 1;
     }
     else if(n == 3) {
         score += 3;
-        console.log("3 d u l");
+        //console.log("3 d u l");
         n = 1;
     }
     //#endregion
@@ -460,7 +593,7 @@ function isTerminalState(board) {
     }
 
     //check for a draw
-    if(isDraw) return "draw";
+    if(isDraw(board)) return "draw";
 
     //default
     return null;
