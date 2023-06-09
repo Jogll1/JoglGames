@@ -4,7 +4,7 @@ function aiMove(board, depth, aiPiece) {
     //const bestMove = minimax(board, depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).index;
     const bestMove = 0;
 
-    console.log(bestMove);
+    //console.log(bestMove);
 
     //column shouldn't be full so call setPiece, also game shouldn't be drawn
     // if(!isDraw) {
@@ -12,9 +12,10 @@ function aiMove(board, depth, aiPiece) {
     //     console.log("ai played");
     // }
 
-    setPiece(bestMove, aiPiece);
+    //setPiece(bestMove, aiPiece);
 }
 
+//#region chatgpt test
 //minimax function to get ai's best move
 function minimax(board, depth, alpha, beta, isMaximisingPlayer) { //minimax with alpha beta pruning
     //if a player has won or drawn, or depth limit is reached
@@ -113,50 +114,42 @@ function minimax(board, depth, alpha, beta, isMaximisingPlayer) { //minimax with
         return { eval: minEval, index: bestMove}; //return values
     }
 }
-
-//#region test
-//simplified minimax function to get ai's best move
-// function negamax(board, depth, alpha, beta) {
-//     //check for draw
-//     if(isDraw) return 0;
-
-//     //check if player can win next go:
-//     //create copy of the board
-//     let boardCopy = JSON.parse(JSON.stringify(board));
-//     //play a piece in each column of the copy
-//     //check if that played piece is a terminal state
-//     for (let col = 0; col < COLUMNS; col++) {
-//         if(!isColumnFull(boardCopy)) {
-//             playPiece(boardCopy, col, "R"); //play ai's turn
-
-//             if(isTerminalState(boardCopy)) {
-//                 return (ROWS * COLUMNS + 1 - noMovesFromStart(boardCopy)) / 2; //possible logic error
-//             }
-//         }
-//     }
-
-//     let max = (ROWS*COLUMNS - 1 - noMovesFromStart(boardCopy)) / 2; //init bestScore with lower bound of score
-
-//     if(beta > max) {
-//         beta = max; //no need for beta to be bigger than max score
-
-//         if(alpha >= beta) return beta; //prune the exploration
-//     }
-
-//     //compute all next moves and keep the next one
-//     for (let col = 0; col < COLUMNS; col++) {
-//         if(!isColumnFull(col)) { //if you can play this move
-//             playPiece(boardCopy, col, "Y"); //play opponent's turn
-//             let score = -negamax(boardCopy, depth, -beta, -alpha); //opponent's score is negative ai's
-
-//             if(score >= beta) return score; //prune the exploration if we find a move better than what we weer looking for
-//             if(score > alpha) alpha = score; //reduce the score window
-//         }
-//     }
-
-//     return alpha;
-// }
 //#endregion
+
+function minimax2(board, depth, alpha, beta, isMaximisingPlayer) {
+
+}
+
+function evaluateBoard(board, columnNo, pieceToCheck) {
+    //this function will generate a score for any inputted go, 
+    //column should be checked to see if its empty first
+
+    //this is based on weighted values that i will assign
+    //for example:
+    //centre pieces: +4
+    //lines of 2: +2
+    //lines of 3: +5
+    //win: +1000
+
+    //get a copy of the board
+    //let boardCopy = [...board];
+
+    //get the value
+    let score = 0;
+
+    //check if in centre
+    if(columnNo == ((COLUMNS - 1) / 2)) {
+        score += 2;
+    }
+
+    //check for lines of 2
+    //horizontally
+    for (let c = 0; c < COLUMNS; c++) {
+        
+    }
+
+    return score;
+}
 
 //function to check if a game is at a terminal state (win or draw)
 function isTerminalState(board) {
