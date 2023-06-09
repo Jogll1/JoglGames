@@ -231,7 +231,7 @@ function minimax3(board, depth, alpha, beta, maximisingPlayer) {
 
             //get score of new board
             let eval = evaluatePos(boardCopy, col, "R");
-            console.log(eval);
+            //console.log(eval);
 
             if(eval > maxEval) {
                 maxEval = eval;
@@ -275,9 +275,9 @@ function evaluatePos(board, col, pieceToCheck) {
     let row = ROWS - tilesInColumn; //get row of last placed tile
 
     //if column is full, return 0
-    if(tilesInColumn >= ROWS) {
-        return 0;
-    }
+    // if(tilesInColumn >= ROWS) {
+    //     return 0;
+    // }
 
     //check if won
     terminalState = isTerminalState(board);
@@ -299,9 +299,10 @@ function evaluatePos(board, col, pieceToCheck) {
     //check for lines of 2 and 3 from the last placed piece
     let n = 1;
 
+    let maxLineCheck = 3; //how for each lune will be checked - was 4
     //#region horizontal
     //horizontally right
-    for (let i = 1; i < 4; i++) { //no point of checking past 3 places over
+    for (let i = 1; i < maxLineCheck; i++) { //no point of checking past 3 places over
         if((col + i) < COLUMNS) { //check if the next column over is valid
             if(board[row][(col + i)] == pieceToCheck || board[row][(col + i)] == ' ') { //if the piece i columns over isn't the opponent's piece
                 if(board[row][(col + i)] == pieceToCheck) { //if it is our piece
@@ -330,7 +331,7 @@ function evaluatePos(board, col, pieceToCheck) {
     }
 
     //horizontally left
-    for (let i = 1; i < 4; i++) { //no point of checking past 3 places over
+    for (let i = 1; i < maxLineCheck; i++) { //no point of checking past 3 places over
         if((col - i) >= 0) { //check if the previous column over is valid
             if(board[row][(col - i)] == pieceToCheck || board[row][(col - i)] == ' ') { //if the piece i columns previous isn't the opponent's piece
                 if(board[row][(col - i)] == pieceToCheck) { //if it is our piece
@@ -361,7 +362,7 @@ function evaluatePos(board, col, pieceToCheck) {
 
     //#region vertical
     //vertically down
-    for (let i = 1; i < 4; i++) { //no point of checking past 3 places over
+    for (let i = 1; i < maxLineCheck; i++) { //no point of checking past 3 places over
         if((row + i) < ROWS) { //check if the next row down is valid
             if(board[(row + i)][col] == pieceToCheck || board[(row + i)][col] == ' ') { //if the piece i rows down isn't the opponent's piece
                 if(board[(row + i)][col] == pieceToCheck) { //if it is our piece
@@ -390,7 +391,7 @@ function evaluatePos(board, col, pieceToCheck) {
     }
 
     //vertically up
-    for (let i = 1; i < 4; i++) { //no point of checking past 3 places over
+    for (let i = 1; i < maxLineCheck; i++) { //no point of checking past 3 places over
         if((row - i) >= 0) { //check if the next row up is valid
             if(board[(row - i)][col] == pieceToCheck || board[(row - i)][col] == ' ') { //if the piece i row up isn't the opponent's piece
                 if(board[(row - i)][col] == pieceToCheck) { //if it is our piece
@@ -421,7 +422,7 @@ function evaluatePos(board, col, pieceToCheck) {
 
     //#region diagonally down
     //diagonally down right
-    for (let i = 1; i < 4; i++) { //no point of checking past 3 places over
+    for (let i = 1; i < maxLineCheck; i++) { //no point of checking past 3 places over
         if((col + i) < COLUMNS && (row + i) < ROWS) { //check if the next diagonal down right is valid
             if(board[(row + i)][(col + i)] == pieceToCheck || board[(row + i)][(col + i)] == ' ') { //if the piece i next diagonal down right isn't the opponent's piece
                 if(board[(row + i)][(col + i)] == pieceToCheck) { //if it is our piece
@@ -440,17 +441,17 @@ function evaluatePos(board, col, pieceToCheck) {
     //calculate score of 
     if(n == 2) {
         score += 2;
-        console.log("2 d d r");
+        //console.log("2 d d r");
         n = 1;
     }
     else if(n == 3) {
         score += 3;
-        console.log("3 d d r");
+        //console.log("3 d d r");
         n = 1;
     }
 
     //diagonally down left
-    for (let i = 1; i < 4; i++) { //no point of checking past 3 places over
+    for (let i = 1; i < maxLineCheck; i++) { //no point of checking past 3 places over
         if((col - i) >= 0 && (row + i) < ROWS) { //check if the next diagonal up left is valid
             if(board[(row + i)][(col - i)] == pieceToCheck || board[(row + i)][(col - i)] == ' ') { //if the piece i next diagonal up left isn't the opponent's piece
                 if(board[(row + i)][(col - i)] == pieceToCheck) { //if it is our piece
@@ -481,7 +482,7 @@ function evaluatePos(board, col, pieceToCheck) {
 
     //#region diagonally up
     //diagonally up right
-    for (let i = 1; i < 4; i++) { //no point of checking past 3 places over
+    for (let i = 1; i < maxLineCheck; i++) { //no point of checking past 3 places over
         if((col + i) < COLUMNS && (row - i) >= 0) { //check if the next diagonal up right is valid
             if(board[(row - i)][(col + i)] == pieceToCheck || board[(row - i)][(col + i)] == ' ') { //if the piece i next diagonal up right isn't the opponent's piece
                 if(board[(row - i)][(col + i)] == pieceToCheck) { //if it is our piece
@@ -510,7 +511,7 @@ function evaluatePos(board, col, pieceToCheck) {
     }
 
     //diagonally up left
-    for (let i = 1; i < 4; i++) { //no point of checking past 3 places over
+    for (let i = 1; i < maxLineCheck; i++) { //no point of checking past 3 places over
         if((col - i) >= 0 && (row - i) >= 0) { //check if the next diagonal up left is valid
             if(board[(row - i)][(col - i)] == pieceToCheck || board[(row - i)][(col - i)] == ' ') { //if the piece i next diagonal up left isn't the opponent's piece
                 if(board[(row - i)][(col - i)] == pieceToCheck) { //if it is our piece

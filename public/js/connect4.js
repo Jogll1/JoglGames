@@ -331,7 +331,7 @@ function setWinner(winningTiles) {
     c4_gameStarted.setGameStarted(false);
 
     for (let i = 0; i < winningTiles.length; i++) {
-        console.log(winningTiles[i]);
+        //console.log(winningTiles[i]);
         $("#" + winningTiles[i]).addClass("winningTile");
     }
 
