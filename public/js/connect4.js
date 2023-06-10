@@ -104,17 +104,11 @@ $(document).ready(function() {
             //this commented code needs to be uncommented aswell as the first line of this function for allowing ai turns
             setPiece(columnNo, "Y"); //yellow is player one (human)
 
-            // setTimeout(function() {
-            //     if(!c4_isPlayerOneTurn.getState()) { //if not player one's turn, call ai turn
-            //         aiMove(c4_board.getBoard(), 4, "R");
-            //     }
-            // }, 1);
-
             if(!c4_isPlayerOneTurn.getState()) { //if not player one's turn, call ai turn
                 //aiMove(c4_board.getBoard(), 6, "R");
 
                 //send the board state to the aiworker for it to calculate its move
-                let depth = 7;
+                let depth = 6; //max 8
                 
                 //set the message to be sent
                 const message = {

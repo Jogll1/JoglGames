@@ -407,12 +407,15 @@ function scoreBoard(board) {
     let score = 0;
     let aiPiece = "R";
     let playerPiece = "Y";
+
+    //ai's score
     for (let c = 0; c < COLUMNS; c++) {
         for (let r = 0; r < ROWS; r++) {
             score += evaluatePos(board, c, r, aiPiece);
         }
     }
 
+    //subtract player's co
     for (let c = 0; c < COLUMNS; c++) {
         for (let r = 0; r < ROWS; r++) {
             score -= evaluatePos(board, c, r, playerPiece);
