@@ -1,6 +1,19 @@
 const ROWS = 6;
 const COLUMNS = 7;
 
+//#region Web workers
+//create a worker instance
+const aiWorker = new Worker('../js/conn4AI-worker.js');
+
+//set up the message event listener to recieve ai moves from the worker
+aiWorker.onmessage = function(event) {
+    const aiMove = event.data;
+
+    //perform ai's move
+    setPiece(aiMove, "R");
+}
+//#endregion
+
 //#region globals
 //test for using global modules
 var c4_gameStarted = (function(){ //create a module
@@ -91,15 +104,26 @@ $(document).ready(function() {
             //this commented code needs to be uncommented aswell as the first line of this function for allowing ai turns
             setPiece(columnNo, "Y"); //yellow is player one (human)
 
-            setTimeout(function() {
-                if(!c4_isPlayerOneTurn.getState()) { //if not player one's turn, call ai turn
-                    aiMove(c4_board.getBoard(), 4, "R");
-                }
-            }, 1);
+            // setTimeout(function() {
+            //     if(!c4_isPlayerOneTurn.getState()) { //if not player one's turn, call ai turn
+            //         aiMove(c4_board.getBoard(), 4, "R");
+            //     }
+            // }, 1);
 
-            // if(!c4_isPlayerOneTurn.getState()) { //if not player one's turn, call ai turn
-            //     aiMove(c4_board.getBoard(), 6, "R");
-            // }
+            if(!c4_isPlayerOneTurn.getState()) { //if not player one's turn, call ai turn
+                //aiMove(c4_board.getBoard(), 6, "R");
+
+                //send the board state to the aiworker for it to calculate its move
+                let depth = 7;
+                
+                //set the message to be sent
+                const message = {
+                    _board: c4_board.getBoard(),
+                    _depth: depth
+                }
+
+                aiWorker.postMessage(message);
+            }
         }
     });
 
