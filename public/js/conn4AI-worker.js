@@ -12,7 +12,11 @@ function minimax3(board, depth, alpha, beta, maximisingPlayer) {
     //     }
     // }
 
-    //console.log("depth = " + depth);
+    //static column order we will use to check possible moves
+    //this array holds the order of most valuable columns
+    //using this array optimises alpha beta pruning by trying to put most valuable moves first
+    const colOrder = [3, 4, 2, 5, 1, 6, 0];
+
     //get terminal state
     let terminalState = isTerminalState(board);
 
@@ -21,11 +25,11 @@ function minimax3(board, depth, alpha, beta, maximisingPlayer) {
         if (terminalState !== null) {
             if(terminalState == "R") { //if ai won
                 //console.log("null won");
-                return {eval: 1000, index: null};
+                return {eval: 1000000000, index: null};
             }
             else if(terminalState == "Y") { //if player won
                 //console.log("null lost");
-                return {eval: -1000, index: null};
+                return {eval: -1000000000, index: null};
             }
             else { //draw
                 //console.log("null draw");
@@ -43,19 +47,21 @@ function minimax3(board, depth, alpha, beta, maximisingPlayer) {
         let maxEval = Number.NEGATIVE_INFINITY;
         let bestMove = 1;
 
-        for (let col = 0; col < COLUMNS; col++) {
-            if(board[0][col] == ' ') { //if column empty
+        //for i in range(0, colOrder.length)
+        //board[row][colOrder[col]]
+        for (let col = 0; col < colOrder.length; col++) {
+            if(board[0][colOrder[col]] == ' ') { //if column empty
                 //copy board
                 let boardCopy = copy2DArray(board);
 
                 //get next available slot in row
                 let row = 5;
-                while(row >= 0 && boardCopy[row][col] !== ' ') {
+                while(row >= 0 && boardCopy[row][colOrder[col]] !== ' ') {
                     row--;
                 }
 
                 //update the board copy
-                boardCopy[row][col] = "R";
+                boardCopy[row][colOrder[col]] = "R";
 
                 //console.log("Placed an R at " + row + "-" + col);
 
@@ -66,13 +72,13 @@ function minimax3(board, depth, alpha, beta, maximisingPlayer) {
                 if(eval > maxEval) {
                     //console.log(eval + ">" + maxEval);
                     maxEval = eval;
-                    bestMove = col;
+                    bestMove = colOrder[col];
                     //console.log("max best move = " + col);
                 }
                 else if (eval == maxEval) { //incase the evals are the same, pick a random to set as maxEval
                     if(Math.random > 0.5) { //idk if this does anything
                         maxEval = eval;
-                        bestMove = col;
+                        bestMove = colOrder[col];
                     }
                 }
                 
@@ -83,7 +89,7 @@ function minimax3(board, depth, alpha, beta, maximisingPlayer) {
                 if(beta <= alpha) break;
 
                 //undo move
-                boardCopy[row][col] = " ";
+                boardCopy[row][colOrder[col]] = " ";
             }
         }
         
@@ -94,19 +100,19 @@ function minimax3(board, depth, alpha, beta, maximisingPlayer) {
         let minEval = Number.POSITIVE_INFINITY;
         let bestMove = 1;
         
-        for (let col = 0; col < COLUMNS; col++) {
-            if(board[0][col] == ' ') { //if column empty
+        for (let col = 0; col < colOrder.length; col++) {
+            if(board[0][colOrder[col]] == ' ') { //if column empty
                 //copy board
                 let boardCopy = copy2DArray(board);
 
                 //get next available slot in row
                 let row = 5;
-                while(row >= 0 && boardCopy[row][col] !== ' ') {
+                while(row >= 0 && boardCopy[row][colOrder[col]] !== ' ') {
                     row--;
                 }
 
                 //update the board copy
-                boardCopy[row][col] = "Y";
+                boardCopy[row][colOrder[col]] = "Y";
                 // logArray(boardCopy);
 
                 //console.log("Placed a Y at " + row + "-" + col);
@@ -118,13 +124,13 @@ function minimax3(board, depth, alpha, beta, maximisingPlayer) {
                 if(eval < minEval) {
                     //console.log(eval + "<" + minEval);
                     minEval = eval;
-                    bestMove = col;
+                    bestMove = colOrder[col];
                     //console.log("min best move = " + col);
                 }
                 else if (eval == minEval) { //incase the evals are the same, pick a random to set as maxEval
                     if(Math.random > 0.5) { //idk if this does anything
                         maxEval = eval;
-                        bestMove = col;
+                        bestMove = colOrder[col];
                     }
                 }
 
@@ -135,7 +141,7 @@ function minimax3(board, depth, alpha, beta, maximisingPlayer) {
                 if(beta <= alpha) break;
 
                 //undo move
-                boardCopy[row][col] = " ";
+                boardCopy[row][colOrder[col]] = " ";
             }
         }
         
@@ -152,17 +158,17 @@ function evaluatePos(board, col, row, pieceToCheck) {
     //check if won
     terminalState = isTerminalState(board);
     if(terminalState == pieceToCheck) {
-        return 100000;
+        return 1000000000;
     }  
 
     //check if in centre
     if(col == ((COLUMNS - 1) / 2)) {
-        score += 4;
+        score += 6; //4
     }
 
     //check if in column 2 places either side of the middle
     if(col == ((COLUMNS - 1) / 2) - 2 || col == ((COLUMNS - 1) / 2) + 2) {
-        score += 1;
+        score += 2; //1
     }
 
     //#region lines of 2 or 3
@@ -170,6 +176,7 @@ function evaluatePos(board, col, row, pieceToCheck) {
     let n = 1;
 
     let maxLineCheck = 3; //how for each lune will be checked - was 4
+
     //#region horizontal
     //horizontally right
     for (let i = 1; i < maxLineCheck; i++) { //no point of checking past 3 places over
@@ -195,7 +202,7 @@ function evaluatePos(board, col, row, pieceToCheck) {
         n = 1;
     }
     else if(n == 3) {
-        score += 3;
+        score += 4; //3
         //console.log("3 h r");
         n = 1;
     }
@@ -224,7 +231,7 @@ function evaluatePos(board, col, row, pieceToCheck) {
         n = 1;
     }
     else if(n == 3) {
-        score += 3;
+        score += 4; //3
         //console.log("3 h l");
         n = 1;
     }
@@ -255,7 +262,7 @@ function evaluatePos(board, col, row, pieceToCheck) {
         n = 1;
     }
     else if(n == 3) {
-        score += 3;
+        score += 4; //3
         //console.log("3 v d");
         n = 1;
     }
@@ -284,7 +291,7 @@ function evaluatePos(board, col, row, pieceToCheck) {
         n = 1;
     }
     else if(n == 3) {
-        score += 3;
+        score += 4; //3
         //console.log("3 v u");
         n = 1;
     }
@@ -315,7 +322,7 @@ function evaluatePos(board, col, row, pieceToCheck) {
         n = 1;
     }
     else if(n == 3) {
-        score += 3;
+        score += 4; //3
         //console.log("3 d d r");
         n = 1;
     }
@@ -344,7 +351,7 @@ function evaluatePos(board, col, row, pieceToCheck) {
         n = 1;
     }
     else if(n == 3) {
-        score += 3;
+        score += 4; //3
         //console.log("3 d d l");
         n = 1;
     }
@@ -375,7 +382,7 @@ function evaluatePos(board, col, row, pieceToCheck) {
         n = 1;
     }
     else if(n == 3) {
-        score += 3;
+        score += 4; //3
         //console.log("3 d u r");
         n = 1;
     }
@@ -404,7 +411,7 @@ function evaluatePos(board, col, row, pieceToCheck) {
         n = 1;
     }
     else if(n == 3) {
-        score += 3;
+        score += 4; //3
         //console.log("3 d u l");
         n = 1;
     }
@@ -427,7 +434,7 @@ function scoreBoard(board) {
         }
     }
 
-    //subtract player's co
+    //subtract player's score
     for (let c = 0; c < COLUMNS; c++) {
         for (let r = 0; r < ROWS; r++) {
             score -= evaluatePos(board, c, r, playerPiece);
