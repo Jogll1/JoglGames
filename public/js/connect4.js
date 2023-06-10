@@ -87,13 +87,19 @@ $(document).ready(function() {
             // else {
             //     setPiece(columnNo, "R"); //red is player two
             // }
-            
+
             //this commented code needs to be uncommented aswell as the first line of this function for allowing ai turns
             setPiece(columnNo, "Y"); //yellow is player one (human)
 
-            if(!c4_isPlayerOneTurn.getState()) { //if not player one's turn, call ai turn
-                aiMove(c4_board.getBoard(), 3, "R");
-            }
+            setTimeout(function() {
+                if(!c4_isPlayerOneTurn.getState()) { //if not player one's turn, call ai turn
+                    aiMove(c4_board.getBoard(), 4, "R");
+                }
+            }, 1);
+
+            // if(!c4_isPlayerOneTurn.getState()) { //if not player one's turn, call ai turn
+            //     aiMove(c4_board.getBoard(), 6, "R");
+            // }
         }
     });
 
@@ -216,7 +222,7 @@ function setPiece(columnNo, playerPiece) {
     c4_board.updateBoard(board); //update the board global
 
     // console.log("clicked at " + columnNo + ", " + (tilesInColumn + 1) + " tile(s) in this column");
-    // logArray(c4_board.getBoard());
+    //logArray(c4_board.getBoard());
 
     //check if the player has won
     checkWinner();
