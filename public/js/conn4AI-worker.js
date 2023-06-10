@@ -69,6 +69,12 @@ function minimax3(board, depth, alpha, beta, maximisingPlayer) {
                     bestMove = col;
                     //console.log("max best move = " + col);
                 }
+                else if (eval == maxEval) { //incase the evals are the same, pick a random to set as maxEval
+                    if(Math.random > 0.5) { //idk if this does anything
+                        maxEval = eval;
+                        bestMove = col;
+                    }
+                }
                 
                 //set alpha to bigger of alpha and eval
                 alpha = Math.max(alpha, eval);
@@ -114,6 +120,12 @@ function minimax3(board, depth, alpha, beta, maximisingPlayer) {
                     minEval = eval;
                     bestMove = col;
                     //console.log("min best move = " + col);
+                }
+                else if (eval == minEval) { //incase the evals are the same, pick a random to set as maxEval
+                    if(Math.random > 0.5) { //idk if this does anything
+                        maxEval = eval;
+                        bestMove = col;
+                    }
                 }
 
                 //set alpha to bigger of alpha and eval
@@ -422,7 +434,10 @@ function scoreBoard(board) {
         }
     }
 
-    return score;
+    //add a random value from -3 to 3 for fun
+    let ranOffset = Math.floor(Math.random() * (3 - (-3) + 1)) + (-3);
+
+    return score + ranOffset;
 }
 //#endregion
 
