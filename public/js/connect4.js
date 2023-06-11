@@ -95,7 +95,6 @@ $(document).ready(function() {
         if(!isColumnFull(columnNo)) {
             // if(c4_isPlayerOneTurn.getState()){
             //     setPiece(columnNo, "Y"); //yellow is player one
-            //     console.log("The score for yellow's go is: " + evaluatePos(board, columnNo, "Y"));
             // } 
             // else {
             //     setPiece(columnNo, "R"); //red is player two

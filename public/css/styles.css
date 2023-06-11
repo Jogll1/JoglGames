@@ -38,7 +38,8 @@ a {
 }
 /*#endregion*/
 
-/*#region Home Icon Container */
+/*#region Game option icons */
+/* home container */
 .homeIconContainer {
     position: absolute;
     width: 37.5px;
@@ -57,6 +58,28 @@ a {
     height: 116%;
     margin: -3px;
 }
+
+/* help button */
+.helpIconContainer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 37.5px;
+    height: 37.5px;
+    transform: translate(-50%, 37.5%);
+}
+
+.helpIconContainer img {
+    width: 100%;
+    height: 100%;
+    transition: 0.35s;
+}
+
+.helpIconContainer img:hover {
+    width: 116%;
+    height: 116%;
+    margin: -3px;
+}
 /*#endregion*/
 
 /*#region Game flexContainer */
@@ -67,7 +90,7 @@ a {
     align-items: center;
     height: 675px;
     position: relative;
-    gap: 140px;
+    gap: 120px;
     /* background-color: #202020; */
     /* border: 5px solid green; */
 }
@@ -78,8 +101,8 @@ a {
     border: 15px solid #333333;
     /* padding: 155px 175px; */
 
-    width: 320px;
-    height: 280px;
+    width: 340px;
+    height: 300px;
 
     color: white;
     font-size: 20px;
@@ -95,8 +118,10 @@ a {
 .gameContainer:hover {
     margin: -25px;
     /* padding: 170px 190px; */
-    width: 370px;
-    height: 324.3px;
+    width: 390px;
+    height: 344.3px;
+    /* width: 115%;
+    height: 115%; */
     font-size: 23px;
 }
 
@@ -212,7 +237,7 @@ transform: translate(0, -11px) rotate(45deg);
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, 90%);
+    transform: translate(-50%, 80%);
 }
 
 #playRobotButton {
@@ -221,7 +246,7 @@ transform: translate(0, -11px) rotate(45deg);
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -60%);
 }
 
 /* Online play menu */
