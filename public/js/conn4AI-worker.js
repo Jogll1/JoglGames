@@ -2,60 +2,8 @@
 const ROWS = 6;
 const COLUMNS = 7;
 
-//#region transposition table
-//create a global transposition table
-const c4_transpositionTable = new Map();
-
-//function to get a unique key for each board
-function getBoardKey(board) {
-    //convert board to json and hash it
-    return hashCode(JSON.stringify(board));
-}
-
-//hash function (djb2)
-function hashCode(str) {
-    let hash = 5381;
-    for (let i = 0; i < str.length; i++) {
-        hash = (hash * 33) ^ str.charCodeAt(i);
-    }
-    return hash >>> 0; // Ensure a positive hash value
-}
-
-//function to retrieve a value from the transposition table 
-function getTranspoitionTableEntry(board) {
-    const key = getBoardKey(board);
-    return c4_transpositionTable.get(key);
-}
-
-//function to store a value in the transposition table 
-function storeTranspositionTableEntry(board, value, depth, type) {
-    const key = getBoardKey(board);
-    c4_transpositionTable.set(key, {value, depth, type});
-} 
-//#endregion
-
 //minimax function to get ai's best move - so far perform minimax of depth 1
 function minimax3(board, depth, alpha, beta, maximisingPlayer) {
-    //----------test----------
-    //#region checking the transposition table
-    const storedEntry = getTranspoitionTableEntry(board);
-    if(storedEntry && storedEntry.depth >= depth) {
-        if(storedEntry.type == 'exact') {
-            return {eval: storedEntry.value, index: null};
-        }
-        else if(storedEntry.type == 'lower' && storedEntry.value > alpha){
-            alpha = storedEntry.value;
-        }
-        else if(storedEntry.type == 'upper' && storedEntry.value < beta){
-            beta = storedEntry.value;
-        }
-        if(alpha >= beta){
-            return {eval: storedEntry.value, index: null};
-        }
-    }
-    //#endregion
-    //----------test----------
-
     //this array holds the order of most valuable columns
     //using this array optimises alpha beta pruning by trying to put most valuable moves first
     const colOrder = [3, 4, 2, 5, 1, 6, 0];
@@ -65,27 +13,20 @@ function minimax3(board, depth, alpha, beta, maximisingPlayer) {
 
     //determine score based on terminal state or if depth is 0
     if(depth == 0 || terminalState !== null) {
-        //----------test----------
-        //store this value in the transposition table
-        const value = scoreBoard(board);
-        storeTranspositionTableEntry(board, value, depth, 'exact');
-        return value;
-        //----------test----------
-
-        // if (terminalState !== null) {
-        //     if(terminalState == "R") { //if ai won
-        //         return {eval: 1000000000, index: null};
-        //     }
-        //     else if(terminalState == "Y") { //if player won
-        //         return {eval: -1000000000, index: null};
-        //     }
-        //     else { //draw
-        //         return {eval: 0, index: null};
-        //     }
-        // }
-        // else { //depth is 1
-        //     return {eval: scoreBoard(board), index: null};
-        // }
+        if (terminalState !== null) {
+            if(terminalState == "R") { //if ai won
+                return {eval: 1000000000, index: null};
+            }
+            else if(terminalState == "Y") { //if player won
+                return {eval: -1000000000, index: null};
+            }
+            else { //draw
+                return {eval: 0, index: null};
+            }
+        }
+        else { //depth is 1
+            return {eval: scoreBoard(board), index: null};
+        }
     }
 
     if(maximisingPlayer) {
@@ -125,18 +66,6 @@ function minimax3(board, depth, alpha, beta, maximisingPlayer) {
                     }
                 }
 
-                //----------test----------
-                //store the value in the transposition table
-                let type = 'exact';
-                if(maxEval <= alpha) {
-                    type = 'upper';
-                }
-                else if(maxEval >= beta) {
-                    type = 'lower';
-                }
-                storeTranspositionTableEntry(boardCopy, maxEval, depth, type);
-                //----------test----------
-                
                 //set alpha to bigger of alpha and eval
                 alpha = Math.max(alpha, eval);
 
@@ -184,18 +113,6 @@ function minimax3(board, depth, alpha, beta, maximisingPlayer) {
                         bestMove = colOrder[col];
                     }
                 }
-
-                //----------test----------
-                //store the value in the transposition table
-                let type = 'exact';
-                if(minEval <= alpha) {
-                    type = 'upper';
-                }
-                else if(minEval >= beta) {
-                    type = 'lower';
-                }
-                storeTranspositionTableEntry(boardCopy, minEval, depth, type);
-                //----------test----------
 
                 //set alpha to bigger of alpha and eval
                 beta = Math.min(beta, eval);
@@ -606,9 +523,42 @@ self.addEventListener('message', function(event) {
     const board = event.data._board;
     const depth = event.data._depth;
 
-    //let depth = 5;
-    const bestMove = minimax3(board, depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).index;
+    //first check for winning move before calculating another
+    let countedColumns = 0;
+    for (let col = 0; col < COLUMNS; col++) {
+        if(board[0][col] == ' ') { //if column has room
+            let boardCopy = copy2DArray(board);
 
-    setTimeout(this.self.postMessage(bestMove), 2000); //supposed to speed it up by sending bestmove
+            //set a piece in the column
+            let row = 5;
+            while(row >= 0 && boardCopy[row][col] !== ' ') {
+                row--;
+            }
+
+            boardCopy[row][col] = "R";
+
+            //if we have got a winning position
+            let terminalState = isTerminalState(boardCopy);
+            if(terminalState == "R") { 
+                this.self.postMessage(col);
+                break;
+            }
+            else {
+                countedColumns++;
+            }
+
+            boardCopy[row][col] = " ";
+        }
+        else {
+            countedColumns++;
+        }
+    }
+
+    //if no moves could let ai win, calculate best move
+    if(countedColumns == COLUMNS) {
+        const bestMove = minimax3(board, depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).index;
+
+        setTimeout(this.self.postMessage(bestMove), 2000); //supposed to speed it up by sending bestmove
+    }
 })
 //#endregion

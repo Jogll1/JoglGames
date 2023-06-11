@@ -108,7 +108,7 @@ $(document).ready(function() {
                 //aiMove(c4_board.getBoard(), 6, "R");
 
                 //send the board state to the aiworker for it to calculate its move
-                let depth = 9; //max 8 nearly 9, 6 is good
+                let depth = 7; //max 8 nearly 9, 7 is good
                 
                 //set the message to be sent
                 const message = {

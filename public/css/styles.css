@@ -3,9 +3,13 @@
     padding: 0;
 }
 
-body{
+body {
     background-color: #222222;
     font-family: Arial, Helvetica, sans-serif;
+}
+
+a {
+    text-decoration: none;
 }
 
 /* #region TopNav */
@@ -23,7 +27,7 @@ body{
     z-index: 10;
 }
 
-.topnav .centre{
+.topnav .centre {
     text-align: center;
     margin: 0;
     position: absolute;
@@ -35,28 +39,28 @@ body{
 /*#endregion*/
 
 /*#region Home Icon Container */
-.homeIconContainer{
+.homeIconContainer {
     position: absolute;
     width: 37.5px;
     height: 37.5px;
     transform: translate(50%, 37.5%);
 }
 
-.homeIconContainer img{
+.homeIconContainer img {
     width: 100%;
     height: 100%;
     transition: 0.35s;
 }
 
-.homeIconContainer img:hover{
+.homeIconContainer img:hover {
     width: 116%;
     height: 116%;
     margin: -3px;
 }
 /*#endregion*/
 
-/*#region flex-container */
-.flex-container{
+/*#region Game flexContainer */
+.flexContainer {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -68,22 +72,50 @@ body{
     /* border: 5px solid green; */
 }
 
-.gameContainer{
-    background-color: white;
-    padding: 155px 175px;
+.gameContainer {
+    background-color: #333333;
     border-radius: 40px;
+    border: 15px solid #333333;
+    /* padding: 155px 175px; */
+
+    width: 320px;
+    height: 280px;
+
+    color: white;
     font-size: 20px;
+
+    overflow: hidden;
+    /* display: flex; */
+    justify-content: center;
+    align-items: center;
+
     transition: 0.25s;
 }
 
 .gameContainer:hover {
-    margin: -15px;
-    padding: 170px 190px;
+    margin: -25px;
+    /* padding: 170px 190px; */
+    width: 370px;
+    height: 324.3px;
+    font-size: 23px;
+}
+
+.gameContainerImg {
+    width: 100%;
+    height: 100%;
+
+    transform: translate(0, -17.5%);
+}
+
+.gameContainerText {
+    /* position: absolute; */
+    text-align: center;
+    transform: translate(0, -125%);
 }
 /*#endregion */
 
 /*#region Animated menu icon */
-.mIconContainer{
+.mIconContainer {
     /* display: inline-block; */
     cursor: pointer;
     position: absolute;
@@ -170,7 +202,7 @@ transform: translate(0, -11px) rotate(45deg);
     bottom: 0; */
 }
 
-.playButton:hover{
+.playButton:hover {
     background-color: #4090b2;
 }
 

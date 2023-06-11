@@ -9,7 +9,7 @@
     transform: translate(-50%, -50%)
 }
 
-/*#region board */
+/*#region Board */
 #boardContainer{
     /* centre div */
     position: absolute;
@@ -24,9 +24,11 @@
     width: 644px;
     height: 552px;
 
-    background-color:#333333;
+    background-color:#333333; 
+    /* background-color:white;  */
     border-radius: 25px;
     border: 10px solid #333333;
+    /* border: 10px solid white; */
 
     margin: 0 auto;
     display: grid;
