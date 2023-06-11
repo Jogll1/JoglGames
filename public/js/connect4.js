@@ -1,12 +1,12 @@
 const ROWS = 6;
 const COLUMNS = 7;
 
-//#region Web workers
+//#region Web worker
 //create a worker instance
-const aiWorker = new Worker('../js/conn4AI-worker.js');
+const c4_aiWorker = new Worker('../js/conn4AI-worker.js');
 
 //set up the message event listener to recieve ai moves from the worker
-aiWorker.onmessage = function(event) {
+c4_aiWorker.onmessage = function(event) {
     const aiMove = event.data;
 
     //perform ai's move
@@ -108,7 +108,7 @@ $(document).ready(function() {
                 //aiMove(c4_board.getBoard(), 6, "R");
 
                 //send the board state to the aiworker for it to calculate its move
-                let depth = 8; //max 8 nearly 9, 6 is good
+                let depth = 9; //max 8 nearly 9, 6 is good
                 
                 //set the message to be sent
                 const message = {
@@ -116,7 +116,7 @@ $(document).ready(function() {
                     _depth: depth
                 }
 
-                aiWorker.postMessage(message);
+                c4_aiWorker.postMessage(message);
             }
         }
     });
