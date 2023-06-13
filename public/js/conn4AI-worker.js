@@ -15,10 +15,10 @@ function minimax3(board, depth, alpha, beta, maximisingPlayer) {
     if(depth == 0 || terminalState !== null) {
         if (terminalState !== null) {
             if(terminalState == "R") { //if ai won
-                return {eval: 1000000000, index: null};
+                return {eval: 10000000000000000000, index: null};
             }
             else if(terminalState == "Y") { //if player won
-                return {eval: -1000000000, index: null};
+                return {eval: -10000000000000000000, index: null};
             }
             else { //draw
                 return {eval: 0, index: null};
@@ -142,7 +142,7 @@ function evaluatePos(board, col, row, pieceToCheck) {
 
     //check if in centre
     if(col == ((COLUMNS - 1) / 2)) {
-        score += 60; //4
+        score += 60; //60
     }
 
     //check if in column 2 places either side of the middle
@@ -405,17 +405,19 @@ function scoreBoard(board) {
     let aiPiece = "R";
     let playerPiece = "Y";
 
+    const colOrder = [3, 4, 2, 5, 1, 6, 0];
+
     //ai's score
-    for (let c = 0; c < COLUMNS; c++) {
+    for (let c = 0; c < colOrder.length; c++) {
         for (let r = 0; r < ROWS; r++) {
-            score += evaluatePos(board, c, r, aiPiece);
+            score += evaluatePos(board, colOrder[c], r, aiPiece);
         }
     }
 
     //subtract player's score
-    for (let c = 0; c < COLUMNS; c++) {
+    for (let c = 0; c < colOrder.length; c++) {
         for (let r = 0; r < ROWS; r++) {
-            score -= evaluatePos(board, c, r, playerPiece);
+            score -= evaluatePos(board, colOrder[c], r, playerPiece);
         }
     }
 

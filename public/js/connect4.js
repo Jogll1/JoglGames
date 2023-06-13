@@ -68,8 +68,8 @@ $(document).ready(function() {
         $('.menuBackground').hide();
         $('.friendOrAIMenu').hide();
 
-        c4_gameStarted.setGameStarted(true);
-        c4_isPlayerOneTurn.setState(true);
+        //call timer function to start game
+        startGameTimer(3);
     });
 
     $('#playFriendButton').click(function() {
@@ -115,7 +115,11 @@ $(document).ready(function() {
                     _depth: depth
                 }
 
-                c4_aiWorker.postMessage(message);
+                //add minimum time limit to send the move
+                let minTime = 300;
+                setTimeout(function() { 
+                    c4_aiWorker.postMessage(message) 
+                }, minTime);
             }
         }
     });
@@ -141,6 +145,36 @@ $(document).ready(function() {
     });
     //#endregion
 });
+
+//start time
+function startGameTimer(duration) {
+    var timer = duration; //in seconds
+    //let minutes, seconds;
+    var seconds;
+
+    $('.startTimer').show();
+    $('.startTimer').text(duration);
+    let countdown = setInterval(function () {
+        //minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        //put a zero at the front if below 10
+        //minutes = minutes < 10 ? "0" + minutes : minutes;
+        //seconds = seconds < 10 ? "0" + seconds : minutes;
+
+        //display.textContent = minutes + ":" + seconds;
+        $('.startTimer').text(seconds > 1 ? seconds - 1 : "You start!"); //make sure timer doesn't go below 0
+
+        if(--timer < 0) {
+            clearInterval(countdown);
+            $('.startTimer').hide();
+
+            //timer end
+            c4_gameStarted.setGameStarted(true);
+            c4_isPlayerOneTurn.setState(true);
+        }
+    }, 1000);
+}
 
 //initialise the game
 function setGame() {
