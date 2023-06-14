@@ -69,7 +69,8 @@ $(document).ready(function() {
         $('.friendOrAIMenu').hide();
 
         //call timer function to start game
-        startGameTimer(3);
+        //startGameTimer(3);
+        startGame(true);
     });
 
     $('#playFriendButton').click(function() {
@@ -116,7 +117,7 @@ $(document).ready(function() {
                 }
 
                 //add minimum time limit to send the move
-                let minTime = 300;
+                let minTime = 500;
                 setTimeout(function() { 
                     c4_aiWorker.postMessage(message) 
                 }, minTime);
@@ -126,7 +127,9 @@ $(document).ready(function() {
 
     //when hovering over a column
     $('.squareTile').mouseenter(function() {
+        //don't hover if game hasn't started or it isn't our go
         if(!c4_gameStarted.getGameStarted()) return;
+        // if(!c4_isPlayerOneTurn.getState()) return;
 
         let id = $(this).attr("id"); //get the squaretile's id
         let columnNo = id.substring(2).split("-")[1]; //get the column number of the tile
@@ -143,6 +146,10 @@ $(document).ready(function() {
         //select the correct column hover to hide
         $('#Hover' + columnNo).removeClass("hoverSelected");
     });
+
+    if(c4_isPlayerOneTurn.getState()) {
+
+    }
     //#endregion
 });
 
@@ -245,12 +252,36 @@ function setBoardHovers() {
     $('#boardColumnHoversParent').append(rightBoardHoverDiv); //make the boardColumnHoversParent this div's parent
 }
 
+//function to start the game
+function startGame(isPlayingRobot) {
+    c4_gameStarted.setGameStarted(true);
+    c4_isPlayerOneTurn.setState(true);
+    $('.scoreAndIconParent').show();
+
+    //set player first
+    $('#playerIcon').addClass('currentGo');
+
+    //set icons and player names
+    if(isPlayingRobot) {
+        //set robot name
+        $('#opponentNameText').text('Robot');
+
+        //change icon
+        $('#oppImg').attr('src', '/images/RobotIcon.png')
+    }
+}
+
 //set a tile's colour
 function setPiece(columnNo, playerPiece) {
     if(!c4_gameStarted.getGameStarted()) return;
 
     let board = c4_board.getBoard();
     let tilesInColumn = 0;
+
+    //remove hovers
+    // for (let i = 0; i < 7; i++) {
+    //     $('#Hover' + i).removeClass("hoverSelected");
+    // }
 
     //work out which row to put the tile at based on how empty the column is
     for (let i = 0; i < ROWS; i++) {
@@ -279,6 +310,16 @@ function setPiece(columnNo, playerPiece) {
     checkWinner();
 
     c4_isPlayerOneTurn.setState(!c4_isPlayerOneTurn.getState()); //alternate player
+
+    //alternate who has the border around
+    if($('#playerIcon').hasClass('currentGo')) {
+        $('#playerIcon').removeClass('currentGo');
+        $('#opponentIcon').addClass('currentGo');
+    }
+    else if ($('#opponentIcon').hasClass('currentGo')) {
+        $('#opponentIcon').removeClass('currentGo');
+        $('#playerIcon').addClass('currentGo');
+    }
 }
 
 //function to check if a column is full

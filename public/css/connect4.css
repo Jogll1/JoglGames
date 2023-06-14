@@ -74,37 +74,28 @@
     width: 101px;
     height: 572px;
 
-    /* background-color: #444444; */
     position: relative;
     overflow: hidden;
 
     border-radius: 25px 0 0 25px;
-    /* border: 10px solid #444444; */
-
-    /* display: none; */
 }
 
 .boardColumnHover {
     width: 92.4px;
     height: 572px;
 
-    /* background-color: #444444; */
     position: relative;
     overflow: hidden;
-
-    /* border: 10px solid #444444; */
 }
 
 .boardColumnHoverRight {
     width: 101px;
     height: 572px;
 
-    /* background-color: #444444; */
     position: relative;
     overflow: hidden;
 
     border-radius: 0 25px 25px 0;
-    /* border: 10px solid #444444; */
 }
 
 .hoverSelected {
@@ -149,11 +140,11 @@
 }
 
 .yellowTile {
-    background-color: #F6AE2D;
+    background-color: #f6ae2d;
 }
 
 .redTile {
-    background-color: #C91847;
+    background-color: #c91847;
 }
 
 .winningTile {
