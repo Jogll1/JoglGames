@@ -317,15 +317,14 @@ function setPiece(columnNo, playerPiece) {
     board[ROWS - 1 - tilesInColumn][columnNo] = playerPiece; //update board
     c4_board.updateBoard(board); //update the board global
 
-    // console.log("clicked at " + columnNo + ", " + (tilesInColumn + 1) + " tile(s) in this column");
-    //logArray(c4_board.getBoard());
-
-    //check if the player has won
+    //check if the player has won or drawn
+    checkDraw();
     checkWinner();
+    
+    //alternate player
+    c4_isPlayerOneTurn.setState(!c4_isPlayerOneTurn.getState()); 
 
-    c4_isPlayerOneTurn.setState(!c4_isPlayerOneTurn.getState()); //alternate player
-
-    //alternate who has the border around
+    //alternate who has the border around their icon
     if($('#playerIcon').hasClass('currentGo')) {
         $('#playerIcon').removeClass('currentGo');
         $('#opponentIcon').addClass('currentGo');
@@ -438,6 +437,33 @@ function checkWinner() {
     //#endregion
 }
 
+//function to check if you have drawn
+function checkDraw() {
+    let board = c4_board.getBoard();
+    let filledPositions = 0;
+
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLUMNS; c++) {
+            if(board[r][c] != ' ') { //if the tile isn't empty
+                filledPositions++;
+            }
+        }
+    }
+
+    if(filledPositions >= (ROWS * COLUMNS)) {
+        //if draw
+        //increment score counters for both players
+        let scoreOpponent = parseInt($("#opponentScoreText").text());
+        $("#opponentScoreText").text(scoreOpponent + 1);
+
+        let scorePlayer = parseInt($("#playerScoreText").text());
+        $("#playerScoreText").text(scorePlayer + 1);
+
+        endGame();
+    }
+    
+}
+
 //function to set the winning tiles
 function setWinner(winningTiles) {
     c4_gameStarted.setState(false);
@@ -447,16 +473,7 @@ function setWinner(winningTiles) {
         $("#" + winningTiles[i]).addClass("winningTile");
     }
 
-    //remove hovers
-    for (let i = 0; i < 7; i++) {
-        $('#Hover' + i).removeClass("hoverSelected");
-    }
-
-    //remove blue circle from icons
-    $('#playerIcon').removeClass('currentGo');
-    $('#opponentIcon').removeClass('currentGo');
-
-    //increment score counters
+    //increment score counters based on who won
     if($("#" + winningTiles[0]).attr('class').split(" ")[1] == "redTile") { //opponent
         let score = parseInt($("#opponentScoreText").text());
         $("#opponentScoreText").text(score + 1);
@@ -466,11 +483,35 @@ function setWinner(winningTiles) {
         $("#playerScoreText").text(score + 1);
     }
 
+    endGame();
+}
+
+//function to end the game and allow for another game
+function endGame() {
+    //remove hovers
+    for (let i = 0; i < 7; i++) {
+        $('#Hover' + i).removeClass("hoverSelected");
+    }
+
+    //remove blue circle from icons
+    $('#playerIcon').removeClass('currentGo');
+    $('#opponentIcon').removeClass('currentGo');
+
+    // //increment score counters
+    // if($("#" + winningTiles[0]).attr('class').split(" ")[1] == "redTile") { //opponent
+    //     let score = parseInt($("#opponentScoreText").text());
+    //     $("#opponentScoreText").text(score + 1);
+    // }
+    // else { //player
+    //     let score = parseInt($("#playerScoreText").text());
+    //     $("#playerScoreText").text(score + 1);
+    // }
+
     //load rematch menu after a bit
     setTimeout(function() { 
         $('.menuBackground').show();
         $('.rematchMenu').show();
-    }, 500);
+    }, 700);
 }
 
 //function to reset the board
