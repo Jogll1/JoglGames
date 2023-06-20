@@ -497,16 +497,6 @@ function endGame() {
     $('#playerIcon').removeClass('currentGo');
     $('#opponentIcon').removeClass('currentGo');
 
-    // //increment score counters
-    // if($("#" + winningTiles[0]).attr('class').split(" ")[1] == "redTile") { //opponent
-    //     let score = parseInt($("#opponentScoreText").text());
-    //     $("#opponentScoreText").text(score + 1);
-    // }
-    // else { //player
-    //     let score = parseInt($("#playerScoreText").text());
-    //     $("#playerScoreText").text(score + 1);
-    // }
-
     //load rematch menu after a bit
     setTimeout(function() { 
         $('.menuBackground').show();
