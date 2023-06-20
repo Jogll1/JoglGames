@@ -20,11 +20,11 @@ var c4_gameStarted = (function(){ //create a module
     var gameStarted = false; //create a variable inside the module (within scope)
 
     return { //return a fuction that sets the variable
-        setGameStarted : function(bToSet) {
+        setState : function(bToSet) {
             return gameStarted = bToSet;
         },
 
-        getGameStarted : function() {
+        getState : function() {
             return gameStarted;
         }
     }
@@ -82,6 +82,20 @@ $(document).ready(function() {
         $('.menuBackground').hide();
         $('.onlinePlayMenu').hide();
     });
+
+    //rematch menu
+    $('#rematchButton').click(function() {
+        //close the menu
+        $('.menuBackground').hide();
+        $('.rematchMenu').hide();
+
+        //reset the board
+        resetBoard();
+    });
+
+    $('#homeButton').click(function() {
+        window.location.href = './index.html';
+    });
     //#endregion
 
     //#region Tile functions
@@ -117,7 +131,7 @@ $(document).ready(function() {
                 }
 
                 //add minimum time limit to send the move
-                let minTime = 500;
+                let minTime = 450;
                 setTimeout(function() { 
                     c4_aiWorker.postMessage(message) 
                 }, minTime);
@@ -128,7 +142,7 @@ $(document).ready(function() {
     //when hovering over a column
     $('.squareTile').mouseenter(function() {
         //don't hover if game hasn't started or it isn't our go
-        if(!c4_gameStarted.getGameStarted()) return;
+        if(!c4_gameStarted.getState()) return;
         // if(!c4_isPlayerOneTurn.getState()) return;
 
         let id = $(this).attr("id"); //get the squaretile's id
@@ -177,7 +191,7 @@ function startGameTimer(duration) {
             $('.startTimer').hide();
 
             //timer end
-            c4_gameStarted.setGameStarted(true);
+            c4_gameStarted.setState(true);
             c4_isPlayerOneTurn.setState(true);
         }
     }, 1000);
@@ -186,7 +200,7 @@ function startGameTimer(duration) {
 //initialise the game
 function setGame() {
     //board will be a 2d array
-    board = [];
+    let board = [];
 
     //rows
     for (let r = 0; r < ROWS; r++) {
@@ -254,7 +268,7 @@ function setBoardHovers() {
 
 //function to start the game
 function startGame(isPlayingRobot) {
-    c4_gameStarted.setGameStarted(true);
+    c4_gameStarted.setState(true);
     c4_isPlayerOneTurn.setState(true);
     $('.scoreAndIconParent').show();
 
@@ -273,7 +287,7 @@ function startGame(isPlayingRobot) {
 
 //set a tile's colour
 function setPiece(columnNo, playerPiece) {
-    if(!c4_gameStarted.getGameStarted()) return;
+    if(!c4_gameStarted.getState()) return;
 
     let board = c4_board.getBoard();
     let tilesInColumn = 0;
@@ -426,7 +440,7 @@ function checkWinner() {
 
 //function to set the winning tiles
 function setWinner(winningTiles) {
-    c4_gameStarted.setGameStarted(false);
+    c4_gameStarted.setState(false);
 
     for (let i = 0; i < winningTiles.length; i++) {
         //console.log(winningTiles[i]);
@@ -438,6 +452,10 @@ function setWinner(winningTiles) {
         $('#Hover' + i).removeClass("hoverSelected");
     }
 
+    //remove blue circle from icons
+    $('#playerIcon').removeClass('currentGo');
+    $('#opponentIcon').removeClass('currentGo');
+
     //increment score counters
     if($("#" + winningTiles[0]).attr('class').split(" ")[1] == "redTile") { //opponent
         let score = parseInt($("#opponentScoreText").text());
@@ -447,6 +465,38 @@ function setWinner(winningTiles) {
         let score = parseInt($("#playerScoreText").text());
         $("#playerScoreText").text(score + 1);
     }
+
+    //load rematch menu after a bit
+    setTimeout(function() { 
+        $('.menuBackground').show();
+        $('.rematchMenu').show();
+    }, 500);
+}
+
+//function to reset the board
+function resetBoard() {
+    //reset the board array
+    let board = c4_board.getBoard();
+    board = [];
+    for (let r = 0; r < ROWS; r++) {
+        let row = [];
+        for (let c = 0; c < COLUMNS; c++) {
+            row.push(' ');
+        }
+        board.push(row);
+    }
+    c4_board.updateBoard(board);
+
+    //reset tile html
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLUMNS; c++) {
+            let coords = r + "-" + c;
+            $("#" + coords).removeClass('redTile yellowTile winningTile');
+        }
+    }
+
+    //set game started
+    c4_gameStarted.setState(true);
 }
 
 // function that console.logs the values in a 2d array (or normal array)

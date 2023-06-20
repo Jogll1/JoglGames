@@ -185,7 +185,7 @@ transform: translate(0, -11px) rotate(45deg);
     background-color: #c1c1c1;
 }
 
-/* Friend or AI menu */
+/*#region Friend or AI menu */
 .friendOrAIMenu {
     opacity: 100%;
     /* width: 20vw;
@@ -248,8 +248,9 @@ transform: translate(0, -11px) rotate(45deg);
     left: 50%;
     transform: translate(-50%, -60%);
 }
+/*#endregion*/
 
-/* Online play menu */
+/*#region Online play menu */
 .onlinePlayMenu {
     opacity: 100%;
     /* This menu starts hidden */
@@ -330,6 +331,52 @@ transform: translate(0, -11px) rotate(45deg);
     left: 50%;
     transform: translate(-50%, 205%);
 }
+/*#endregion*/
+
+/*#region Rematch menu */
+.rematchMenu {
+    opacity: 100%;
+    /* width: 20vw;
+    height: 24.5vh; */
+    width: 350px;
+    height: 180px;
+
+    /* This menu starts hidden */
+    display: none;
+
+    background-color: #282828;
+    border-radius: 40px;
+    border: 35px solid #282828;
+
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+
+    /* centre div */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#rematchButton {
+    width: 62.5%;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -60%);
+}
+
+#homeButton {
+    width: 62.5%;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 80%);
+}
+/*#endregion*/
 /*#endregion*/
 
 /*#region Player icons and score */
