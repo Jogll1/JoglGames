@@ -90,7 +90,7 @@ $(document).ready(function() {
         $('.rematchMenu').hide();
 
         //reset the board
-        resetBoard();
+        resetGame();
     });
 
     $('#homeButton').click(function() {
@@ -474,7 +474,7 @@ function setWinner(winningTiles) {
 }
 
 //function to reset the board
-function resetBoard() {
+function resetGame() {
     //reset the board array
     let board = c4_board.getBoard();
     board = [];
