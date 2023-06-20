@@ -108,7 +108,7 @@ $(document).ready(function() {
                 //aiMove(c4_board.getBoard(), 6, "R");
 
                 //send the board state to the aiworker for it to calculate its move
-                let depth = 8; //max 8 nearly 9, 7 is good
+                let depth = 7; //max 8 nearly 9, 7 is good
                 
                 //set the message to be sent
                 const message = {
@@ -436,6 +436,16 @@ function setWinner(winningTiles) {
     //remove hovers
     for (let i = 0; i < 7; i++) {
         $('#Hover' + i).removeClass("hoverSelected");
+    }
+
+    //increment score counters
+    if($("#" + winningTiles[0]).attr('class').split(" ")[1] == "redTile") { //opponent
+        let score = parseInt($("#opponentScoreText").text());
+        $("#opponentScoreText").text(score + 1);
+    }
+    else { //player
+        let score = parseInt($("#playerScoreText").text());
+        $("#playerScoreText").text(score + 1);
     }
 }
 
