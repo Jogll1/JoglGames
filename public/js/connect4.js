@@ -70,7 +70,7 @@ $(document).ready(function() {
 
         //call timer function to start game
         //startGameTimer(3);
-        startGame(true);
+        setUpGame(true);
     });
 
     $('#playFriendButton').click(function() {
@@ -267,7 +267,7 @@ function setBoardHovers() {
 }
 
 //function to start the game
-function startGame(isPlayingRobot) {
+function setUpGame(isPlayingRobot) {
     c4_gameStarted.setState(true);
     c4_isPlayerOneTurn.setState(true);
     $('.scoreAndIconParent').show();
@@ -459,13 +459,15 @@ function checkDraw() {
         let scorePlayer = parseInt($("#playerScoreText").text());
         $("#playerScoreText").text(scorePlayer + 1);
 
-        endGame();
+        endGame("Draw");
     }
     
 }
 
 //function to set the winning tiles
 function setWinner(winningTiles) {
+    //initialise winner string
+    let winnerString = " ";
     c4_gameStarted.setState(false);
 
     for (let i = 0; i < winningTiles.length; i++) {
@@ -477,17 +479,21 @@ function setWinner(winningTiles) {
     if($("#" + winningTiles[0]).attr('class').split(" ")[1] == "redTile") { //opponent
         let score = parseInt($("#opponentScoreText").text());
         $("#opponentScoreText").text(score + 1);
+
+        winnerString = "Robot wins!"; //need to change to name of opponent
     }
     else { //player
         let score = parseInt($("#playerScoreText").text());
         $("#playerScoreText").text(score + 1);
+
+        winnerString = "You win!"; //need to change to name of player?
     }
 
-    endGame();
+    endGame(winnerString);
 }
 
 //function to end the game and allow for another game
-function endGame() {
+function endGame(winnerString) {
     //remove hovers
     for (let i = 0; i < 7; i++) {
         $('#Hover' + i).removeClass("hoverSelected");
@@ -502,6 +508,9 @@ function endGame() {
         $('.menuBackground').show();
         $('.rematchMenu').show();
     }, 700);
+
+    //set rematch menu title
+    $('#rematchMenuTitle').text(winnerString);
 }
 
 //function to reset the board
@@ -528,6 +537,10 @@ function resetGame() {
 
     //set game started
     c4_gameStarted.setState(true);
+
+    //set blue circle
+    //remove blue circle from icons
+    $('#playerIcon').addClass('currentGo');
 }
 
 // function that console.logs the values in a 2d array (or normal array)
