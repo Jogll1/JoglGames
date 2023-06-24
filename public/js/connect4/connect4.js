@@ -3,7 +3,7 @@ const COLUMNS = 7;
 
 //#region Web worker
 //create a worker instance
-const c4_aiWorker = new Worker('../js/conn4AI-worker.js');
+const c4_aiWorker = new Worker('../js/connect4/conn4AI-worker.js');
 
 //set up the message event listener to recieve ai moves from the worker
 c4_aiWorker.onmessage = function(event) {
