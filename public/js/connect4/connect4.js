@@ -78,9 +78,27 @@ $(document).ready(function() {
         $('.friendOrAIMenu').hide();
     });
 
-    $('#playOnlineButton').click(function() {
-        $('.menuBackground').hide();
-        $('.onlinePlayMenu').hide();
+    //play online menu
+    $('#onlinePlayMenuForm').submit(function(e) {
+        e.preventDefault(); //prevent form submission
+
+        let name = $('#usernameInput').val();
+        let roomName = $('#roomNameInput').val();
+
+        //if both input fields are empty, display an error
+        if (name.trim() === '' || roomName.trim() === '') {
+            e.preventDefault(); //prevent form submission
+            //display an error message
+            alert('Please fill in both input fields');
+        }
+        else {
+            //hide menu if both input fields
+            $('.menuBackground').hide();
+            $('.onlinePlayMenu').hide();
+
+            //connect to socket
+            connectToSocket(roomName);
+        }
     });
 
     //rematch menu
