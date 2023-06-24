@@ -27,6 +27,33 @@ io.on('connection', function(socket) {
     //disconnection
     socket.on('disconnect', () => {
         console.log('user disconnected');
+
+        //if the player was the last one in a room, delete the room
+        //const room = io.sockets.adapter.rooms.get(roomName);
+        for (let i = 0; i < rooms.length; i++) {
+            // const roomSize = io.sockets.adapter.rooms.get(rooms[i]);
+            // console.log(roomSize);
+            // if(roomSize <= 0) {
+            //     // Get all sockets in the room
+            //     const socketsInRoom = Array.from(io.sockets.adapter.rooms.get(roomName));
+
+            //     // Disconnect all sockets in the room
+            //     socketsInRoom.forEach(socketId => {
+            //         io.sockets.sockets.get(socketId).disconnect(true);
+            //     });
+
+            //     // Delete the room
+            //     io.sockets.adapter.rooms.delete(roomName);
+
+            //     //remove room from list
+            //     const index = array.indexOf(roomName);
+            //     if (index > -1) { // only splice array when item is found
+            //         array.splice(index, 1); // 2nd parameter means remove one item only
+            //     }
+
+            //     console.log(`deleted room ${rooms[i]} as it was empty`);
+            // }
+        }
     });
 
     //checking if a room exists
@@ -37,8 +64,15 @@ io.on('connection', function(socket) {
 
     //joining room
     socket.on('joinRoom', function(roomName) {
-        socket.join(roomName); //join room
-        socket.emit('roomOperationResponse', true, roomName); //success
+        //only join if room contains less than 2 players
+        const roomSize = io.sockets.adapter.rooms.get(roomName).size;
+        if(roomSize < 2) { 
+            socket.join(roomName); //join room
+            socket.emit('roomOperationResponse', true, roomName, ''); //success
+        }
+        else {
+            socket.emit('roomOperationResponse', false, roomName, 'room full'); //failure
+        }
     });
 
     //creating room
@@ -47,10 +81,13 @@ io.on('connection', function(socket) {
         if(!rooms.includes(roomName)) {
             rooms.push(roomName); //add room to array
             socket.join(roomName); //join this new room
-            socket.emit('roomOperationResponse', true, roomName); //success
+
+            //TODO -- set this player as host
+
+            socket.emit('roomOperationResponse', true, roomName, ''); //success
         }
         else {
-            socket.emit('roomOperationResponse', false, roomName); //failure
+            socket.emit('roomOperationResponse', false, roomName, 'room already exists'); //failure
         }
     });
 });

@@ -19,12 +19,22 @@ function connectToSocket(roomName) {
     });
 
     //room operation response
-    socket.on('roomOperationResponse', function(success, roomName) {
+    socket.on('roomOperationResponse', function(success, roomName, errorReason) {
         if(success) {
             console.log(`joined room: ${roomName}`);
+
+            //hide menu if joined a room
+            $('.menuBackground').hide();
+            $('.onlinePlayMenu').hide();
+
+            //setup conn4 game
+            //TODO -- retrieve names of players in the room
+            //OR pass in a array of objects about the players
+            // { username: userName, isHost: true}
+            setUpGame(false, 'Player1');
         }
         else {
-            alert(`failed to join room: ${roomName}`);
+            alert(`failed to join room: ${roomName}\nreason: ${errorReason}`);
         }
     });
 }

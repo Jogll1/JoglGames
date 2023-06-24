@@ -70,7 +70,7 @@ $(document).ready(function() {
 
         //call timer function to start game
         //startGameTimer(3);
-        setUpGame(true);
+        setUpGame(true, 'Player1');
     });
 
     $('#playFriendButton').click(function() {
@@ -92,13 +92,13 @@ $(document).ready(function() {
             alert('Please fill in both input fields');
         }
         else {
-            //hide menu if both input fields
-            $('.menuBackground').hide();
-            $('.onlinePlayMenu').hide();
-
-            //connect to socket
+            //connect to socket - or at least attempt to
             connectToSocket(roomName);
         }
+
+        //reset input fields
+        $('#usernameInput').val('');
+        $('#roomNameInput').val('');
     });
 
     //rematch menu
@@ -285,21 +285,29 @@ function setBoardHovers() {
 }
 
 //function to start the game
-function setUpGame(isPlayingRobot) {
-    c4_gameStarted.setState(true);
-    c4_isPlayerOneTurn.setState(true);
+function setUpGame(isPlayingRobot, playerName) {
     $('.scoreAndIconParent').show();
 
-    //set player first
-    $('#playerIcon').addClass('currentGo');
+    //set player name
+    $('#playerNameText').text(playerName);
 
     //set icons and player names
-    if(isPlayingRobot) {
+    if(isPlayingRobot) {  
+        //set player first
+        $('#playerIcon').addClass('currentGo');
+        
         //set robot name
         $('#opponentNameText').text('Robot');
 
         //change icon
         $('#oppImg').attr('src', '/images/RobotIcon.png')
+
+        //start game against robot
+        c4_gameStarted.setState(true);
+        c4_isPlayerOneTurn.setState(true);
+    }
+    else {
+
     }
 }
 
