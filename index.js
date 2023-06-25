@@ -18,7 +18,8 @@ app.get('/', (req, res) => {
 });
 
 //#region Socket Server Side
-const rooms = [];
+const rooms = {};
+// const rooms = [];
 
 //when a user connects
 io.on('connection', function(socket) {
@@ -28,37 +29,25 @@ io.on('connection', function(socket) {
     socket.on('disconnect', () => {
         console.log('user disconnected');
 
-        //if the player was the last one in a room, delete the room
-        //const room = io.sockets.adapter.rooms.get(roomName);
-        for (let i = 0; i < rooms.length; i++) {
-            // const roomSize = io.sockets.adapter.rooms.get(rooms[i]);
-            // console.log(roomSize);
-            // if(roomSize <= 0) {
-            //     // Get all sockets in the room
-            //     const socketsInRoom = Array.from(io.sockets.adapter.rooms.get(roomName));
+        //remove player id from rooms object
+        //get list of rooms player was in
+        const roomsIn = Object.keys(rooms).filter((roomName) => rooms[roomName].includes(socket.id));
 
-            //     // Disconnect all sockets in the room
-            //     socketsInRoom.forEach(socketId => {
-            //         io.sockets.sockets.get(socketId).disconnect(true);
-            //     });
+        //remove player from each room and if the player was the last one in a room, delete the room
+        roomsIn.forEach((roomName) => {
+            rooms[roomName] = rooms[roomName].filter((playerId) => playerId !== socket.id);
+            if(rooms[roomName].length === 0) {
+                delete rooms[roomName]; //remove the empty room
+            }
+        });
 
-            //     // Delete the room
-            //     io.sockets.adapter.rooms.delete(roomName);
-
-            //     //remove room from list
-            //     const index = array.indexOf(roomName);
-            //     if (index > -1) { // only splice array when item is found
-            //         array.splice(index, 1); // 2nd parameter means remove one item only
-            //     }
-
-            //     console.log(`deleted room ${rooms[i]} as it was empty`);
-            // }
-        }
+        console.log(rooms);
     });
 
     //checking if a room exists
     socket.on('checkRoom', function(roomName) {
-        const roomExists = rooms.includes(roomName);
+        // const roomExists = rooms.includes(roomName);
+        const roomExists = rooms[roomName];
         socket.emit('checkRoomResponse', roomExists);
     });
 
@@ -66,8 +55,10 @@ io.on('connection', function(socket) {
     socket.on('joinRoom', function(roomName) {
         //only join if room contains less than 2 players
         const roomSize = io.sockets.adapter.rooms.get(roomName).size;
-        if(roomSize < 2) { 
+        if(roomSize < 2) {
+            rooms[roomName].push(socket.id); //add id of this player to room array
             socket.join(roomName); //join room
+
             socket.emit('roomOperationResponse', true, roomName, ''); //success
         }
         else {
@@ -78,8 +69,9 @@ io.on('connection', function(socket) {
     //creating room
     socket.on('createRoom', function(roomName) {
         //make sure room doesn't already exist
-        if(!rooms.includes(roomName)) {
-            rooms.push(roomName); //add room to array
+        if(!rooms[roomName]) {
+            rooms[roomName] = []; //create empty array of playerIds;
+            rooms[roomName].push(socket.id); //add id of this player to room array
             socket.join(roomName); //join this new room
 
             //TODO -- set this player as host
