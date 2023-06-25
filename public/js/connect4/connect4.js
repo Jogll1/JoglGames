@@ -93,7 +93,7 @@ $(document).ready(function() {
         }
         else {
             //connect to socket - or at least attempt to
-            connectToSocket(roomName,username);
+            connectToSocket(roomName, username);
         }
 
         //reset input fields
@@ -295,8 +295,8 @@ function setUpGame(isPlayingRobot, playerName) {
     if(isPlayingRobot) {  
         //set player first
         $('#playerIcon').addClass('currentGo');
-        
-        //set robot name
+           
+        //set opponent name
         $('#opponentNameText').text('Robot');
 
         //change icon
@@ -307,7 +307,8 @@ function setUpGame(isPlayingRobot, playerName) {
         c4_isPlayerOneTurn.setState(true);
     }
     else {
-
+        //set opponent name
+        $('#opponentNameText').text('...');
     }
 }
 

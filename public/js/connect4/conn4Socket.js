@@ -30,11 +30,17 @@ function connectToSocket(roomName, username) {
             //setup conn4 game
             //TODO -- retrieve names of players in the room
             //OR pass in a array of objects about the players
-            // { username: userName, isHost: true}
-            setUpGame(false, 'Player1');
+            setUpGame(false, username);
         }
         else {
             alert(`failed to join room: ${roomName}\nreason: ${errorReason}`);
         }
+    });
+
+    //when another player joins
+    socket.on('playerJoined', function(name1, name2) {
+        console.log('player joined');
+        //set opponent name based on which one is not ours
+        $('#opponentNameText').text((name1 == username) ? name2 : name1);
     });
 }

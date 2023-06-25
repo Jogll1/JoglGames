@@ -19,7 +19,6 @@ app.get('/', (req, res) => {
 
 //#region Socket Server Side
 const rooms = {};
-// const rooms = [];
 
 //when a user connects
 io.on('connection', function(socket) {
@@ -65,9 +64,23 @@ io.on('connection', function(socket) {
             //join room
             socket.join(roomName);
 
+            //send room response
             socket.emit('roomOperationResponse', true, roomName, ''); //success
+
+            //send a message to both players in the room containing both usernames
+            //get name of other player
+            const opponentName = Object.entries(rooms).reduce((result, [room, players]) => {
+                const opponent = players.find(player => player.playerID !== socket.id);
+                if(opponent) {
+                    return opponent.username;
+                }
+
+                return result;
+            }, '');
+            io.to(roomName).emit('playerJoined', username, opponentName);
         }
         else {
+            //send room response
             socket.emit('roomOperationResponse', false, roomName, 'room full'); //failure
         }
     });
@@ -80,17 +93,18 @@ io.on('connection', function(socket) {
             rooms[roomName] = [];
 
             //add data of this player to room object
+            //TODO -- set this player as host
             const playerData = {playerID: socket.id, username: username};
             rooms[roomName].push(playerData);
 
             //join this new room
             socket.join(roomName);
 
-            //TODO -- set this player as host
-
+            //send room response
             socket.emit('roomOperationResponse', true, roomName, ''); //success
         }
         else {
+            //send room response
             socket.emit('roomOperationResponse', false, roomName, 'room already exists'); //failure
         }
     });
