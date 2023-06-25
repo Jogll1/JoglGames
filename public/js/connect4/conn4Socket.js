@@ -1,4 +1,4 @@
-function connectToSocket(roomName) {
+function connectToSocket(roomName, username) {
     var socket = io(); //possibly needs a url
 
     //check if room exists
@@ -9,12 +9,12 @@ function connectToSocket(roomName) {
         if(roomExists) {
             //join room
             console.log('joining room');
-            socket.emit('joinRoom', roomName);
+            socket.emit('joinRoom', roomName, username);
         }
         else {
             //create room
             console.log("creating room");
-            socket.emit('createRoom', roomName);
+            socket.emit('createRoom', roomName, username);
         }
     });
 

@@ -82,18 +82,18 @@ $(document).ready(function() {
     $('#onlinePlayMenuForm').submit(function(e) {
         e.preventDefault(); //prevent form submission
 
-        let name = $('#usernameInput').val();
+        let username = $('#usernameInput').val();
         let roomName = $('#roomNameInput').val();
 
         //if both input fields are empty, display an error
-        if (name.trim() === '' || roomName.trim() === '') {
+        if (username.trim() === '' || roomName.trim() === '') {
             e.preventDefault(); //prevent form submission
             //display an error message
             alert('Please fill in both input fields');
         }
         else {
             //connect to socket - or at least attempt to
-            connectToSocket(roomName);
+            connectToSocket(roomName,username);
         }
 
         //reset input fields

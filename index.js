@@ -31,13 +31,17 @@ io.on('connection', function(socket) {
 
         //remove player id from rooms object
         //get list of rooms player was in
-        const roomsIn = Object.keys(rooms).filter((roomName) => rooms[roomName].includes(socket.id));
+        // const roomsIn = Object.keys(rooms).filter((roomName) => rooms[roomName].includes(socket.id));
+        const roomsIn = Object.keys(rooms).filter((roomName) => rooms[roomName].some(_playerID => _playerID.playerID === socket.id));
 
         //remove player from each room and if the player was the last one in a room, delete the room
         roomsIn.forEach((roomName) => {
-            rooms[roomName] = rooms[roomName].filter((playerId) => playerId !== socket.id);
+            rooms[roomName] = rooms[roomName].filter((_playerID) => _playerID.playerID !== socket.id);
+
+            //remove the empty room
             if(rooms[roomName].length === 0) {
-                delete rooms[roomName]; //remove the empty room
+                delete rooms[roomName];
+                socket.leave(roomName);
             }
         });
 
@@ -52,12 +56,17 @@ io.on('connection', function(socket) {
     });
 
     //joining room
-    socket.on('joinRoom', function(roomName) {
+    socket.on('joinRoom', function(roomName, username) {
         //only join if room contains less than 2 players
         const roomSize = io.sockets.adapter.rooms.get(roomName).size;
         if(roomSize < 2) {
-            rooms[roomName].push(socket.id); //add id of this player to room array
-            socket.join(roomName); //join room
+            //add data of this player to room object
+            const playerData = {playerID: socket.id, username: username};
+            rooms[roomName].push(playerData); 
+            console.log(rooms);
+
+            //join room
+            socket.join(roomName);
 
             socket.emit('roomOperationResponse', true, roomName, ''); //success
         }
@@ -67,12 +76,19 @@ io.on('connection', function(socket) {
     });
 
     //creating room
-    socket.on('createRoom', function(roomName) {
+    socket.on('createRoom', function(roomName, username) {
         //make sure room doesn't already exist
         if(!rooms[roomName]) {
-            rooms[roomName] = []; //create empty array of playerIds;
-            rooms[roomName].push(socket.id); //add id of this player to room array
-            socket.join(roomName); //join this new room
+            //create empty array of playerIds;
+            rooms[roomName] = [];
+
+            //add data of this player to room object
+            const playerData = {playerID: socket.id, username: username};
+            rooms[roomName].push(playerData);
+            console.log(rooms);
+
+            //join this new room
+            socket.join(roomName);
 
             //TODO -- set this player as host
 
