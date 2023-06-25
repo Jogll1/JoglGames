@@ -71,6 +71,20 @@ var c4_isPlayingRobot = (function(){ //check if it is the first (human) player's
         }
     }
 })();
+
+var c4_myPiece = (function(){ //check if it is the first (human) player's go
+    var myPiece = "Y"; //create a variable inside the module (within scope)
+
+    return { //return a fuction that sets the variable
+        setState: function(value) {
+            return myPiece = value;
+        },
+
+        getState : function() {
+            return myPiece;
+        }
+    }
+})();
 //#endregion
 
 // When document loads up call setGame()
@@ -141,12 +155,10 @@ $(document).ready(function() {
         //check if the column is full
         if(!isColumnFull(columnNo)) {
             //this commented code needs to be uncommented aswell as the first line of this function for allowing ai turns
-            setPiece(columnNo, "Y"); //yellow is player one (human)
+            setPiece(columnNo, c4_myPiece.getState()); //yellow is player one (human)
 
             if(c4_isPlayingRobot.getState()) { //if playing against the robot
                 if(!c4_isMyTurn.getState()) { //if not player one's turn, call ai turn
-                    //aiMove(c4_board.getBoard(), 6, "R");
-    
                     //send the board state to the aiworker for it to calculate its move
                     let depth = 7; //max 8 nearly 9, 7 is good
                     
@@ -190,10 +202,6 @@ $(document).ready(function() {
         //select the correct column hover to hide
         $('#Hover' + columnNo).removeClass("hoverSelected");
     });
-
-    if(c4_isMyTurn.getState()) {
-
-    }
     //#endregion
 });
 

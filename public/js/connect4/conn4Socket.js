@@ -1,5 +1,23 @@
+//#region globals
+//socket global
+var c4_socket = (function(){ //create a module
+    var socket; //create a variable inside the module (within scope)
+
+    return { //return a fuction that sets the variable
+        setState : function(value) {
+            return socket = value;
+        },
+
+        getState : function() {
+            return socket;
+        }
+    }
+})();
+//#endregion
+
 function connectToSocket(roomName, username) {
-    var socket = io(); //possibly needs a url
+    //var socket = io(); //possibly needs a url?
+    var socket = c4_socket.setState(io()); //possibly needs a url?
 
     //check if room exists
     socket.emit('checkRoom', roomName);
@@ -27,9 +45,7 @@ function connectToSocket(roomName, username) {
             $('.menuBackground').hide();
             $('.onlinePlayMenu').hide();
 
-            //setup conn4 game
-            //TODO -- retrieve names of players in the room
-            //OR pass in a array of objects about the players
+            //setup connect 4 game
             setUpGame(false, username);
         }
         else {
@@ -62,5 +78,10 @@ function connectToSocket(roomName, username) {
         c4_gameStarted.setState(true);
         c4_isMyTurn.setState(myData.isHost);
         c4_isPlayingRobot.setState(false);
+        c4_myPiece.setState((myData.isHost) ? "Y" : "R");
     });
+}
+
+function sendMove() {
+
 }
