@@ -57,6 +57,20 @@ var c4_isPlayerOneTurn = (function(){ //check if it is the first (human) player'
         }
     }
 })();
+
+var c4_isPlayingRobot = (function(){ //check if it is the first (human) player's go
+    var isPlayingRobot = false; //create a variable inside the module (within scope)
+
+    return { //return a fuction that sets the variable
+        setState: function(bToSet) {
+            return isPlayingRobot = bToSet;
+        },
+
+        getState : function() {
+            return isPlayingRobot;
+        }
+    }
+})();
 //#endregion
 
 // When document loads up call setGame()
@@ -119,40 +133,40 @@ $(document).ready(function() {
     //#region Tile functions
     //change the colour of the tile when its clicked on
     $('.squareTile').click(function() {
-        if(!c4_isPlayerOneTurn.getState()) return; //if it isn't the player's turn
+        if(c4_isPlayingRobot.getState()) {
+            if(!c4_isPlayerOneTurn.getState()) return; //if it isn't the player's turn
+        }
 
         let id = $(this).attr("id"); //get the squaretile's id
         let columnNo = id.substring(2).split("-")[1]; //remove the SQ from the front
 
         //check if the column is full
         if(!isColumnFull(columnNo)) {
-            // if(c4_isPlayerOneTurn.getState()){
-            //     setPiece(columnNo, "Y"); //yellow is player one
-            // } 
-            // else {
-            //     setPiece(columnNo, "R"); //red is player two
-            // }
-
             //this commented code needs to be uncommented aswell as the first line of this function for allowing ai turns
             setPiece(columnNo, "Y"); //yellow is player one (human)
 
-            if(!c4_isPlayerOneTurn.getState()) { //if not player one's turn, call ai turn
-                //aiMove(c4_board.getBoard(), 6, "R");
-
-                //send the board state to the aiworker for it to calculate its move
-                let depth = 7; //max 8 nearly 9, 7 is good
-                
-                //set the message to be sent
-                const message = {
-                    _board: c4_board.getBoard(),
-                    _depth: depth
+            if(c4_isPlayingRobot.getState()) { //if playing against the robot
+                if(!c4_isPlayerOneTurn.getState()) { //if not player one's turn, call ai turn
+                    //aiMove(c4_board.getBoard(), 6, "R");
+    
+                    //send the board state to the aiworker for it to calculate its move
+                    let depth = 7; //max 8 nearly 9, 7 is good
+                    
+                    //set the message to be sent
+                    const message = {
+                        _board: c4_board.getBoard(),
+                        _depth: depth
+                    }
+    
+                    //add minimum time limit to send the move
+                    let minTime = 450;
+                    setTimeout(function() { 
+                        c4_aiWorker.postMessage(message) 
+                    }, minTime);
                 }
+            } 
+            else { //if playing a player online
 
-                //add minimum time limit to send the move
-                let minTime = 450;
-                setTimeout(function() { 
-                    c4_aiWorker.postMessage(message) 
-                }, minTime);
             }
         }
     });
@@ -215,7 +229,7 @@ function startGameTimer(duration) {
     }, 1000);
 }
 
-//initialise the game
+//initialise the game by creating the board and the tiles
 function setGame() {
     //board will be a 2d array
     let board = [];
@@ -284,7 +298,7 @@ function setBoardHovers() {
     $('#boardColumnHoversParent').append(rightBoardHoverDiv); //make the boardColumnHoversParent this div's parent
 }
 
-//function to start the game
+//function to set up the game
 function setUpGame(isPlayingRobot, playerName) {
     $('.scoreAndIconParent').show();
 
@@ -305,6 +319,7 @@ function setUpGame(isPlayingRobot, playerName) {
         //start game against robot
         c4_gameStarted.setState(true);
         c4_isPlayerOneTurn.setState(true);
+        c4_isPlayingRobot.setState(true);
     }
     else {
         //set opponent name

@@ -58,7 +58,7 @@ io.on('connection', function(socket) {
         const roomSize = io.sockets.adapter.rooms.get(roomName).size;
         if(roomSize < 2) {
             //add data of this player to room object
-            const playerData = {playerID: socket.id, username: username};
+            const playerData = {playerID: socket.id, username: username, isHost: false};
             rooms[roomName].push(playerData); 
 
             //join room
@@ -67,17 +67,10 @@ io.on('connection', function(socket) {
             //send room response
             socket.emit('roomOperationResponse', true, roomName, ''); //success
 
-            //send a message to both players in the room containing both usernames
-            //get name of other player
-            const opponentName = Object.entries(rooms).reduce((result, [room, players]) => {
-                const opponent = players.find(player => player.playerID !== socket.id);
-                if(opponent) {
-                    return opponent.username;
-                }
-
-                return result;
-            }, '');
-            io.to(roomName).emit('playerJoined', username, opponentName);
+            //send a message to both players in the room data about both players
+            const playerData1 = rooms[roomName][0];
+            const playerData2 = rooms[roomName][1];
+            io.to(roomName).emit('playerJoined', playerData1, playerData2);
         }
         else {
             //send room response
@@ -93,8 +86,7 @@ io.on('connection', function(socket) {
             rooms[roomName] = [];
 
             //add data of this player to room object
-            //TODO -- set this player as host
-            const playerData = {playerID: socket.id, username: username};
+            const playerData = {playerID: socket.id, username: username, isHost: true};
             rooms[roomName].push(playerData);
 
             //join this new room

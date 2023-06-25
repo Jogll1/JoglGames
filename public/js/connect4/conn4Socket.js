@@ -38,9 +38,29 @@ function connectToSocket(roomName, username) {
     });
 
     //when another player joins
-    socket.on('playerJoined', function(name1, name2) {
+    socket.on('playerJoined', function(playerData1, playerData2) {
         console.log('player joined');
+
+        //set which is our data
+        const myData = (playerData1.playerID === socket.id) ? playerData1 : playerData2;
+        const oppData = (playerData1.playerID === socket.id) ? playerData2 : playerData1;
+
         //set opponent name based on which one is not ours
-        $('#opponentNameText').text((name1 == username) ? name2 : name1);
+        $('#opponentNameText').text(oppData.username);
+
+        //set who's to go first based on whos host
+        if(myData.isHost) {
+            //set player first
+            $('#playerIcon').addClass('currentGo');
+        } 
+        else {
+            //set player first
+            $('#opponentIcon').addClass('currentGo');
+        }
+
+        //start the game against the other player
+        c4_gameStarted.setState(true);
+        c4_isPlayerOneTurn.setState(true);
+        c4_isPlayingRobot.setState(false);
     });
 }

@@ -440,7 +440,7 @@ transform: translate(0, -11px) rotate(45deg);
 
 #playerNameText {
     /* color: #f6ae2d; */
-    transform: translate(69%, 130%);
+    transform: translate(70%, 130%);
     text-align: left;
 }
 
@@ -458,14 +458,20 @@ transform: translate(0, -11px) rotate(45deg);
     position: absolute;
     top: 0;
     left: 50%;
+
+    width: 60px;
+
+    text-align: center;
 }
 
 #playerScoreText {
-    transform: translate(50%, 100%);
+    /* transform: translate(50%, 100%); */
+    transform: translate(-22.5%, 100%);
 }
 
 #opponentScoreText {
-    transform: translate(-150%, 100%);
+    /* transform: translate(-150%, 100%); */
+    transform: translate(-77.5%, 100%);
 }
 /*#endregion*/
 /*#endregion*/
