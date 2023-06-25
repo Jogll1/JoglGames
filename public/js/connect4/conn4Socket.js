@@ -60,7 +60,7 @@ function connectToSocket(roomName, username) {
 
         //start the game against the other player
         c4_gameStarted.setState(true);
-        c4_isPlayerOneTurn.setState(true);
+        c4_isMyTurn.setState(myData.isHost);
         c4_isPlayingRobot.setState(false);
     });
 }

@@ -44,16 +44,16 @@ var c4_board = (function() {
     }
 })();
 
-var c4_isPlayerOneTurn = (function(){ //check if it is the first (human) player's go
-    var isPlayerOneTurn = false; //create a variable inside the module (within scope)
+var c4_isMyTurn = (function(){ //check if it is the first (human) player's go
+    var isMyTurn = false; //create a variable inside the module (within scope)
 
     return { //return a fuction that sets the variable
         setState: function(bToSet) {
-            return isPlayerOneTurn = bToSet;
+            return isMyTurn = bToSet;
         },
 
         getState : function() {
-            return isPlayerOneTurn;
+            return isMyTurn;
         }
     }
 })();
@@ -133,9 +133,7 @@ $(document).ready(function() {
     //#region Tile functions
     //change the colour of the tile when its clicked on
     $('.squareTile').click(function() {
-        if(c4_isPlayingRobot.getState()) {
-            if(!c4_isPlayerOneTurn.getState()) return; //if it isn't the player's turn
-        }
+        if(!c4_isMyTurn.getState()) return; //if it isn't the our's turn
 
         let id = $(this).attr("id"); //get the squaretile's id
         let columnNo = id.substring(2).split("-")[1]; //remove the SQ from the front
@@ -146,7 +144,7 @@ $(document).ready(function() {
             setPiece(columnNo, "Y"); //yellow is player one (human)
 
             if(c4_isPlayingRobot.getState()) { //if playing against the robot
-                if(!c4_isPlayerOneTurn.getState()) { //if not player one's turn, call ai turn
+                if(!c4_isMyTurn.getState()) { //if not player one's turn, call ai turn
                     //aiMove(c4_board.getBoard(), 6, "R");
     
                     //send the board state to the aiworker for it to calculate its move
@@ -175,7 +173,7 @@ $(document).ready(function() {
     $('.squareTile').mouseenter(function() {
         //don't hover if game hasn't started or it isn't our go
         if(!c4_gameStarted.getState()) return;
-        // if(!c4_isPlayerOneTurn.getState()) return;
+        if(!c4_isMyTurn.getState()) return;
 
         let id = $(this).attr("id"); //get the squaretile's id
         let columnNo = id.substring(2).split("-")[1]; //get the column number of the tile
@@ -193,7 +191,7 @@ $(document).ready(function() {
         $('#Hover' + columnNo).removeClass("hoverSelected");
     });
 
-    if(c4_isPlayerOneTurn.getState()) {
+    if(c4_isMyTurn.getState()) {
 
     }
     //#endregion
@@ -224,7 +222,7 @@ function startGameTimer(duration) {
 
             //timer end
             c4_gameStarted.setState(true);
-            c4_isPlayerOneTurn.setState(true);
+            c4_isMyTurn.setState(true);
         }
     }, 1000);
 }
@@ -318,7 +316,7 @@ function setUpGame(isPlayingRobot, playerName) {
 
         //start game against robot
         c4_gameStarted.setState(true);
-        c4_isPlayerOneTurn.setState(true);
+        c4_isMyTurn.setState(true);
         c4_isPlayingRobot.setState(true);
     }
     else {
@@ -364,7 +362,7 @@ function setPiece(columnNo, playerPiece) {
     checkWinner();
     
     //alternate player
-    c4_isPlayerOneTurn.setState(!c4_isPlayerOneTurn.getState()); 
+    c4_isMyTurn.setState(!c4_isMyTurn.getState()); 
 
     //alternate who has the border around their icon
     if($('#playerIcon').hasClass('currentGo')) {
