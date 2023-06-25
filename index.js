@@ -44,8 +44,6 @@ io.on('connection', function(socket) {
                 socket.leave(roomName);
             }
         });
-
-        console.log(rooms);
     });
 
     //checking if a room exists
@@ -63,7 +61,6 @@ io.on('connection', function(socket) {
             //add data of this player to room object
             const playerData = {playerID: socket.id, username: username};
             rooms[roomName].push(playerData); 
-            console.log(rooms);
 
             //join room
             socket.join(roomName);
@@ -85,7 +82,6 @@ io.on('connection', function(socket) {
             //add data of this player to room object
             const playerData = {playerID: socket.id, username: username};
             rooms[roomName].push(playerData);
-            console.log(rooms);
 
             //join this new room
             socket.join(roomName);
