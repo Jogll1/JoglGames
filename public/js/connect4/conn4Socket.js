@@ -1,15 +1,30 @@
 //#region globals
 //socket global
-var c4_socket = (function(){ //create a module
+var c4_socket = (function () {
     var socket; //create a variable inside the module (within scope)
 
     return { //return a fuction that sets the variable
-        setState : function(value) {
+        setState: function (value) {
             return socket = value;
         },
 
-        getState : function() {
+        getState: function () {
             return socket;
+        }
+    }
+})();
+
+//room we are in global
+var c4_roomName = (function () {
+    var roomName; //create a variable inside the module (within scope)
+
+    return { //return a fuction that sets the variable
+        setState: function (value) {
+            return roomName = value;
+        },
+
+        getState: function () {
+            return roomName;
         }
     }
 })();
@@ -18,13 +33,14 @@ var c4_socket = (function(){ //create a module
 function connectToSocket(roomName, username) {
     //var socket = io(); //possibly needs a url?
     var socket = c4_socket.setState(io()); //possibly needs a url?
+    c4_roomName.setState(roomName); //store foomname locally
 
     //check if room exists
     socket.emit('checkRoom', roomName);
 
     //room check response
-    socket.on('checkRoomResponse', function(roomExists) {
-        if(roomExists) {
+    socket.on('checkRoomResponse', function (roomExists) {
+        if (roomExists) {
             //join room
             console.log('joining room');
             socket.emit('joinRoom', roomName, username);
@@ -37,8 +53,8 @@ function connectToSocket(roomName, username) {
     });
 
     //room operation response
-    socket.on('roomOperationResponse', function(success, roomName, errorReason) {
-        if(success) {
+    socket.on('roomOperationResponse', function (success, roomName, errorReason) {
+        if (success) {
             console.log(`joined room: ${roomName}`);
 
             //hide menu if joined a room
@@ -54,7 +70,7 @@ function connectToSocket(roomName, username) {
     });
 
     //when another player joins
-    socket.on('playerJoined', function(playerData1, playerData2) {
+    socket.on('playerJoined', function (playerData1, playerData2) {
         console.log('player joined');
 
         //set which is our data
@@ -65,10 +81,10 @@ function connectToSocket(roomName, username) {
         $('#opponentNameText').text(oppData.username);
 
         //set who's to go first based on whos host
-        if(myData.isHost) {
+        if (myData.isHost) {
             //set player first
             $('#playerIcon').addClass('currentGo');
-        } 
+        }
         else {
             //set player first
             $('#opponentIcon').addClass('currentGo');
@@ -80,8 +96,16 @@ function connectToSocket(roomName, username) {
         c4_isPlayingRobot.setState(false);
         c4_myPiece.setState((myData.isHost) ? "Y" : "R");
     });
+
+    //recieving a move that was sent to the server
+    socket.on('conn4MoveResponse', function(msg) {
+        console.log(msg);
+    });
 }
 
-function sendMove() {
-
+//function to send a move to the server
+//can only be called when c4_socket is set
+function socketSendConn4Move(columnNo, playerPiece) {
+    var socket = c4_socket.getState();
+    socket.emit('conn4SendMove', columnNo, playerPiece, c4_roomName.getState());
 }

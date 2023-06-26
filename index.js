@@ -20,6 +20,7 @@ app.get('/', (req, res) => {
 //#region Socket Server Side
 const rooms = {};
 
+//#region Connect 4
 //when a user connects
 io.on('connection', function(socket) {
     console.log('a user connected');
@@ -100,7 +101,14 @@ io.on('connection', function(socket) {
             socket.emit('roomOperationResponse', false, roomName, 'room already exists'); //failure
         }
     });
+
+    //recieving a move
+    socket.on('conn4SendMove', function(columnNo, playerPiece, roomName) {
+        const msg = `${playerPiece} played in column ${columnNo} in room ${roomName}`;
+        io.to(roomName).emit('conn4MoveResponse', msg);
+    });
 });
+//#endregion
 //#endregion
 
 //open port 3000
