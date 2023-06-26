@@ -176,7 +176,10 @@ $(document).ready(function() {
                 }
             } 
             else { //if playing a player online
-
+                //-----SOCKET-----
+                //if not playing robot, send move to the server
+                socketSendConn4Move(columnNo, c4_myPiece.getState());
+                //----------------
             }
         }
     });
@@ -371,13 +374,6 @@ function setPiece(columnNo, playerPiece) {
     
     //alternate player
     c4_isMyTurn.setState(!c4_isMyTurn.getState()); 
-
-    //-----SOCKET-----
-    //if not playing robot, send move to the server
-    if(!c4_isPlayingRobot.getState()) {
-        socketSendConn4Move(columnNo, playerPiece);
-    }
-    //----------------
 
     //alternate who has the border around their icon
     if($('#playerIcon').hasClass('currentGo')) {

@@ -71,7 +71,7 @@ io.on('connection', function(socket) {
             //send a message to both players in the room data about both players
             const playerData1 = rooms[roomName][0];
             const playerData2 = rooms[roomName][1];
-            io.to(roomName).emit('playerJoined', playerData1, playerData2);
+            io.to(roomName).emit('playerJoined', playerData1, playerData2); //sends to all sockets in a room
         }
         else {
             //send room response
@@ -105,7 +105,7 @@ io.on('connection', function(socket) {
     //recieving a move
     socket.on('conn4SendMove', function(columnNo, playerPiece, roomName) {
         const msg = `${playerPiece} played in column ${columnNo} in room ${roomName}`;
-        io.to(roomName).emit('conn4MoveResponse', msg);
+        socket.to(roomName).emit('conn4MoveResponse', columnNo, playerPiece, msg); //sends to all sockets, exclusing the sender
     });
 });
 //#endregion

@@ -98,8 +98,9 @@ function connectToSocket(roomName, username) {
     });
 
     //recieving a move that was sent to the server
-    socket.on('conn4MoveResponse', function(msg) {
+    socket.on('conn4MoveResponse', function(columnNo, playerPiece, msg) {
         console.log(msg);
+        setPiece(columnNo, playerPiece);
     });
 }
 
