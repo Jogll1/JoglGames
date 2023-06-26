@@ -526,18 +526,28 @@ function setWinner(winningTiles) {
         $("#" + winningTiles[i]).addClass("winningTile");
     }
 
+    //check if we are red tile or yellow tile
+    const myTile = (c4_myPiece.getState() == "Y") ? "yellowTile" : "redTile";
+    
     //increment score counters based on who won
-    if($("#" + winningTiles[0]).attr('class').split(" ")[1] == "redTile") { //opponent
+    if($("#" + winningTiles[0]).attr('class').split(" ")[1] !== myTile) { //opponent
         let score = parseInt($("#opponentScoreText").text());
         $("#opponentScoreText").text(score + 1);
 
-        winnerString = "Robot wins!"; //need to change to name of opponent
+        if(c4_isPlayingRobot.getState()) {
+            //if playing ai, say robot won
+            winnerString = "Robot wins!"; 
+        }
+        else {
+            //if playing online, say other player won
+            winnerString = `${$('#opponentNameText').html()} wins!`;
+        }
     }
     else { //player
         let score = parseInt($("#playerScoreText").text());
         $("#playerScoreText").text(score + 1);
 
-        winnerString = "You win!"; //need to change to name of player?
+        winnerString = "You win!";
     }
 
     endGame(winnerString);
@@ -591,7 +601,20 @@ function resetGame() {
 
     //set blue circle
     //remove blue circle from icons
-    $('#playerIcon').addClass('currentGo');
+    if(c4_isPlayingRobot.getState()) 
+    {
+        //if you're playing robot, set player first
+        $('#playerIcon').addClass('currentGo');
+    } 
+    else { 
+        //if you're playing online, alternate blue circle
+        if(c4_isMyTurn.getState()) {
+            $('#playerIcon').addClass('currentGo');
+        }
+        else {
+            $('#opponentIcon').addClass('currentGo');
+        }
+    }   
 }
 
 // function that console.logs the values in a 2d array (or normal array)
