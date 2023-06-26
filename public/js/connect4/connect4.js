@@ -521,8 +521,8 @@ function setWinner(winningTiles) {
     let winnerString = " ";
     c4_gameStarted.setState(false);
 
+    //add winnerTile class to each winning tile
     for (let i = 0; i < winningTiles.length; i++) {
-        //console.log(winningTiles[i]);
         $("#" + winningTiles[i]).addClass("winningTile");
     }
 
