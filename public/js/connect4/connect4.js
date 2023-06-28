@@ -137,6 +137,11 @@ $(document).ready(function() {
 
         //reset the board
         resetGame();
+
+        //-----SOCKET-----
+        //if not playing robot, send rematch to the server
+        if(!c4_isPlayingRobot.getState()) socketSendConn4Rematch();
+        //----------------
     });
 
     $('#homeButton').click(function() {

@@ -97,10 +97,42 @@ function connectToSocket(roomName, username) {
         c4_myPiece.setState((myData.isHost) ? "Y" : "R");
     });
 
+    //detecting when the opponent has left the room
+    socket.on('opponentLeftRoom', function() {
+        //this doesn't have to happen, opponent could just join back
+        //with same name and code and it should let them in
+
+        //show alert
+        alert('Opponent has left the game.');
+
+        //send user back to play menu
+        //reset board
+        resetGame();
+        //remove blue circle
+        $('#playerIcon').removeClass('currentGo');
+        $('#opponentIcon').removeClass('currentGo');
+        //hide player icons and score text
+        $('.scoreAndIconParent').hide();
+        //open menu
+        $('.menuBackground').show();
+        $('.friendOrAIMenu').show();
+    });
+
     //recieving a move that was sent to the server
     socket.on('conn4MoveResponse', function(columnNo, playerPiece, msg) {
         console.log(msg);
         setPiece(columnNo, playerPiece);
+    });
+
+    //recieving a remtach that was sent by the other player to the server
+    socket.on('conn4RematchResponse', function() {
+        console.log("rematch started by the other player");
+        //close the menu
+        $('.menuBackground').hide();
+        $('.rematchMenu').hide();
+
+        //reset the board
+        resetGame();
     });
 }
 
@@ -109,4 +141,10 @@ function connectToSocket(roomName, username) {
 function socketSendConn4Move(columnNo, playerPiece) {
     var socket = c4_socket.getState();
     socket.emit('conn4SendMove', columnNo, playerPiece, c4_roomName.getState());
+}
+
+//function to call a rematch for both players
+function socketSendConn4Rematch() {
+    var socket = c4_socket.getState();
+    socket.emit('conn4SendRematch', c4_roomName.getState());
 }

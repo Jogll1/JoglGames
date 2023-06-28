@@ -43,6 +43,9 @@ io.on('connection', function(socket) {
                 delete rooms[roomName];
                 socket.leave(roomName);
             }
+
+            //notify the other player that the opponent left the room
+            socket.to(roomName).emit('opponentLeftRoom');
         });
     });
 
@@ -95,6 +98,8 @@ io.on('connection', function(socket) {
 
             //send room response
             socket.emit('roomOperationResponse', true, roomName, ''); //success
+
+            //TODO -- store room game type in object too
         }
         else {
             //send room response
@@ -102,11 +107,20 @@ io.on('connection', function(socket) {
         }
     });
 
+    //#region Connect 4
     //recieving a move
     socket.on('conn4SendMove', function(columnNo, playerPiece, roomName) {
         const msg = `${playerPiece} played in column ${columnNo} in room ${roomName}`;
-        socket.to(roomName).emit('conn4MoveResponse', columnNo, playerPiece, msg); //sends to all sockets, exclusing the sender
+        //sends to all sockets in a room, excluding the sender
+        socket.to(roomName).emit('conn4MoveResponse', columnNo, playerPiece, msg); 
     });
+
+    //receiving a call to rematch
+    socket.on('conn4SendRematch', function(roomName) {
+        //sends to all sockets in a room, excluding the sender as sender has already reset
+        socket.to(roomName).emit('conn4RematchResponse');
+    });
+    //#endregion
 });
 //#endregion
 //#endregion
