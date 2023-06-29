@@ -82,7 +82,7 @@ a {
 }
 /*#endregion*/
 
-/*#region Game flexContainer */
+/*#region Games flexContainer */
 .flexContainer {
     display: flex;
     flex-wrap: wrap;
