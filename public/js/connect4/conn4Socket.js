@@ -105,6 +105,9 @@ function connectToSocket(roomName, username) {
         //show alert
         alert('Opponent has left the game.');
 
+        //disconnect self from socket
+        socket.close();
+
         //send user back to play menu
         //reset board
         resetGame();
