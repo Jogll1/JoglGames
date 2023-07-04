@@ -40,5 +40,13 @@
     background-color: #ffffff;
     border: none;
 }
+
+.lightTile {
+    background-color: #4ea9d0;
+}
+
+.darkTile {
+    background-color: #d4f0fc;
+}
 /*#endregion*/
 /*#endregion*/

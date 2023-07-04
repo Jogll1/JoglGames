@@ -28,6 +28,14 @@ function setGame() {
             squareTile.id = "SQ" + idNo;
             squareTile.classList.add("squareTile");
 
+            //alternate light tile or dark tile (odd = light)
+            if(c % 2 == 0) {
+                squareTile.classList.add((r % 2 == 0) ? "darkTile" : "lightTile");
+            }
+            else {
+                squareTile.classList.add((r % 2 == 0) ? "lightTile" : "darkTile");
+            }
+
             //append squareTile to board
             $('#board').append(squareTile);
             //#endregion
