@@ -5,7 +5,7 @@ const ch_COLUMNS = 8;
 $(document).ready(function() {
     setGame();
 
-    $('.squareTile').click(function() {
+    $('.squareTile').mousedown(function() {
         let id = $(this).attr("id"); //get the squaretile's id
         let tile = $('#' + id);
 
@@ -22,9 +22,23 @@ $(document).ready(function() {
         }
     });
 
-    $(function() {
-        $(".squareTile").draggable();
-      });
+    $(".piece1").draggable({
+        // start: function() {
+        //         originalPosition = $(this).position();
+        //         console.log(originalPosition);
+        //     },
+        stop: function(event, ui) {
+            //var droppedOnCorrectPosition = isDroppedOnCorrectPosition(ui.offset.left, ui.offset.top);
+            var droppedOnCorrectPosition = false;
+            if (!droppedOnCorrectPosition) {
+                //if not dropped in the right place, revert back to original position
+                $(this).css({ top: 0, left: 0 });
+            }
+        },
+
+        //contain the piece from being dragged outside the screen
+        containment: "#mainContainer"
+    });
 });
 
 //initialise the game by creating the board and the tiles
@@ -63,6 +77,19 @@ function setGame() {
         }
         board.push(row);
     }
+
+    //piece test
+    var pieceContainer = $('<div>');
+    pieceContainer.addClass("piece1");
+    // // Create the image element
+    var piece1 = $('<img>');
+    // Set the source of the image
+    piece1.attr('src', '/images/ChessPieces/WhiteKing.png');
+    // Append the image to the container
+    // $('#board').append(piece1);
+    // $('#board').append(pieceContainer);
+    $('#SQ0-0').append(pieceContainer);
+    $('.piece1').append(piece1);
 
     logArray(board);
 }
