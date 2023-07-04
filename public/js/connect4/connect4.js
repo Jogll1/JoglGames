@@ -87,7 +87,7 @@ var c4_myPiece = (function(){ //check if it is the first (human) player's go
 })();
 //#endregion
 
-// When document loads up call setGame()
+//when document loads up 
 $(document).ready(function() {
     setGame();
 

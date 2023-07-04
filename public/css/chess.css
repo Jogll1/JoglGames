@@ -1,0 +1,32 @@
+#mainContainer {
+    width: 100vw;
+    height: 100vh;
+
+    /* centre div */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/*#region Board */
+#boardContainer{
+    /* centre div */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#board {
+    width: 572px;
+    height: 572px;
+
+    background-color:#333333; 
+
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 2px;
+}
+/*#endregion*/
