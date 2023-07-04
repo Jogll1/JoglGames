@@ -29,4 +29,16 @@
     grid-template-columns: repeat(8, 1fr);
     gap: 2px;
 }
+
+/*#region Tiles */
+.squareTile { 
+    position: relative;
+    height: 71.5px;
+    width: 71.5px;
+
+    margin: 0px;
+    background-color: #ffffff;
+    border: none;
+}
+/*#endregion*/
 /*#endregion*/

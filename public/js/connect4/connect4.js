@@ -1,5 +1,5 @@
-const ROWS = 6;
-const COLUMNS = 7;
+const c4_ROWS = 6;
+const c4_COLUMNS = 7;
 
 //#region Web worker
 //create a worker instance
@@ -249,12 +249,12 @@ function setGame() {
     let board = [];
 
     //rows
-    for (let r = 0; r < ROWS; r++) {
+    for (let r = 0; r < c4_ROWS; r++) {
         //each row
         let row = [];
 
         //columns
-        for (let c = 0; c < COLUMNS; c++) {
+        for (let c = 0; c < c4_COLUMNS; c++) {
             row.push(' '); //add an empty value to each column of a row
 
             //#region Creating tiles
@@ -296,7 +296,7 @@ function setBoardHovers() {
     $('#boardColumnHoversParent').append(leftBoardHoverDiv); //make the boardColumnHoversParent this div's parent
 
     //centre hovers
-    for (let i = 0; i < COLUMNS - 2; i++) {
+    for (let i = 0; i < c4_COLUMNS - 2; i++) {
         let boardHoverDiv = document.createElement("div"); //create a new div
         boardHoverDiv.id = "Hover" + (i + 1); //give it the correct indexed id
         boardHoverDiv.classList.add("boardColumnHover"); //add the class to style it
@@ -354,13 +354,13 @@ function setPiece(columnNo, playerPiece) {
     // }
 
     //work out which row to put the tile at based on how empty the column is
-    for (let i = 0; i < ROWS; i++) {
+    for (let i = 0; i < c4_ROWS; i++) {
         if(board[i][columnNo] != ' ') { //if the row at column is empty
             tilesInColumn++; //increment tilesInColumn
         }
     }
 
-    let id = (ROWS - tilesInColumn - 1) + "-" + columnNo; //get the id of the tile to change
+    let id = (c4_ROWS - tilesInColumn - 1) + "-" + columnNo; //get the id of the tile to change
 
     //change colour based on player
     if(playerPiece == "Y"){
@@ -370,7 +370,7 @@ function setPiece(columnNo, playerPiece) {
         $('#' + id).addClass("redTile"); //spawn the tile (red)
     }
 
-    board[ROWS - 1 - tilesInColumn][columnNo] = playerPiece; //update board
+    board[c4_ROWS - 1 - tilesInColumn][columnNo] = playerPiece; //update board
     c4_board.updateBoard(board); //update the board global
 
     //check if the player has won or drawn
@@ -397,13 +397,13 @@ function isColumnFull(columnNo) {
     let tilesInColumn = 0;
 
     //work out which row to put the tile at based on how empty the column is
-    for (let i = 0; i < ROWS; i++) {
+    for (let i = 0; i < c4_ROWS; i++) {
         if(board[i][columnNo] != ' ') { //if the row at column is empty
             tilesInColumn++; //increment tilesInColumn
         }
     }
 
-    if(tilesInColumn < ROWS) { //if there's room in the column
+    if(tilesInColumn < c4_ROWS) { //if there's room in the column
         // console.log("Room in column");
         return false; //room in column
     } 
@@ -419,8 +419,8 @@ function checkWinner() {
 
     //check all directions - this can probably be optimised
     //#region Horizontally
-    for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < (COLUMNS - 3); c++) {
+    for (let r = 0; r < c4_ROWS; r++) {
+        for (let c = 0; c < (c4_COLUMNS - 3); c++) {
             if(board[r][c] != ' ') {
                 if(board[r][c] == board[r][c + 1] && board[r][c + 1] == board[r][c + 2] && board[r][c + 2] == board[r][c + 3]) {
                     //add the winning tiles to an array
@@ -437,8 +437,8 @@ function checkWinner() {
     //#endregion
 
     //#region Vertically
-    for (let c = 0; c < COLUMNS; c++) {
-        for (let r = 0; r < (ROWS - 3); r++) {
+    for (let c = 0; c < c4_COLUMNS; c++) {
+        for (let r = 0; r < (c4_ROWS - 3); r++) {
             if(board[r][c] != ' ') {
                 if(board[r][c] == board[r + 1][c] && board[r + 1][c] == board[r + 2][c] && board[r + 2][c] == board[r + 3][c]) {
                     //add the winning tiles to an array
@@ -455,8 +455,8 @@ function checkWinner() {
     //#endregion
 
     //#region Diagonally (top-left to bottom-right)
-    for (let r = 0; r < (ROWS - 3); r++) {
-        for (let c = 0; c < (COLUMNS - 3); c++) {
+    for (let r = 0; r < (c4_ROWS - 3); r++) {
+        for (let c = 0; c < (c4_COLUMNS - 3); c++) {
             if(board[r][c] != ' ') {
                 if(board[r][c] == board[r + 1][c + 1] && board[r + 1][c + 1] == board[r + 2][c + 2] && board[r + 2][c + 2] == board[r + 3][c + 3]) {
                     //add the winning tiles to an array
@@ -473,8 +473,8 @@ function checkWinner() {
     //#endregion
 
     //#region Diagonally (bottom-left to top-right)
-    for (let r = 3; r < ROWS; r++) {
-        for (let c = 0; c < (COLUMNS - 3); c++) {
+    for (let r = 3; r < c4_ROWS; r++) {
+        for (let c = 0; c < (c4_COLUMNS - 3); c++) {
             if(board[r][c] != ' ') {
                 if(board[r][c] == board[r - 1][c + 1] && board[r - 1][c + 1] == board[r - 2][c + 2] && board[r - 2][c + 2] == board[r - 3][c + 3]) {
                     //add the winning tiles to an array
@@ -498,15 +498,15 @@ function checkDraw() {
     let board = c4_board.getBoard();
     let filledPositions = 0;
 
-    for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLUMNS; c++) {
+    for (let r = 0; r < c4_ROWS; r++) {
+        for (let c = 0; c < c4_COLUMNS; c++) {
             if(board[r][c] != ' ') { //if the tile isn't empty
                 filledPositions++;
             }
         }
     }
 
-    if(filledPositions >= (ROWS * COLUMNS)) {
+    if(filledPositions >= (c4_ROWS * c4_COLUMNS)) {
         //if draw
         //increment score counters for both players
         let scoreOpponent = parseInt($("#opponentScoreText").text());
@@ -584,9 +584,9 @@ function resetGame() {
     //reset the board array
     let board = c4_board.getBoard();
     board = [];
-    for (let r = 0; r < ROWS; r++) {
+    for (let r = 0; r < c4_ROWS; r++) {
         let row = [];
-        for (let c = 0; c < COLUMNS; c++) {
+        for (let c = 0; c < c4_COLUMNS; c++) {
             row.push(' ');
         }
         board.push(row);
@@ -594,8 +594,8 @@ function resetGame() {
     c4_board.updateBoard(board);
 
     //reset tile html
-    for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLUMNS; c++) {
+    for (let r = 0; r < c4_ROWS; r++) {
+        for (let c = 0; c < c4_COLUMNS; c++) {
             let coords = r + "-" + c;
             $("#" + coords).removeClass('redTile yellowTile winningTile');
         }
