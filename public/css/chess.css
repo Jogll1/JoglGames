@@ -27,7 +27,6 @@
     margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(8, 1fr);
-    gap: 2px;
 }
 
 /*#region Tiles */
@@ -39,14 +38,26 @@
     margin: 0px;
     background-color: #ffffff;
     border: none;
+    /* make sure element doesn't move when a border is added */
+    box-sizing: border-box; 
 }
 
 .lightTile {
-    background-color: #4ea9d0;
+    background-color: #d4f0fc;
 }
 
 .darkTile {
-    background-color: #d4f0fc;
+    background-color: #4ea9d0;
+}
+
+.lightSelected {
+    background-color: #80dcca;
+    border: 2px white solid;
+}
+
+.darkSelected {
+    background-color: #59c3ad;
+    border: 2px white solid;
 }
 /*#endregion*/
 /*#endregion*/

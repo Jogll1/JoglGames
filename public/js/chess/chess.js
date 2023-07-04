@@ -4,6 +4,27 @@ const ch_COLUMNS = 8;
 //when document loads up
 $(document).ready(function() {
     setGame();
+
+    $('.squareTile').click(function() {
+        let id = $(this).attr("id"); //get the squaretile's id
+        let tile = $('#' + id);
+
+        //deselect all previously selected tiles
+        $('.squareTile').removeClass('lightSelected');
+        $('.squareTile').removeClass('darkSelected');
+
+        //when selected a tile give it the selected class
+        if(tile.hasClass('lightTile')) {
+            tile.addClass('lightSelected');
+        }
+        else if (tile.hasClass('darkTile')) {
+            tile.addClass('darkSelected');
+        }
+    });
+
+    $(function() {
+        $(".squareTile").draggable();
+      });
 });
 
 //initialise the game by creating the board and the tiles
@@ -30,10 +51,10 @@ function setGame() {
 
             //alternate light tile or dark tile (odd = light)
             if(c % 2 == 0) {
-                squareTile.classList.add((r % 2 == 0) ? "darkTile" : "lightTile");
+                squareTile.classList.add((r % 2 == 0) ? 'lightTile' : 'darkTile');
             }
             else {
-                squareTile.classList.add((r % 2 == 0) ? "lightTile" : "darkTile");
+                squareTile.classList.add((r % 2 == 0) ? 'darkTile' : 'lightTile');
             }
 
             //append squareTile to board
