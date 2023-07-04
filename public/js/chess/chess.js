@@ -79,15 +79,14 @@ function setGame() {
     }
 
     //piece test
+    //create new container div
     var pieceContainer = $('<div>');
     pieceContainer.addClass("piece1");
-    // // Create the image element
+    //create the image element
     var piece1 = $('<img>');
-    // Set the source of the image
+    //set the source of the image
     piece1.attr('src', '/images/ChessPieces/WhiteKing.png');
-    // Append the image to the container
-    // $('#board').append(piece1);
-    // $('#board').append(pieceContainer);
+    //append the image to the container
     $('#SQ0-0').append(pieceContainer);
     $('.piece1').append(piece1);
 
