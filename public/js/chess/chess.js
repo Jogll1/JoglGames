@@ -28,7 +28,7 @@ $(document).ready(function() {
         //         console.log(originalPosition);
         //     },
         stop: function(event, ui) {
-            //var droppedOnCorrectPosition = isDroppedOnCorrectPosition(ui.offset.left, ui.offset.top);
+            // var droppedOnCorrectPosition = isDroppedOnCorrectPosition($(), ui.offset.left, ui.offset.top);
             var droppedOnCorrectPosition = false;
             if (!droppedOnCorrectPosition) {
                 //if not dropped in the right place, revert back to original position
@@ -38,6 +38,13 @@ $(document).ready(function() {
 
         //contain the piece from being dragged outside the screen
         containment: "#mainContainer"
+    });
+
+    $(".dropTile").droppable({
+        accept: ".piece1",
+        drop: function(event, ui) {
+            $(this).append($(ui.draggable));
+        }
     });
 });
 
@@ -62,6 +69,9 @@ function setGame() {
             let squareTile = document.createElement("div");
             squareTile.id = "SQ" + idNo;
             squareTile.classList.add("squareTile");
+
+            //allow pieces to be dropped on it
+            squareTile.classList.add("dropTile");
 
             //alternate light tile or dark tile (odd = light)
             if(c % 2 == 0) {
