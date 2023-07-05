@@ -22,8 +22,20 @@ $(document).ready(function() {
         }
     });
 
+    $(".pieceContainer").mousedown(function() {
+        //make mouse grabbing
+        $(this).css("cursor", "grabbing");
+    });
+
+    $(".pieceContainer").mouseup(function() {
+        //reset mouse
+        $(this).css("cursor", "grab");
+    });
+
     $(".pieceContainer").draggable({
         start: function() {
+            isGrabbing = true;
+
             //make dragged piece on top
             $(this).css("z-index", 9999);
         },
@@ -32,13 +44,16 @@ $(document).ready(function() {
             $(this).css({ top: 0, left: 0 });
             $(this).css("z-index", 500);
             $(this).css("transform", `translate(0px, 0px)`);
+
+            //reset mouse
+            $(this).css("cursor", "grab");
         },
 
         //contain the piece from being dragged outside the screen
         containment: "#mainContainer",
 
         //offset the object by half its width and height over the mouse
-        cursorAt: { top: 35.75, left: 35.75 }
+        cursorAt: { top: 35.75, left: 33 }
     });
 
     $(".dropTile").droppable({
@@ -93,10 +108,10 @@ function setGame() {
         board.push(row);
     }
 
-    //piece test
-    createPiece("WhiteKing", 0, "0-0");
-    createPiece("WhitePawn", 0, "0-1");
-    createPiece("WhitePawn", 1, "0-2");
+    //piece instantiation
+    createPiece("WhiteKing", 0, "7-4");
+    createPiece("WhitePawn", 0, "6-0");
+    createPiece("WhitePawn", 1, "6-1");
 
     logArray(board);
 }
@@ -106,6 +121,7 @@ function createPiece(type, i, tile)
 {
     //type has to be the same as the image file name
     //id has to be a reference to a square tile
+    //i is the identifier (int)
 
     //create new container div
     var pieceContainer = $('<div>');
