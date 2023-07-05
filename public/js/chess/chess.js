@@ -22,18 +22,15 @@ $(document).ready(function() {
         }
     });
 
-    $(".piece1").draggable({
-        // start: function() {
-        //         originalPosition = $(this).position();
-        //         console.log(originalPosition);
-        //     },
+    $(".pieceContainer").draggable({
+        start: function() {
+            //make dragged piece on top
+            $(this).css("z-index", 9999);
+        },
         stop: function(event, ui) {
-            // var droppedOnCorrectPosition = isDroppedOnCorrectPosition($(), ui.offset.left, ui.offset.top);
-            var droppedOnCorrectPosition = false;
-            if (!droppedOnCorrectPosition) {
-                //if not dropped in the right place, revert back to original position
-                $(this).css({ top: 0, left: 0 });
-            }
+            //if not dropped in the right place, revert back to original position
+            $(this).css({ top: 0, left: 0 });
+            $(this).css("z-index", 500);
         },
 
         //contain the piece from being dragged outside the screen
@@ -41,9 +38,13 @@ $(document).ready(function() {
     });
 
     $(".dropTile").droppable({
-        accept: ".piece1",
+        accept: ".pieceContainer",
+        greedy: true,
         drop: function(event, ui) {
-            $(this).append($(ui.draggable));
+            //if a piece is dropped over this drop zone and it has no children, add it as child
+            if ($(this).children().length < 1) {
+                $(this).append(ui.draggable);
+            }
         }
     });
 });
@@ -89,18 +90,32 @@ function setGame() {
     }
 
     //piece test
-    //create new container div
-    var pieceContainer = $('<div>');
-    pieceContainer.addClass("piece1");
-    //create the image element
-    var piece1 = $('<img>');
-    //set the source of the image
-    piece1.attr('src', '/images/ChessPieces/WhiteKing.png');
-    //append the image to the container
-    $('#SQ0-0').append(pieceContainer);
-    $('.piece1').append(piece1);
+    createPiece("WhiteKing", 0, "0-0");
+    createPiece("WhitePawn", 0, "0-1");
+    createPiece("WhitePawn", 1, "0-2");
 
     logArray(board);
+}
+
+//function to create a piece on the board
+function createPiece(type, i, tile)
+{
+    //type has to be the same as the image file name
+    //id has to be a reference to a square tile
+
+    //create new container div
+    var pieceContainer = $('<div>');
+    pieceContainer.addClass('pieceContainer');
+    //give it its id
+    let id = type + i;
+    pieceContainer.attr("id", id);
+    //create the image element
+    var pieceImg = $('<img>');
+    //set the source of the image
+    pieceImg.attr('src', '/images/ChessPieces/' + type + '.png');
+    //append the image to the container
+    $('#SQ' + tile).append(pieceContainer);
+    $("#" + id).append(pieceImg);
 }
 
 // function that console.logs the values in a 2d array (or normal array)
