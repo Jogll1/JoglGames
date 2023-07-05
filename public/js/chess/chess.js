@@ -1,6 +1,22 @@
 const ch_ROWS = 8;
 const ch_COLUMNS = 8;
 
+//#region globals
+var ch_board = (function() {
+    var board = [];
+
+    return {
+        updateBoard : function(array) {
+            return board = array;
+        },
+
+        getBoard : function() {
+            return board;
+        }
+    }
+})();
+//#endregion
+
 //when document loads up
 $(document).ready(function() {
     setGame();
@@ -34,12 +50,10 @@ $(document).ready(function() {
 
     $(".pieceContainer").draggable({
         start: function() {
-            isGrabbing = true;
-
             //make dragged piece on top
             $(this).css("z-index", 9999);
         },
-        stop: function(event, ui) {
+        stop: function() {
             //if not dropped in the right place, revert back to original position
             $(this).css({ top: 0, left: 0 });
             $(this).css("z-index", 500);
@@ -64,6 +78,9 @@ $(document).ready(function() {
             if ($(this).children().length < 1) {
                 $(this).append(ui.draggable);
             }
+
+            //if is valid move
+            console.log(ui.draggable.attr("id"));
         }
     });
 });
@@ -108,16 +125,17 @@ function setGame() {
         board.push(row);
     }
 
-    //piece instantiation
-    createPiece("WhiteKing", 0, "7-4");
-    createPiece("WhitePawn", 0, "6-0");
-    createPiece("WhitePawn", 1, "6-1");
+    //set board
+    ch_board.updateBoard(board);
 
-    logArray(board);
+    //piece instantiation
+    createPiece(ch_board.getBoard(), "White", "King", "wK", 0, 7, 4);
+    createPiece(ch_board.getBoard(), "White", "Pawn", "wp",  0, 6, 0);
+    createPiece(ch_board.getBoard(), "White", "Pawn", "wp", 1, 6, 1);
 }
 
 //function to create a piece on the board
-function createPiece(type, i, tile)
+function createPiece(board, colour, type, notation, i, row, col)
 {
     //type has to be the same as the image file name
     //id has to be a reference to a square tile
@@ -127,15 +145,20 @@ function createPiece(type, i, tile)
     var pieceContainer = $('<div>');
     pieceContainer.addClass('pieceContainer');
     //give it its id
-    let id = type + i;
+    let id = colour + type + i;
     pieceContainer.attr("id", id);
     //create the image element
     var pieceImg = $('<img>');
     //set the source of the image
-    pieceImg.attr('src', '/images/ChessPieces/' + type + '.png');
+    pieceImg.attr('src', '/images/ChessPieces/' + colour + type + '.png');
     //append the image to the container
-    $('#SQ' + tile).append(pieceContainer);
+    $('#SQ' + row + "-" + col).append(pieceContainer);
     $("#" + id).append(pieceImg);
+
+    //set the piece in the board
+    console.log()
+    board[row][col] = notation + i;
+    ch_board.updateBoard(board);
 }
 
 // function that console.logs the values in a 2d array (or normal array)
