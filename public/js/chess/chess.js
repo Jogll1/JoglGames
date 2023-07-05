@@ -23,32 +23,7 @@ $(document).ready(function() {
     });
 
     $(".pieceContainer").draggable({
-        drag: function(event, ui) {
-            var mouseX = event.pageX;
-            var mouseY = event.pageY;
-            
-            console.log("Mouse X: " + mouseX);
-            console.log("Mouse Y: " + mouseY);
-
-            var thisX = ui.offset.left;
-            var thisY = ui.offset.top;
-            
-            console.log("This X: " + thisX);
-            console.log("This Y: " + thisY);
-
-            /*say mouse x = 600 and mouse y = 500 
-            and this = 650 and this y = 550
-            how would i get this to equal mouse
-            gap = 50
-            50/2 = 25
-            */
-
-            var distX = mouseX - thisX;
-            var distY = mouseY - thisY;
-
-            // Update the draggable element's position
-            $(this).css("transform", `translate(${distX / 2}px, ${distY / 2}px)`);   
-
+        start: function() {
             //make dragged piece on top
             $(this).css("z-index", 9999);
         },
@@ -60,7 +35,10 @@ $(document).ready(function() {
         },
 
         //contain the piece from being dragged outside the screen
-        containment: "#mainContainer"
+        containment: "#mainContainer",
+
+        //offset the object by half its width and height over the mouse
+        cursorAt: { top: 35.75, left: 35.75 }
     });
 
     $(".dropTile").droppable({
