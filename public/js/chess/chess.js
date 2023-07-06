@@ -43,33 +43,44 @@ $(document).ready(function() {
         $('.squareTile').removeClass('lightSelected');
         $('.squareTile').removeClass('darkSelected');
 
-        //when selected a tile give it the selected class
-        if(tile.hasClass('lightTile')) {
-            tile.addClass('lightSelected');
-        }
-        else if (tile.hasClass('darkTile')) {
-            tile.addClass('darkSelected');
-        }
+        //delete all current valid tile spots
+        $('.validTile').remove();
 
-        //if has a piece in it
-        if ($(this).children().length >= 1) 
-        {
-            //show all valid moves
-            getAllValidMoves(ch_board.getBoard(), tile);
+        //if haven't clicked on square already selected
+        if(ch_selectedTile.getState() !== id) {
+            //when selected a tile give it the selected class
+            if(tile.hasClass('lightTile')) {
+                tile.addClass('lightSelected');
+            }
+            else if (tile.hasClass('darkTile')) {
+                tile.addClass('darkSelected');
+            }
 
-            //console.log(`${$(this).children(0).attr("id")} occupies this tile`);
-            ch_selectedTile.setState($(this).attr("id"));
-            //console.log(ch_selectedTile.getState());
+            //if tile clicked has a piece in it (and not a highlight circle)
+            if ($(this).children().length >= 1 && !$(this).children(0).attr("id").includes('validTile')) 
+            {
+                //show all valid moves
+                showValidMoves(ch_board.getBoard(), tile);
+
+                //console.log(`${$(this).children(0).attr("id")} occupies this tile`);
+                //select this tile
+                ch_selectedTile.setState($(this).attr("id"));
+                //console.log(ch_selectedTile.getState());
+            }
+            else {
+                //if a tile selected
+                if(ch_selectedTile.getState() != "")
+                {
+                    //if empty, move selected piece to this square
+                    let pieceToMove = $("#" + ch_selectedTile.getState()).children(0);
+                    movePiece(pieceToMove, $(this));
+                }
+                
+                //reset selected tile
+                ch_selectedTile.setState("");
+            }
         }
         else {
-            //if a tile selected
-            if(ch_selectedTile.getState() != "")
-            {
-                //if empty, move selected piece to this square
-                let pieceToMove = $("#" + ch_selectedTile.getState()).children(0);
-                movePiece(pieceToMove, $(this));
-            }
-            
             //reset selected tile
             ch_selectedTile.setState("");
         }
@@ -112,7 +123,7 @@ $(document).ready(function() {
         greedy: true,
         drop: function(event, ui) {
             //if a piece is dropped over this drop zone and it has no children, add it as child
-            if ($(this).children().length < 1) {
+            if ($(this).children().length < 1 || ($(this).children().length == 1 && $(this).children(0).attr("id").includes('validTile'))) {
                 //move the piece
                 movePiece(ui.draggable, $(this));
             }
@@ -214,9 +225,11 @@ function movePiece(pieceToMove, tileToMoveTo) {
     //check if piece can move
     const pattern = new Pattern(ch_board.getBoard(), originalCoords[0], originalCoords[1], coords[0], coords[1]);
     const canMove = pattern.isValidPawnMove(false);
-    console.log(`can move : ${canMove}`);
 
     if(canMove) {
+        //delete all current valid tile spots
+        $('.validTile').remove();
+
         ch_board.updateBoard(updateBoardArray(board, pieceId, coords[0], coords[1]));
 
         //append child to div
@@ -239,8 +252,7 @@ function updateBoardArray(board, id, endRow, endCol){
 }
 
 //function to check all the valid moves of a given piece and highlights them when selected
-function getAllValidMoves(board, tile) {
-    $('.squareTile').removeClass('validTile');
+function showValidMoves(board, tile) {
     //get piece original coords (tile should be a reference to a square tile)
     let originalId = tile.attr("id");
     let originalCoords = originalId.substring(2).split("-");
@@ -251,11 +263,15 @@ function getAllValidMoves(board, tile) {
                 const pattern = new Pattern(board, originalCoords[0], originalCoords[1], r, c);
                 const canMove = pattern.isValidPawnMove(false);
                 // console.log(`${canMove}, ${originalCoords[0]}, ${originalCoords[1]}, ${r}, ${c}`);
-                console.log(canMove);
                 if(canMove) {
                     let id = "#SQ" + r + "-" + c;
 
-                    //$(id).append('validTile');
+                    //create a new div
+                    let validTile = $('<div>');
+                    validTile.attr("id", `validTile${r}-${c}`);
+                    validTile.addClass('validTile');
+
+                    $(id).append(validTile);
                 }
             }
         }

@@ -62,11 +62,13 @@
 
 .validTile {
     height: 20px;
-    width: 205px;
+    width: 20px;
 
     border-radius: 50%;
     background-color: #474747;
     opacity: 30%;
+
+    z-index: 400;
 
     /* centre div */
     position: absolute;
