@@ -54,9 +54,9 @@ $(document).ready(function() {
         //if has a piece in it
         if ($(this).children().length >= 1) 
         {
-            console.log(`${$(this).children(0).attr("id")} occupies this tile`);
+            //console.log(`${$(this).children(0).attr("id")} occupies this tile`);
             ch_selectedTile.setState($(this).attr("id"));
-            console.log(ch_selectedTile.getState());
+            //console.log(ch_selectedTile.getState());
         }
         else {
             //if a tile selected
@@ -64,7 +64,7 @@ $(document).ready(function() {
             {
                 //if empty, move selected piece to this square
                 let pieceToMove = $("#" + ch_selectedTile.getState()).children(0);
-                $(this).append(pieceToMove);
+                movePiece(pieceToMove, $(this));
             }
             
             //reset selected tile
@@ -110,26 +110,8 @@ $(document).ready(function() {
         drop: function(event, ui) {
             //if a piece is dropped over this drop zone and it has no children, add it as child
             if ($(this).children().length < 1) {
-                //get piece original coords
-                let originalId = ui.draggable.parent().attr("id");
-                let originalCoords = originalId.substring(2).split("-");
-
-                //if is valid move
-                let id = $(this).attr("id");
-                let coords = id.substring(2).split("-");
-
-                //append child to div
-                $(this).append(ui.draggable);
-
-                //update board
-                //get the piece id
-                let board = ch_board.getBoard();
-                let pieceId = board[originalCoords[0]][originalCoords[1]];
-                ch_board.updateBoard(updateBoardArray(board, pieceId, coords[0], coords[1]));
-
-                console.log(`${ui.draggable.attr("id")} moved to from row ${originalCoords[0]}, column ${originalCoords[1]} to row ${coords[0]}, column ${coords[1]}`);
-
-                //need to copy this code to line 67
+                //move the piece
+                movePiece(ui.draggable, $(this));
             }
         }
     });
@@ -209,6 +191,29 @@ function createPiece(board, colour, type, notation, i, row, col)
     console.log()
     board[row][col] = notation + i;
     ch_board.updateBoard(board);
+}
+
+//function to move a piece to the correct square
+function movePiece(pieceToMove, tileToMoveTo) {
+    //get piece original coords
+    let originalId = pieceToMove.parent().attr("id");
+    let originalCoords = originalId.substring(2).split("-");
+
+    //if is valid move
+    let id = tileToMoveTo.attr("id");
+    let coords = id.substring(2).split("-");
+
+    //append child to div
+    tileToMoveTo.append(pieceToMove);
+
+    //update board
+    //get the piece id
+    let board = ch_board.getBoard();
+    let pieceId = board[originalCoords[0]][originalCoords[1]];
+    ch_board.updateBoard(updateBoardArray(board, pieceId, coords[0], coords[1]));
+
+    //console.log(`${pieceToMove.attr("id")} moved to from row ${originalCoords[0]}, column ${originalCoords[1]} to row ${coords[0]}, column ${coords[1]}`);
+    //logArray(board);
 }
 
 //function to update the board array
