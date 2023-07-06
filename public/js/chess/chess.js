@@ -16,16 +16,16 @@ var ch_board = (function() {
     }
 })();
 
-var ch_currentTile = (function() {
-    var currentTile = "";
+var ch_selectedTile = (function() {
+    var selectedTile = "";
 
     return {
         setState : function(toSet) {
-            return currentTile = toSet;
+            return selectedTile = toSet;
         },
 
         getState : function() {
-            return currentTile;
+            return selectedTile;
         }
     }
 })();
@@ -55,19 +55,20 @@ $(document).ready(function() {
         if ($(this).children().length >= 1) 
         {
             console.log(`${$(this).children(0).attr("id")} occupies this tile`);
-            ch_currentTile.setState($(this).attr("id"));
-            console.log(ch_currentTile.getState());
+            ch_selectedTile.setState($(this).attr("id"));
+            console.log(ch_selectedTile.getState());
         }
         else {
             //if a tile selected
-            if(ch_currentTile.getState() != "")
+            if(ch_selectedTile.getState() != "")
             {
                 //if empty, move selected piece to this square
-                let pieceToMove = $("#" + ch_currentTile.getState()).children(0);
+                let pieceToMove = $("#" + ch_selectedTile.getState()).children(0);
                 $(this).append(pieceToMove);
             }
-
-            ch_currentTile.setState("");
+            
+            //reset selected tile
+            ch_selectedTile.setState("");
         }
     });
 
@@ -196,21 +197,7 @@ function createPiece(board, colour, type, notation, i, row, col)
     ch_board.updateBoard(board);
 }
 
-// function that console.logs the values in a 2d array (or normal array)
-function logArray(array) {
-    let output = "";
-    for (let r = 0; r < array.length; r++) 
-    {
-        for (let c = 0; c < array[r].length; c++) 
-        {
-            if(array[r][c] == " ") {
-                output = output + "0 "; //output a 0 representing an empty string (" ")
-            }
-            else {
-                output = output + array[r][c] + " ";
-            }
-        }
-        output = output + "\n";
-    }
-    console.log(output);
+//function to update the board array
+function updateBoardArray(board, id, startRow, startCol, endRow, endCol){
+    let index = findIndex2DArray(board);
 }

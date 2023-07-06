@@ -621,22 +621,3 @@ function resetGame() {
         }
     }   
 }
-
-// function that console.logs the values in a 2d array (or normal array)
-function logArray(array) {
-    let output = "";
-    for (let r = 0; r < array.length; r++) 
-    {
-        for (let c = 0; c < array[r].length; c++) 
-        {
-            if(array[r][c] == " ") {
-                output = output + "0 "; //output a 0 representing an empty string (" ")
-            }
-            else {
-                output = output + array[r][c] + " ";
-            }
-        }
-        output = output + "\n";
-    }
-    console.log(output);
-}
