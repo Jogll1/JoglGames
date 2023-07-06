@@ -203,14 +203,22 @@ function movePiece(pieceToMove, tileToMoveTo) {
     let id = tileToMoveTo.attr("id");
     let coords = id.substring(2).split("-");
 
-    //append child to div
-    tileToMoveTo.append(pieceToMove);
-
     //update board
     //get the piece id
     let board = ch_board.getBoard();
     let pieceId = board[originalCoords[0]][originalCoords[1]];
-    ch_board.updateBoard(updateBoardArray(board, pieceId, coords[0], coords[1]));
+
+    //check if piece can move
+    const pattern = new Pattern(ch_board.getBoard(), originalCoords[0], originalCoords[1], coords[0], coords[1]);
+    const canMove = pattern.isValidPawnMove(false);
+    console.log(`can move : ${canMove}`);
+
+    if(canMove) {
+        ch_board.updateBoard(updateBoardArray(board, pieceId, coords[0], coords[1]));
+
+        //append child to div
+        tileToMoveTo.append(pieceToMove);
+    }
 
     //console.log(`${pieceToMove.attr("id")} moved to from row ${originalCoords[0]}, column ${originalCoords[1]} to row ${coords[0]}, column ${coords[1]}`);
     //logArray(board);
@@ -221,7 +229,7 @@ function updateBoardArray(board, id, endRow, endCol){
     let index = findIndex2DArray(board, id);
     let newBoard = board;
 
-    newBoard[index.row][index.column] = "";
+    newBoard[index.row][index.column] = " ";
     newBoard[endRow][endCol] = id;
 
     return newBoard;
