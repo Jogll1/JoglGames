@@ -1,15 +1,17 @@
 //piece parent class
 class Piece {
-    constructor(colour, type) {
+    constructor(colour, type, i) {
         this.colour = colour; //peice colour (black or white)
         this.type = type; //piece type
+        this.i = i;
+        this.id = colour + type + i;
     }
 }
 
 //pawn class
 class Pawn extends Piece {
-    constructor(colour) {
-        super(colour, "Pawn");
+    constructor(colour, i) {
+        super(colour, "Pawn", i);
     }
   
     isValidMove(startRow, startCol, endRow, endCol, isFirstTurn) {

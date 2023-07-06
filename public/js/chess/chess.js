@@ -15,6 +15,20 @@ var ch_board = (function() {
         }
     }
 })();
+
+var ch_currentTile = (function() {
+    var currentTile = "";
+
+    return {
+        setState : function(toSet) {
+            return currentTile = toSet;
+        },
+
+        getState : function() {
+            return currentTile;
+        }
+    }
+})();
 //#endregion
 
 //when document loads up
@@ -35,6 +49,25 @@ $(document).ready(function() {
         }
         else if (tile.hasClass('darkTile')) {
             tile.addClass('darkSelected');
+        }
+
+        //if has a piece in it
+        if ($(this).children().length >= 1) 
+        {
+            console.log(`${$(this).children(0).attr("id")} occupies this tile`);
+            ch_currentTile.setState($(this).attr("id"));
+            console.log(ch_currentTile.getState());
+        }
+        else {
+            //if a tile selected
+            if(ch_currentTile.getState() != "")
+            {
+                //if empty, move selected piece to this square
+                let pieceToMove = $("#" + ch_currentTile.getState()).children(0);
+                $(this).append(pieceToMove);
+            }
+
+            ch_currentTile.setState("");
         }
     });
 
@@ -80,7 +113,9 @@ $(document).ready(function() {
             }
 
             //if is valid move
-            console.log(ui.draggable.attr("id"));
+            let id = $(this).attr("id");
+            let coords = id.substring(2).split("-");
+            console.log(`${ui.draggable.attr("id")} moved to row ${coords[0]}, column ${coords[1]}`);
         }
     });
 });
