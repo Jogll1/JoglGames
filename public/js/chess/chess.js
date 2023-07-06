@@ -54,6 +54,9 @@ $(document).ready(function() {
         //if has a piece in it
         if ($(this).children().length >= 1) 
         {
+            //show all valid moves
+            getAllValidMoves(ch_board.getBoard(), tile);
+
             //console.log(`${$(this).children(0).attr("id")} occupies this tile`);
             ch_selectedTile.setState($(this).attr("id"));
             //console.log(ch_selectedTile.getState());
@@ -199,7 +202,7 @@ function movePiece(pieceToMove, tileToMoveTo) {
     let originalId = pieceToMove.parent().attr("id");
     let originalCoords = originalId.substring(2).split("-");
 
-    //if is valid move
+    //get coords of tile trying to move to
     let id = tileToMoveTo.attr("id");
     let coords = id.substring(2).split("-");
 
@@ -233,4 +236,28 @@ function updateBoardArray(board, id, endRow, endCol){
     newBoard[endRow][endCol] = id;
 
     return newBoard;
+}
+
+//function to check all the valid moves of a given piece and highlights them when selected
+function getAllValidMoves(board, tile) {
+    $('.squareTile').removeClass('validTile');
+    //get piece original coords (tile should be a reference to a square tile)
+    let originalId = tile.attr("id");
+    let originalCoords = originalId.substring(2).split("-");
+
+    for (let r = 0; r < ch_ROWS; r++) {
+        for (let c = 0; c < ch_COLUMNS; c++) {
+            if(board[r][c] == " ") { //if tile empty
+                const pattern = new Pattern(board, originalCoords[0], originalCoords[1], r, c);
+                const canMove = pattern.isValidPawnMove(false);
+                // console.log(`${canMove}, ${originalCoords[0]}, ${originalCoords[1]}, ${r}, ${c}`);
+                console.log(canMove);
+                if(canMove) {
+                    let id = "#SQ" + r + "-" + c;
+
+                    //$(id).append('validTile');
+                }
+            }
+        }
+    }
 }

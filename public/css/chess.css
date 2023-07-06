@@ -59,6 +59,21 @@
     background-color: #59c3ad;
     border: 4px white solid;
 }
+
+.validTile {
+    height: 20px;
+    width: 205px;
+
+    border-radius: 50%;
+    background-color: #474747;
+    opacity: 30%;
+
+    /* centre div */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 /*#endregion*/
 
 /*#region Pieces */

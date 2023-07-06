@@ -5,6 +5,7 @@ const Pattern = function(board, startRow, startCol, endRow, endCol) {
  
         //check if empty space to move to
         // console.log(`start row = ${startRow}, distance = ${distance}`)
+        //logic wrong, pawn can move backwards
         if(startRow - distance <= endRow && startCol == endCol) {
             return true;
         }
