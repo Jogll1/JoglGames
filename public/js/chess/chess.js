@@ -35,6 +35,8 @@ var ch_selectedTile = (function() {
 $(document).ready(function() {
     setGame();
 
+    //TODO - make hover circles not disappear after first clicking tile then dragging
+
     $('.squareTile').mousedown(function() {
         let id = $(this).attr("id"); //get the squaretile's id
         let tile = $('#' + id);
@@ -48,17 +50,16 @@ $(document).ready(function() {
 
         //if haven't clicked on square already selected
         if(ch_selectedTile.getState() !== id) {
-            //when selected a tile give it the selected class
-            if(tile.hasClass('lightTile')) {
-                tile.addClass('lightSelected');
-            }
-            else if (tile.hasClass('darkTile')) {
-                tile.addClass('darkSelected');
-            }
-
             //if tile clicked has a piece in it (and not a highlight circle)
-            if ($(this).children().length >= 1 && !$(this).children(0).attr("id").includes('validTile')) 
-            {
+            if ($(this).children().length >= 1 && !$(this).children(0).attr("id").includes('validTile')) {
+                //when selected a tile give it the selected class
+                if(tile.hasClass('lightTile')) {
+                    tile.addClass('lightSelected');
+                }
+                else if (tile.hasClass('darkTile')) {
+                    tile.addClass('darkSelected');
+                }
+
                 //show all valid moves
                 showValidMoves(ch_board.getBoard(), tile);
 
@@ -175,9 +176,34 @@ function setGame() {
     ch_board.updateBoard(board);
 
     //piece instantiation
+    //#region White
+    for (let i = 0; i < 8; i++) {
+        createPiece(ch_board.getBoard(), "White", "Pawn", "wp",  i, 6, i);
+    }
+
+    createPiece(ch_board.getBoard(), "White", "Rook", "wR", 0, 7, 0);
+    createPiece(ch_board.getBoard(), "White", "Rook", "wR", 1, 7, 7);
+    createPiece(ch_board.getBoard(), "White", "Bishop", "wB", 0, 7, 1);
+    createPiece(ch_board.getBoard(), "White", "Bishop", "wB", 1, 7, 6);
+    createPiece(ch_board.getBoard(), "White", "Knight", "wN", 0, 7, 2);
+    createPiece(ch_board.getBoard(), "White", "Knight", "wN", 1, 7, 5);
+    createPiece(ch_board.getBoard(), "White", "Queen", "wQ", 0, 7, 3);
     createPiece(ch_board.getBoard(), "White", "King", "wK", 0, 7, 4);
-    createPiece(ch_board.getBoard(), "White", "Pawn", "wp",  0, 6, 0);
-    createPiece(ch_board.getBoard(), "White", "Pawn", "wp", 1, 6, 1);
+    //#endregion
+    //#region Black
+    for (let i = 0; i < 8; i++) {
+        createPiece(ch_board.getBoard(), "Black", "Pawn", "bp",  i, 1, i);
+    }
+
+    createPiece(ch_board.getBoard(), "Black", "Rook", "bR", 0, 0, 0);
+    createPiece(ch_board.getBoard(), "Black", "Rook", "bR", 1, 0, 7);
+    createPiece(ch_board.getBoard(), "Black", "Bishop", "bB", 0, 0, 1);
+    createPiece(ch_board.getBoard(), "Black", "Bishop", "bB", 1, 0, 6);
+    createPiece(ch_board.getBoard(), "Black", "Knight", "bN", 0, 0, 2);
+    createPiece(ch_board.getBoard(), "Black", "Knight", "bN", 1, 0, 5);
+    createPiece(ch_board.getBoard(), "Black", "Queen", "bQ", 0, 0, 3);
+    createPiece(ch_board.getBoard(), "Black", "King", "bK", 0, 0, 4);
+    //#endregion
 }
 
 //function to create a piece on the board
@@ -234,6 +260,18 @@ function movePiece(pieceToMove, tileToMoveTo) {
 
         //append child to div
         tileToMoveTo.append(pieceToMove);
+
+        //deselect all previously selected tiles
+        $('.squareTile').removeClass('lightSelected');
+        $('.squareTile').removeClass('darkSelected');
+
+        //highlight the tile
+        if(tileToMoveTo.hasClass('lightTile')) {
+            tileToMoveTo.addClass('lightSelected');
+        }
+        else if (tileToMoveTo.hasClass('darkTile')) {
+            tileToMoveTo.addClass('darkSelected');
+        }
     }
 
     //console.log(`${pieceToMove.attr("id")} moved to from row ${originalCoords[0]}, column ${originalCoords[1]} to row ${coords[0]}, column ${coords[1]}`);
