@@ -36,20 +36,29 @@ $(document).ready(function() {
     setGame();
 
     //TODO - make hover circles not disappear after first clicking tile then dragging
+    //also unlink images from github?
 
     $('.squareTile').mousedown(function() {
-        let id = $(this).attr("id"); //get the squaretile's id
+        //get the squaretile's id
+        let id = $(this).attr("id"); 
         let tile = $('#' + id);
 
-        //deselect all previously selected tiles
-        $('.squareTile').removeClass('lightSelected');
-        $('.squareTile').removeClass('darkSelected');
+        // //deselect all previously selected tiles
+        // $('.squareTile').removeClass('lightSelected');
+        // $('.squareTile').removeClass('darkSelected');
 
-        //delete all current valid tile spots
-        $('.validTile').remove();
+        // //delete all current valid tile spots
+        // $('.validTile').remove();
 
         //if haven't clicked on square already selected
         if(ch_selectedTile.getState() !== id) {
+            //deselect all previously selected tiles
+            $('.squareTile').removeClass('lightSelected');
+            $('.squareTile').removeClass('darkSelected');
+
+            //delete all current valid tile spots
+            $('.validTile').remove();
+
             //if tile clicked has a piece in it (and not a highlight circle)
             if ($(this).children().length >= 1 && !$(this).children(0).attr("id").includes('validTile')) {
                 //when selected a tile give it the selected class
@@ -83,9 +92,30 @@ $(document).ready(function() {
         }
         else {
             //reset selected tile
-            ch_selectedTile.setState("");
+            // ch_selectedTile.setState("");
         }
     });
+
+    // $('.squareTile').mouseup(function() {
+    //     //get the squaretile's id
+    //     let id = $(this).attr("id");
+    //     let tile = $('#' + id);
+
+    //     // // if selected and mouseup, deselect
+    //     // if(ch_selectedTile.getState() === id) {
+    //     //     if(tile.hasClass('lightSelected') || tile.hasClass('darkSelected')) {
+    //     //         //deselect all previously selected tiles
+    //     //         $('.squareTile').removeClass('lightSelected');
+    //     //         $('.squareTile').removeClass('darkSelected');
+
+    //     //         //delete all current valid tile spots
+    //     //         $('.validTile').remove();
+
+    //     //         //reset selected tile
+    //     //         ch_selectedTile.setState("");
+    //     //     }
+    //     // }
+    // });
 
     $(".pieceContainer").mousedown(function() {
         //make mouse grabbing
@@ -101,6 +131,16 @@ $(document).ready(function() {
         start: function() {
             //make dragged piece on top
             $(this).css("z-index", 9999);
+        },
+        drag: function() {
+            // highlight this tile whilst dragging just to stop that bug
+            let tile = $('#' + $(this).parent().attr("id"));
+            if(tile.hasClass('lightTile')) {
+                tile.addClass('lightSelected');
+            }
+            else if (tile.hasClass('darkTile')) {
+                tile.addClass('darkSelected');
+            }
         },
         stop: function() {
             //if not dropped in the right place, revert back to original position
@@ -273,6 +313,9 @@ function movePiece(pieceToMove, tileToMoveTo) {
             tileToMoveTo.addClass('darkSelected');
         }
     }
+
+    //reset selected tile
+    ch_selectedTile.setState("");
 
     //console.log(`${pieceToMove.attr("id")} moved to from row ${originalCoords[0]}, column ${originalCoords[1]} to row ${coords[0]}, column ${coords[1]}`);
     //logArray(board);
