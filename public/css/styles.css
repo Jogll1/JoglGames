@@ -12,6 +12,18 @@ a {
     text-decoration: none;
 }
 
+.noHighlightOrDrag {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+}
+
 /* #region TopNav */
 .topnav {
     background-color: #333333;

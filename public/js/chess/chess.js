@@ -29,15 +29,25 @@ var ch_selectedTile = (function() {
         }
     }
 })();
+
+var ch_isMyTurn = (function(){
+    var isMyTurn = false;
+
+    return {
+        setState: function(bToSet) {
+            return isMyTurn = bToSet;
+        },
+
+        getState : function() {
+            return isMyTurn;
+        }
+    }
+})();
 //#endregion
 
 //when document loads up
 $(document).ready(function() {
     setGame();
-
-    //TODO - make hover circles not disappear after first clicking tile then dragging
-    //^ i tried this but now i just set it to so the tile doesnt deselect when you click it again
-    //also unlink images from github?
 
     $('.squareTile').mousedown(function() {
         //get the squaretile's id
@@ -75,6 +85,10 @@ $(document).ready(function() {
                     //if empty, move selected piece to this square
                     let pieceToMove = $("#" + ch_selectedTile.getState()).children(0);
                     movePiece(pieceToMove, $(this));
+
+                    //one small issue that should be fixed when adding turns:
+                    //when moving a piece by click you can click the next tile forward right after
+                    //as much as you want but no valid move prompts appear
                 }
 
                 //reset selected tile
@@ -248,6 +262,7 @@ function createPiece(board, colour, type, notation, i, row, col)
     //create new container div
     var pieceContainer = $('<div>');
     pieceContainer.addClass('pieceContainer');
+    pieceContainer.addClass('noHighlightOrDrag');
     //give it its id
     let id = colour + type + i;
     pieceContainer.attr("id", id);
@@ -263,6 +278,8 @@ function createPiece(board, colour, type, notation, i, row, col)
     console.log()
     board[row][col] = notation + i;
     ch_board.updateBoard(board);
+
+    //oop integration - could return an object
 }
 
 //function to move a piece to the correct square
@@ -308,9 +325,6 @@ function movePiece(pieceToMove, tileToMoveTo) {
 
     //reset selected tile
     ch_selectedTile.setState("");
-
-    //console.log(`${pieceToMove.attr("id")} moved to from row ${originalCoords[0]}, column ${originalCoords[1]} to row ${coords[0]}, column ${coords[1]}`);
-    //logArray(board);
 }
 
 //function to update the board array

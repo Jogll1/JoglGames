@@ -44,7 +44,7 @@ var c4_board = (function() {
     }
 })();
 
-var c4_isMyTurn = (function(){ //check if it is the first (human) player's go
+var c4_isMyTurn = (function(){
     var isMyTurn = false; //create a variable inside the module (within scope)
 
     return { //return a fuction that sets the variable
@@ -152,7 +152,7 @@ $(document).ready(function() {
     //#region Tile functions
     //change the colour of the tile when its clicked on
     $('.squareTile').click(function() {
-        if(!c4_isMyTurn.getState()) return; //if it isn't the our's turn
+        if(!c4_isMyTurn.getState()) return; //if it isn't our's turn
 
         let id = $(this).attr("id"); //get the squaretile's id
         let columnNo = id.substring(2).split("-")[1]; //remove the SQ from the front
