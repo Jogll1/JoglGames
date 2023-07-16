@@ -254,8 +254,7 @@ function setGame() {
 }
 
 //function to create a piece on the board
-function createPiece(board, isWhite, type, notation, i, row, col)
-{
+function createPiece(board, isWhite, type, notation, i, row, col) {
     //type has to be the same as the image file name
     //id has to be a reference to a square tile
     //i is the identifier (int)
@@ -300,8 +299,9 @@ function movePiece(pieceToMove, tileToMoveTo) {
     let pieceId = board[originalCoords[0]][originalCoords[1]]; //wp0 or bN1 etc
 
     //check if piece can move
-    const pattern = new Pattern(ch_board.getBoard(), originalCoords[0], originalCoords[1], coords[0], coords[1]);
-    //could isfirstturn be calculated like this:
+    let isWhite = pieceId.includes('w');
+    const pattern = new Pattern(isWhite, originalCoords[0], originalCoords[1], coords[0], coords[1]);
+
     //if is pawn && ((is white && in row index 6) || (is black && in row index 1))
     let isFirstTurn = (pieceId.includes('p') && ((pieceId.includes('w') && originalCoords[0] == 6) || (pieceId.includes('b') && originalCoords[0] == 1)))
     const canMove = pattern.isValidPawnMove(isFirstTurn);
@@ -351,13 +351,13 @@ function showValidMoves(board, tile) {
 
     //get the piece id
     let pieceId = board[originalCoords[0]][originalCoords[1]]; //wp0 or bN1 etc
-    console.log(pieceId)
     let isFirstTurn = (pieceId.includes('p') && ((pieceId.includes('w') && originalCoords[0] == 6) || (pieceId.includes('b') && originalCoords[0] == 1)))
+    let isWhite = pieceId.includes('w');
 
     for (let r = 0; r < ch_ROWS; r++) {
         for (let c = 0; c < ch_COLUMNS; c++) {
             if(board[r][c] == " ") { //if tile empty
-                const pattern = new Pattern(board, originalCoords[0], originalCoords[1], r, c);
+                const pattern = new Pattern(isWhite, originalCoords[0], originalCoords[1], r, c);
 
                 //change if not pawn
                 const canMove = pattern.isValidPawnMove(isFirstTurn);
