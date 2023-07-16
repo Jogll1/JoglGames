@@ -18,7 +18,7 @@ const Pattern = function(isWhite, startRow, startCol, endRow, endCol) {
             }
         }
 
-        //need to make it so cant jump through pieces
+        //need to make it so cant jump through pieces on first turn
         
         //default to false
         return false;

@@ -300,8 +300,13 @@ function movePiece(pieceToMove, tileToMoveTo) {
 
     //check if piece can move
     let isWhite = pieceId.includes('w');
-    const pattern = new Pattern(isWhite, originalCoords[0], originalCoords[1], coords[0], coords[1]);
 
+    //if tile in front is not empty, return
+    if(board[parseInt(originalCoords[0]) + ((isWhite) ? -1 : 1)][originalCoords[1]] != ' ') {
+        return;
+    } 
+
+    const pattern = new Pattern(isWhite, originalCoords[0], originalCoords[1], coords[0], coords[1]);
     //if is pawn && ((is white && in row index 6) || (is black && in row index 1))
     let isFirstTurn = (pieceId.includes('p') && ((pieceId.includes('w') && originalCoords[0] == 6) || (pieceId.includes('b') && originalCoords[0] == 1)))
     const canMove = pattern.isValidPawnMove(isFirstTurn);
@@ -354,9 +359,14 @@ function showValidMoves(board, tile) {
     let isFirstTurn = (pieceId.includes('p') && ((pieceId.includes('w') && originalCoords[0] == 6) || (pieceId.includes('b') && originalCoords[0] == 1)))
     let isWhite = pieceId.includes('w');
 
+    //if tile in front is not empty, return
+    if(board[parseInt(originalCoords[0]) + ((isWhite) ? -1 : 1)][originalCoords[1]] != ' ') {
+        return;
+    } 
+
     for (let r = 0; r < ch_ROWS; r++) {
         for (let c = 0; c < ch_COLUMNS; c++) {
-            if(board[r][c] == " ") { //if tile empty
+            if(board[r][c] == ' ') { //if tile empty
                 const pattern = new Pattern(isWhite, originalCoords[0], originalCoords[1], r, c);
 
                 //change if not pawn
