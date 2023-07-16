@@ -36,6 +36,7 @@ $(document).ready(function() {
     setGame();
 
     //TODO - make hover circles not disappear after first clicking tile then dragging
+    //^ i tried this but now i just set it to so the tile doesnt deselect when you click it again
     //also unlink images from github?
 
     $('.squareTile').mousedown(function() {
@@ -43,15 +44,8 @@ $(document).ready(function() {
         let id = $(this).attr("id"); 
         let tile = $('#' + id);
 
-        // //deselect all previously selected tiles
-        // $('.squareTile').removeClass('lightSelected');
-        // $('.squareTile').removeClass('darkSelected');
-
-        // //delete all current valid tile spots
-        // $('.validTile').remove();
-
-        //if haven't clicked on square already selected
-        if(ch_selectedTile.getState() !== id) {
+        //if haven't clicked on already selected tile
+        if(id !== ch_selectedTile.getState()) {
             //deselect all previously selected tiles
             $('.squareTile').removeClass('lightSelected');
             $('.squareTile').removeClass('darkSelected');
@@ -72,10 +66,7 @@ $(document).ready(function() {
                 //show all valid moves
                 showValidMoves(ch_board.getBoard(), tile);
 
-                //console.log(`${$(this).children(0).attr("id")} occupies this tile`);
-                //select this tile
-                ch_selectedTile.setState($(this).attr("id"));
-                //console.log(ch_selectedTile.getState());
+                // set the selected the tile in mouseup
             }
             else {
                 //if a tile selected
@@ -85,37 +76,38 @@ $(document).ready(function() {
                     let pieceToMove = $("#" + ch_selectedTile.getState()).children(0);
                     movePiece(pieceToMove, $(this));
                 }
-                
+
                 //reset selected tile
                 ch_selectedTile.setState("");
             }
         }
-        else {
-            //reset selected tile
-            // ch_selectedTile.setState("");
-        }
     });
 
-    // $('.squareTile').mouseup(function() {
-    //     //get the squaretile's id
-    //     let id = $(this).attr("id");
-    //     let tile = $('#' + id);
+    $('.squareTile').mouseup(function() {
+        //get the squaretile's id
+        let id = $(this).attr("id");
+        let tile = $('#' + id);
+        
+        //if haven't clicked on already selected tile
+        if(id !== ch_selectedTile.getState()) {
+            //if tile clicked has a piece in it (and not a highlight circle)
+            if ($(this).children().length >= 1 && !$(this).children(0).attr("id").includes('validTile')) {
+                //select this tile
+                ch_selectedTile.setState(id);
+            }
+        }
+        else {
+            //deselect all previously selected tiles
+            $('.squareTile').removeClass('lightSelected');
+            $('.squareTile').removeClass('darkSelected');
 
-    //     // // if selected and mouseup, deselect
-    //     // if(ch_selectedTile.getState() === id) {
-    //     //     if(tile.hasClass('lightSelected') || tile.hasClass('darkSelected')) {
-    //     //         //deselect all previously selected tiles
-    //     //         $('.squareTile').removeClass('lightSelected');
-    //     //         $('.squareTile').removeClass('darkSelected');
+            //delete all current valid tile spots
+            $('.validTile').remove();
 
-    //     //         //delete all current valid tile spots
-    //     //         $('.validTile').remove();
-
-    //     //         //reset selected tile
-    //     //         ch_selectedTile.setState("");
-    //     //     }
-    //     // }
-    // });
+            //reset selected tile
+            ch_selectedTile.setState("");
+        }
+    });
 
     $(".pieceContainer").mousedown(function() {
         //make mouse grabbing
