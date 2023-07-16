@@ -301,7 +301,7 @@ function movePiece(pieceToMove, tileToMoveTo) {
     //check if piece can move
     let isWhite = pieceId.includes('w');
 
-    //if tile in front is not empty, return
+    //if tile in front is not empty, return (only for pawns so far)
     if(board[parseInt(originalCoords[0]) + ((isWhite) ? -1 : 1)][originalCoords[1]] != ' ') {
         return;
     } 
@@ -310,6 +310,7 @@ function movePiece(pieceToMove, tileToMoveTo) {
     //if is pawn && ((is white && in row index 6) || (is black && in row index 1))
     let isFirstTurn = (pieceId.includes('p') && ((pieceId.includes('w') && originalCoords[0] == 6) || (pieceId.includes('b') && originalCoords[0] == 1)))
     const canMove = pattern.isValidPawnMove(isFirstTurn);
+    // const canMove = pattern.isValidRookMove();
 
     if(canMove) {
         //delete all current valid tile spots
@@ -359,7 +360,7 @@ function showValidMoves(board, tile) {
     let isFirstTurn = (pieceId.includes('p') && ((pieceId.includes('w') && originalCoords[0] == 6) || (pieceId.includes('b') && originalCoords[0] == 1)))
     let isWhite = pieceId.includes('w');
 
-    //if tile in front is not empty, return
+    //if tile in front is not empty, return (only for pawns so far)
     if(board[parseInt(originalCoords[0]) + ((isWhite) ? -1 : 1)][originalCoords[1]] != ' ') {
         return;
     } 
@@ -371,6 +372,7 @@ function showValidMoves(board, tile) {
 
                 //change if not pawn
                 const canMove = pattern.isValidPawnMove(isFirstTurn);
+                // const canMove = pattern.isValidRookMove();
 
                 if(canMove) {
                     let id = "#SQ" + r + "-" + c;

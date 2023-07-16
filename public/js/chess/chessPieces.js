@@ -1,11 +1,11 @@
 //move patterns
 const Pattern = function(isWhite, startRow, startCol, endRow, endCol) {
+    startRow = parseInt(startRow);
+    endRow = parseInt(endRow);
+
     this.isValidPawnMove = function(isFirstTurn) {
         let distance = (isFirstTurn) ? 2 : 1; //set the distance it can move based on if it's its first turn
         
-        startRow = parseInt(startRow);
-        endRow = parseInt(endRow);
-
         //check for possible move spaces
         if(isWhite) {
             if(endRow < startRow && startRow - distance <= endRow && startCol == endCol) {
@@ -18,7 +18,15 @@ const Pattern = function(isWhite, startRow, startCol, endRow, endCol) {
             }
         }
 
-        //need to make it so cant jump through pieces on first turn
+        //default to false
+        return false;
+    };
+
+    this.isValidRookMove = function() {
+        //check for possible move spaces
+        if(startCol == endCol || startRow == endRow) {
+            return true;
+        }
         
         //default to false
         return false;
