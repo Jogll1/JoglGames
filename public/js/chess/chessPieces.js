@@ -27,8 +27,8 @@ class Piece {
 }
 
 class Pawn extends Piece {
-    constructor(isFirstTurn, color) {
-        super(color);
+    constructor(isWhite, isFirstTurn) {
+        super(isWhite);
         this.isFirstTurn = isFirstTurn;
     }
 

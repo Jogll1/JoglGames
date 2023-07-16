@@ -224,40 +224,44 @@ function setGame() {
     //piece instantiation
     //#region White
     for (let i = 0; i < 8; i++) {
-        createPiece(ch_board.getBoard(), "White", "Pawn", "wp",  i, 6, i);
+        createPiece(ch_board.getBoard(), true, "Pawn", "wp",  i, 6, i);
     }
 
-    createPiece(ch_board.getBoard(), "White", "Rook", "wR", 0, 7, 0);
-    createPiece(ch_board.getBoard(), "White", "Rook", "wR", 1, 7, 7);
-    createPiece(ch_board.getBoard(), "White", "Bishop", "wB", 0, 7, 1);
-    createPiece(ch_board.getBoard(), "White", "Bishop", "wB", 1, 7, 6);
-    createPiece(ch_board.getBoard(), "White", "Knight", "wN", 0, 7, 2);
-    createPiece(ch_board.getBoard(), "White", "Knight", "wN", 1, 7, 5);
-    createPiece(ch_board.getBoard(), "White", "Queen", "wQ", 0, 7, 3);
-    createPiece(ch_board.getBoard(), "White", "King", "wK", 0, 7, 4);
+    createPiece(ch_board.getBoard(), true, "Rook", "wR", 0, 7, 0);
+    createPiece(ch_board.getBoard(), true, "Rook", "wR", 1, 7, 7);
+    createPiece(ch_board.getBoard(), true, "Bishop", "wB", 0, 7, 1);
+    createPiece(ch_board.getBoard(), true, "Bishop", "wB", 1, 7, 6);
+    createPiece(ch_board.getBoard(), true, "Knight", "wN", 0, 7, 2);
+    createPiece(ch_board.getBoard(), true, "Knight", "wN", 1, 7, 5);
+    createPiece(ch_board.getBoard(), true, "Queen", "wQ", 0, 7, 3);
+    createPiece(ch_board.getBoard(), true, "King", "wK", 0, 7, 4);
     //#endregion
+
     //#region Black
     for (let i = 0; i < 8; i++) {
-        createPiece(ch_board.getBoard(), "Black", "Pawn", "bp",  i, 1, i);
+        createPiece(ch_board.getBoard(), false, "Pawn", "bp",  i, 1, i);
     }
 
-    createPiece(ch_board.getBoard(), "Black", "Rook", "bR", 0, 0, 0);
-    createPiece(ch_board.getBoard(), "Black", "Rook", "bR", 1, 0, 7);
-    createPiece(ch_board.getBoard(), "Black", "Bishop", "bB", 0, 0, 1);
-    createPiece(ch_board.getBoard(), "Black", "Bishop", "bB", 1, 0, 6);
-    createPiece(ch_board.getBoard(), "Black", "Knight", "bN", 0, 0, 2);
-    createPiece(ch_board.getBoard(), "Black", "Knight", "bN", 1, 0, 5);
-    createPiece(ch_board.getBoard(), "Black", "Queen", "bQ", 0, 0, 3);
-    createPiece(ch_board.getBoard(), "Black", "King", "bK", 0, 0, 4);
+    createPiece(ch_board.getBoard(), false, "Rook", "bR", 0, 0, 0);
+    createPiece(ch_board.getBoard(), false, "Rook", "bR", 1, 0, 7);
+    createPiece(ch_board.getBoard(), false, "Bishop", "bB", 0, 0, 1);
+    createPiece(ch_board.getBoard(), false, "Bishop", "bB", 1, 0, 6);
+    createPiece(ch_board.getBoard(), false, "Knight", "bN", 0, 0, 2);
+    createPiece(ch_board.getBoard(), false, "Knight", "bN", 1, 0, 5);
+    createPiece(ch_board.getBoard(), false, "Queen", "bQ", 0, 0, 3);
+    createPiece(ch_board.getBoard(), false, "King", "bK", 0, 0, 4);
     //#endregion
 }
 
 //function to create a piece on the board
-function createPiece(board, colour, type, notation, i, row, col)
+function createPiece(board, isWhite, type, notation, i, row, col)
 {
     //type has to be the same as the image file name
     //id has to be a reference to a square tile
     //i is the identifier (int)
+
+    //set colour
+    colour = (isWhite) ? "White" : "Black";
 
     //create new container div
     var pieceContainer = $('<div>');
@@ -278,8 +282,6 @@ function createPiece(board, colour, type, notation, i, row, col)
     console.log()
     board[row][col] = notation + i;
     ch_board.updateBoard(board);
-
-    //oop integration - could return an object
 }
 
 //function to move a piece to the correct square
