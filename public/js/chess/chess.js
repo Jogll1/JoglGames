@@ -297,11 +297,14 @@ function movePiece(pieceToMove, tileToMoveTo) {
     //update board
     //get the piece id
     let board = ch_board.getBoard();
-    let pieceId = board[originalCoords[0]][originalCoords[1]];
+    let pieceId = board[originalCoords[0]][originalCoords[1]]; //wp0 or bN1 etc
 
     //check if piece can move
     const pattern = new Pattern(ch_board.getBoard(), originalCoords[0], originalCoords[1], coords[0], coords[1]);
-    const canMove = pattern.isValidPawnMove(false);
+    //could isfirstturn be calculated like this:
+    //if is pawn && ((is white && in row index 6) || (is black && in row index 1))
+    let isFirstTurn = (pieceId.includes('p') && ((pieceId.includes('w') && originalCoords[0] == 6) || (pieceId.includes('b') && originalCoords[0] == 1)))
+    const canMove = pattern.isValidPawnMove(isFirstTurn);
 
     if(canMove) {
         //delete all current valid tile spots
@@ -346,12 +349,19 @@ function showValidMoves(board, tile) {
     let originalId = tile.attr("id");
     let originalCoords = originalId.substring(2).split("-");
 
+    //get the piece id
+    let pieceId = board[originalCoords[0]][originalCoords[1]]; //wp0 or bN1 etc
+    console.log(pieceId)
+    let isFirstTurn = (pieceId.includes('p') && ((pieceId.includes('w') && originalCoords[0] == 6) || (pieceId.includes('b') && originalCoords[0] == 1)))
+
     for (let r = 0; r < ch_ROWS; r++) {
         for (let c = 0; c < ch_COLUMNS; c++) {
             if(board[r][c] == " ") { //if tile empty
                 const pattern = new Pattern(board, originalCoords[0], originalCoords[1], r, c);
-                const canMove = pattern.isValidPawnMove(false);
-                // console.log(`${canMove}, ${originalCoords[0]}, ${originalCoords[1]}, ${r}, ${c}`);
+
+                //change if not pawn
+                const canMove = pattern.isValidPawnMove(isFirstTurn);
+
                 if(canMove) {
                     let id = "#SQ" + r + "-" + c;
 
