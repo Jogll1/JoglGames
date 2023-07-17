@@ -298,39 +298,36 @@ function movePiece(pieceToMove, tileToMoveTo) {
     let board = ch_board.getBoard();
     let pieceId = board[originalCoords[0]][originalCoords[1]]; //wp0 or bN1 etc
 
-    //check if piece can move
-    let isWhite = pieceId.includes('w');
+    //check if white
+    const isWhite = pieceId.includes('w');
 
-    //if tile in front is not empty, return (only for pawns so far)
-    if(board[parseInt(originalCoords[0]) + ((isWhite) ? -1 : 1)][originalCoords[1]] != ' ') {
-        return;
-    } 
-
-    const pattern = new Pattern(isWhite, originalCoords[0], originalCoords[1], coords[0], coords[1]);
+    const pattern = new Pattern(ch_board.getBoard(), isWhite, originalCoords[0], originalCoords[1]);
     //if is pawn && ((is white && in row index 6) || (is black && in row index 1))
-    let isFirstTurn = (pieceId.includes('p') && ((pieceId.includes('w') && originalCoords[0] == 6) || (pieceId.includes('b') && originalCoords[0] == 1)))
-    const canMove = pattern.isValidPawnMove(isFirstTurn);
-    // const canMove = pattern.isValidRookMove();
+    const isFirstTurn = (pieceId.includes('p') && ((pieceId.includes('w') && originalCoords[0] == 6) || (pieceId.includes('b') && originalCoords[0] == 1)))
+    const validMoves = pattern.getValidPawnMoves(isFirstTurn);
+    
+    //if piece trying to move to is in validmoves
+    if(validMoves != null) {
+        if(validMoves.includes(id.substring(2))) {
+            //delete all current valid tile spots
+            $('.validTile').remove();
 
-    if(canMove) {
-        //delete all current valid tile spots
-        $('.validTile').remove();
+            ch_board.updateBoard(updateBoardArray(board, pieceId, coords[0], coords[1]));
 
-        ch_board.updateBoard(updateBoardArray(board, pieceId, coords[0], coords[1]));
+            //append child to div
+            tileToMoveTo.append(pieceToMove);
 
-        //append child to div
-        tileToMoveTo.append(pieceToMove);
+            //deselect all previously selected tiles
+            $('.squareTile').removeClass('lightSelected');
+            $('.squareTile').removeClass('darkSelected');
 
-        //deselect all previously selected tiles
-        $('.squareTile').removeClass('lightSelected');
-        $('.squareTile').removeClass('darkSelected');
-
-        //highlight the tile
-        if(tileToMoveTo.hasClass('lightTile')) {
-            tileToMoveTo.addClass('lightSelected');
-        }
-        else if (tileToMoveTo.hasClass('darkTile')) {
-            tileToMoveTo.addClass('darkSelected');
+            //highlight the tile
+            if(tileToMoveTo.hasClass('lightTile')) {
+                tileToMoveTo.addClass('lightSelected');
+            }
+            else if (tileToMoveTo.hasClass('darkTile')) {
+                tileToMoveTo.addClass('darkSelected');
+            }
         }
     }
 
@@ -357,34 +354,23 @@ function showValidMoves(board, tile) {
 
     //get the piece id
     let pieceId = board[originalCoords[0]][originalCoords[1]]; //wp0 or bN1 etc
-    let isFirstTurn = (pieceId.includes('p') && ((pieceId.includes('w') && originalCoords[0] == 6) || (pieceId.includes('b') && originalCoords[0] == 1)))
-    let isWhite = pieceId.includes('w');
+    const isWhite = pieceId.includes('w');
+    const isFirstTurn = (pieceId.includes('p') && ((pieceId.includes('w') && originalCoords[0] == 6) || (pieceId.includes('b') && originalCoords[0] == 1)))
 
-    //if tile in front is not empty, return (only for pawns so far)
-    if(board[parseInt(originalCoords[0]) + ((isWhite) ? -1 : 1)][originalCoords[1]] != ' ') {
-        return;
-    } 
-
-    for (let r = 0; r < ch_ROWS; r++) {
-        for (let c = 0; c < ch_COLUMNS; c++) {
-            if(board[r][c] == ' ') { //if tile empty
-                const pattern = new Pattern(isWhite, originalCoords[0], originalCoords[1], r, c);
-
-                //change if not pawn
-                const canMove = pattern.isValidPawnMove(isFirstTurn);
-                // const canMove = pattern.isValidRookMove();
-
-                if(canMove) {
-                    let id = "#SQ" + r + "-" + c;
-
-                    //create a new div
-                    let validTile = $('<div>');
-                    validTile.attr("id", `validTile${r}-${c}`);
-                    validTile.addClass('validTile');
-
-                    $(id).append(validTile);
-                }
-            }
+    const pattern = new Pattern(ch_board.getBoard(), isWhite, originalCoords[0], originalCoords[1]);
+    const validMoves = pattern.getValidPawnMoves(isFirstTurn);
+    
+    if(validMoves != null) {
+        for (let i = 0; i < validMoves.length; i++) {
+            const coords = validMoves[i]
+            const id = "#SQ" + validMoves[i];
+        
+            //create a new div
+            let validTile = $('<div>');
+            validTile.attr("id", `validTile${coords[0]}-${coords[1]}`);
+            validTile.addClass('validTile');
+    
+            $(id).append(validTile);
         }
     }
 }

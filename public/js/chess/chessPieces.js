@@ -1,39 +1,36 @@
 //move patterns
-const Pattern = function(isWhite, startRow, startCol, endRow, endCol) {
+const Pattern = function(board, isWhite, startRow, startCol) {
     startRow = parseInt(startRow);
-    endRow = parseInt(endRow);
+    startCol = parseInt(startCol);
 
-    this.isValidPawnMove = function(isFirstTurn) {
+    this.getValidPawnMoves = function(isFirstTurn) {
+        validMoves = []
         let distance = (isFirstTurn) ? 2 : 1; //set the distance it can move based on if it's its first turn
-        
-        //check for possible move spaces
-        if(isWhite) {
-            if(endRow < startRow && startRow - distance <= endRow && startCol == endCol) {
-                return true;
+
+        for (let i = 1; i < distance + 1; i++) {
+            let checkRow = startRow + parseInt((isWhite) ? -i : i);
+            if(board[checkRow][startCol] == ' ') {
+                validMoves.push(checkRow + "-" + startCol);
+            }
+            else {
+                return;
             }
         }
-        else { //is black
-            if(endRow > startRow && endRow <= (startRow + distance) && startCol == endCol) {
-                return true;
-            }
-        }
+        return validMoves;
+    }
 
-        //default to false
-        return false;
-    };
-
-    this.isValidRookMove = function() {
-        //check for possible move spaces
-        if(startCol == endCol || startRow == endRow) {
-            return true;
-        }
+    // this.isValidRookMove = function() {
+    //     //check for possible move spaces
+    //     if(startCol == endCol || startRow == endRow) {
+    //         return true;
+    //     }
         
-        //default to false
-        return false;
-    };
+    //     //default to false
+    //     return false;
+    // };
 };
 
-//oop test
+//#region oop test
 class Piece {
     constructor(isWhite) {
         this.isWhite = isWhite;
@@ -58,3 +55,4 @@ class Pawn extends Piece {
         console.log((this.isFirstTurn) ? "First turn" : "Not first turn");
     }
 }
+//#endregion
