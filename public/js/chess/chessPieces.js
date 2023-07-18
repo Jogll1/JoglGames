@@ -6,28 +6,22 @@ const Pattern = function(board, isWhite, startRow, startCol) {
     this.getValidPawnMoves = function(isFirstTurn) {
         validMoves = []
         let distance = (isFirstTurn) ? 2 : 1; //set the distance it can move based on if it's its first turn
-
+        
+        //moving
         for (let i = 1; i < distance + 1; i++) {
             let checkRow = startRow + parseInt((isWhite) ? -i : i);
-            if(board[checkRow][startCol] == ' ') {
-                validMoves.push(checkRow + "-" + startCol);
-            }
-            else {
-                return;
+            if(checkRow >= 0 && checkRow <= 7) { //check if on board
+                if(board[checkRow][startCol] == ' ') {
+                    validMoves.push(checkRow + "-" + startCol);
+                }
+                else {
+                    return validMoves;
+                }
             }
         }
+        
         return validMoves;
     }
-
-    // this.isValidRookMove = function() {
-    //     //check for possible move spaces
-    //     if(startCol == endCol || startRow == endRow) {
-    //         return true;
-    //     }
-        
-    //     //default to false
-    //     return false;
-    // };
 };
 
 //#region oop test

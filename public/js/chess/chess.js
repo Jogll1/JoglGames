@@ -30,16 +30,20 @@ var ch_selectedTile = (function() {
     }
 })();
 
-var ch_isMyTurn = (function(){
-    var isMyTurn = false;
+var ch_isWhiteTurn = (function(){
+    var isWhiteTurn = false;
 
     return {
         setState: function(bToSet) {
-            return isMyTurn = bToSet;
+            return isWhiteTurn = bToSet;
         },
 
         getState : function() {
-            return isMyTurn;
+            return isWhiteTurn;
+        },
+
+        swapState : function() {
+            return isWhiteTurn = !isWhiteTurn;
         }
     }
 })();
@@ -65,26 +69,36 @@ $(document).ready(function() {
 
             //if tile clicked has a piece in it (and not a highlight circle)
             if ($(this).children().length >= 1 && !$(this).children(0).attr("id").includes('validTile')) {
-                //when selected a tile give it the selected class
-                if(tile.hasClass('lightTile')) {
-                    tile.addClass('lightSelected');
-                }
-                else if (tile.hasClass('darkTile')) {
-                    tile.addClass('darkSelected');
-                }
+                //check if our turn
+                if(isMyTurn($(this).children(0).attr("id"))) {
+                    //when selected a tile give it the selected class
+                    if(tile.hasClass('lightTile')) {
+                        tile.addClass('lightSelected');
+                    }
+                    else if (tile.hasClass('darkTile')) {
+                        tile.addClass('darkSelected');
+                    }
 
-                //show all valid moves
-                showValidMoves(ch_board.getBoard(), tile);
+                    //show all valid moves
+                    showValidMoves(ch_board.getBoard(), tile);
 
-                // set the selected the tile in mouseup
+                    // set the selected the tile in mouseup
+                }
             }
             else {
-                //if a tile selected
+                //if tile selected not empty
                 if(ch_selectedTile.getState() != "")
                 {
                     //if empty, move selected piece to this square
                     let pieceToMove = $("#" + ch_selectedTile.getState()).children(0);
-                    movePiece(pieceToMove, $(this));
+
+                    //get pieceToMoveColour
+                    let colour = (pieceToMove.attr("id").includes(("White"))) ? "White" : "Black";
+
+                    //only move piece if colour matches whos turn it is
+                    if(colour == "White" && ch_isWhiteTurn.getState() || colour == "Black" && !ch_isWhiteTurn.getState()) {
+                        movePiece(pieceToMove, $(this));
+                    }
 
                     //one small issue that should be fixed when adding turns:
                     //when moving a piece by click you can click the next tile forward right after
@@ -124,8 +138,10 @@ $(document).ready(function() {
     });
 
     $(".pieceContainer").mousedown(function() {
-        //make mouse grabbing
-        $(this).css("cursor", "grabbing");
+        if(isMyTurn($(this).attr("id"))) {
+            //make mouse grabbing
+            $(this).css("cursor", "grabbing");
+        }   
     });
 
     $(".pieceContainer").mouseup(function() {
@@ -134,9 +150,15 @@ $(document).ready(function() {
     });
 
     $(".pieceContainer").draggable({
-        start: function() {
-            //make dragged piece on top
-            $(this).css("z-index", 9999);
+        start: function(event, ui) {
+            //check if it our turn
+            if (isMyTurn($(this).attr("id"))) {                
+                //make dragged piece on top
+                $(this).css("z-index", 9999);
+            } else {
+                //disable dragging
+                return false;
+            }
         },
         drag: function() {
             // highlight this tile whilst dragging just to stop that bug
@@ -169,11 +191,12 @@ $(document).ready(function() {
         accept: ".pieceContainer",
         greedy: true,
         drop: function(event, ui) {
-            //if a piece is dropped over this drop zone and it has no children, add it as child
-            if ($(this).children().length < 1 || ($(this).children().length == 1 && $(this).children(0).attr("id").includes('validTile'))) {
-                //move the piece
-                movePiece(ui.draggable, $(this));
-            }
+            //if a piece is dropped over this drop zone and it has no children, add it as child through movePiece
+            // if ($(this).children().length < 1 || ($(this).children().length == 1 && $(this).children(0).attr("id").includes('validTile'))) {
+            //     //move the piece
+            //     movePiece(ui.draggable, $(this));
+            // }
+            movePiece(ui.draggable, $(this));
         }
     });
 });
@@ -251,6 +274,9 @@ function setGame() {
     createPiece(ch_board.getBoard(), false, "Queen", "bQ", 0, 0, 3);
     createPiece(ch_board.getBoard(), false, "King", "bK", 0, 0, 4);
     //#endregion
+
+    //set white go first
+    ch_isWhiteTurn.setState(true);
 }
 
 //function to create a piece on the board
@@ -328,6 +354,9 @@ function movePiece(pieceToMove, tileToMoveTo) {
             else if (tileToMoveTo.hasClass('darkTile')) {
                 tileToMoveTo.addClass('darkSelected');
             }
+
+            //alternate turn
+            ch_isWhiteTurn.swapState()
         }
     }
 
@@ -372,5 +401,18 @@ function showValidMoves(board, tile) {
     
             $(id).append(validTile);
         }
+    }
+}
+
+function isMyTurn(pieceId) {
+    //get piece colour
+    let colour = (pieceId.includes(("White"))) ? "White" : "Black";
+    
+    //check if our turn
+    if(colour == "White" && ch_isWhiteTurn.getState() || colour == "Black" && !ch_isWhiteTurn.getState()) {
+        return true;
+    }
+    else {
+        return false;
     }
 }
