@@ -11,12 +11,13 @@ const Pattern = function(board, isWhite, startRow, startCol) {
         for (let i = 1; i < distance + 1; i++) {
             let checkRow = startRow + parseInt((isWhite) ? -i : i);
             if(checkRow >= 0 && checkRow <= 7) { //check if on board
-                if(board[checkRow][startCol] == ' ') {
-                    validMoves.push(checkRow + "-" + startCol);
-                }
-                else {
-                    return validMoves;
-                }
+                // if(board[checkRow][startCol] == ' ') {
+                //     validMoves.push(checkRow + "-" + startCol);
+                // }
+                // else {
+                //     return validMoves;
+                // }
+                validMoves.push(checkRow + "-" + startCol);
             }
         }
         

@@ -69,7 +69,7 @@ $(document).ready(function() {
 
             //if tile clicked has a piece in it (and not a highlight circle)
             if ($(this).children().length >= 1 && !$(this).children(0).attr("id").includes('validTile')) {
-                //check if our turn
+                //check if our turn and we clicked our colour
                 if(isMyTurn($(this).children(0).attr("id"))) {
                     //when selected a tile give it the selected class
                     if(tile.hasClass('lightTile')) {
@@ -84,6 +84,23 @@ $(document).ready(function() {
 
                     // set the selected the tile in mouseup
                 }
+                else {
+                    console.log("epic");
+                    //if tile selected not empty
+                    if(ch_selectedTile.getState() != "")
+                    {
+                        //if empty, move selected piece to this square
+                        let pieceToMove = $("#" + ch_selectedTile.getState()).children(0);
+
+                        //only move piece if colour matches whos turn it is
+                        if(isMyTurn(pieceToMove.attr("id"))) {
+                            movePiece(pieceToMove, $(this));
+                        }
+                    }
+
+                    //reset selected tile
+                    ch_selectedTile.setState("");
+                }
             }
             else {
                 //if tile selected not empty
@@ -92,17 +109,10 @@ $(document).ready(function() {
                     //if empty, move selected piece to this square
                     let pieceToMove = $("#" + ch_selectedTile.getState()).children(0);
 
-                    //get pieceToMoveColour
-                    let colour = (pieceToMove.attr("id").includes(("White"))) ? "White" : "Black";
-
                     //only move piece if colour matches whos turn it is
-                    if(colour == "White" && ch_isWhiteTurn.getState() || colour == "Black" && !ch_isWhiteTurn.getState()) {
+                    if(isMyTurn(pieceToMove.attr("id"))) {
                         movePiece(pieceToMove, $(this));
                     }
-
-                    //one small issue that should be fixed when adding turns:
-                    //when moving a piece by click you can click the next tile forward right after
-                    //as much as you want but no valid move prompts appear
                 }
 
                 //reset selected tile
@@ -120,8 +130,11 @@ $(document).ready(function() {
         if(id !== ch_selectedTile.getState()) {
             //if tile clicked has a piece in it (and not a highlight circle)
             if ($(this).children().length >= 1 && !$(this).children(0).attr("id").includes('validTile')) {
-                //select this tile
-                ch_selectedTile.setState(id);
+                //check if our turn and we clicked our colour
+                if(isMyTurn($(this).children(0).attr("id"))) {
+                    //select this tile
+                    ch_selectedTile.setState(id);
+                }
             }
         }
         else {
@@ -151,7 +164,7 @@ $(document).ready(function() {
 
     $(".pieceContainer").draggable({
         start: function(event, ui) {
-            //check if it our turn
+            //check if our turn and we clicked our colour
             if (isMyTurn($(this).attr("id"))) {                
                 //make dragged piece on top
                 $(this).css("z-index", 9999);
@@ -404,6 +417,7 @@ function showValidMoves(board, tile) {
     }
 }
 
+//function to only let player move their piece on their turn
 function isMyTurn(pieceId) {
     //get piece colour
     let colour = (pieceId.includes(("White"))) ? "White" : "Black";
