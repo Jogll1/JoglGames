@@ -68,39 +68,19 @@ $(document).ready(function() {
             $('.validTile').remove();
 
             //if tile clicked has a piece in it (and not a highlight circle)
-            if ($(this).children().length >= 1 && !$(this).children(0).attr("id").includes('validTile')) {
-                //check if our turn and we clicked our colour
-                if(isMyTurn($(this).children(0).attr("id"))) {
-                    //when selected a tile give it the selected class
-                    if(tile.hasClass('lightTile')) {
-                        tile.addClass('lightSelected');
-                    }
-                    else if (tile.hasClass('darkTile')) {
-                        tile.addClass('darkSelected');
-                    }
-
-                    //show all valid moves
-                    showValidMoves(ch_board.getBoard(), tile);
-
-                    // set the selected the tile in mouseup
+            if ($(this).children().length >= 1 && !$(this).children(0).attr("id").includes('validTile') && isMyTurn($(this).children(0).attr("id"))) {
+                //when selected a tile give it the selected class
+                if(tile.hasClass('lightTile')) {
+                    tile.addClass('lightSelected');
                 }
-                else {
-                    console.log("epic");
-                    //if tile selected not empty
-                    if(ch_selectedTile.getState() != "")
-                    {
-                        //if empty, move selected piece to this square
-                        let pieceToMove = $("#" + ch_selectedTile.getState()).children(0);
-
-                        //only move piece if colour matches whos turn it is
-                        if(isMyTurn(pieceToMove.attr("id"))) {
-                            movePiece(pieceToMove, $(this));
-                        }
-                    }
-
-                    //reset selected tile
-                    ch_selectedTile.setState("");
+                else if (tile.hasClass('darkTile')) {
+                    tile.addClass('darkSelected');
                 }
+
+                //show all valid moves
+                showValidMoves(ch_board.getBoard(), tile);
+
+                // set the selected the tile in mouseup
             }
             else {
                 //if tile selected not empty
@@ -375,6 +355,8 @@ function movePiece(pieceToMove, tileToMoveTo) {
 
     //reset selected tile
     ch_selectedTile.setState("");
+
+    // logArray(ch_board.getBoard());
 }
 
 //function to update the board array
@@ -415,6 +397,8 @@ function showValidMoves(board, tile) {
             $(id).append(validTile);
         }
     }
+
+    //TODO - add a larger validTile thing to pieces to capture
 }
 
 //function to only let player move their piece on their turn

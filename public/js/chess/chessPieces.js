@@ -11,13 +11,43 @@ const Pattern = function(board, isWhite, startRow, startCol) {
         for (let i = 1; i < distance + 1; i++) {
             let checkRow = startRow + parseInt((isWhite) ? -i : i);
             if(checkRow >= 0 && checkRow <= 7) { //check if on board
-                // if(board[checkRow][startCol] == ' ') {
-                //     validMoves.push(checkRow + "-" + startCol);
-                // }
-                // else {
-                //     return validMoves;
-                // }
-                validMoves.push(checkRow + "-" + startCol);
+                if(board[checkRow][startCol] == ' ') {
+                    validMoves.push(checkRow + "-" + startCol);
+                }
+                else {
+                    break;
+                }
+            }
+        }
+
+        //capturing
+        let ourColour = (board[startRow][startCol].includes(("w"))) ? "White" : "Black";
+        console.log(`our colour: ${ourColour}`)
+
+        let checkRow = startRow + parseInt((isWhite) ? -1 : 1)
+        if(checkRow >= 0 && checkRow <= 7) {
+            //right
+            let checkCol = startCol + 1;
+            if(checkCol <= 7) {
+                let oppColour = (board[checkRow][checkCol].includes(("w"))) ? "White" : "Black";
+                console.log(`piece in check place 1: ${board[checkRow][checkCol]}`)
+                //if piece in place and its not our colour
+                if(board[checkRow][checkCol] != ' ' && ourColour != oppColour) {
+                    validMoves.push(checkRow + "-" + checkCol);
+                    console.log("take");
+                }
+            }
+
+            //left
+            checkCol = startCol - 1;
+            if(checkCol >= 0) {
+                let oppColour = (board[checkRow][checkCol].includes(("w"))) ? "White" : "Black";
+                console.log(`piece in check place 1: ${board[checkRow][checkCol]}`)
+                //if piece in place and its not our colour
+                if(board[checkRow][checkCol] != ' '  && ourColour != oppColour) {
+                    validMoves.push(checkRow + "-" + checkCol);
+                    console.log("take");
+                }
             }
         }
         
