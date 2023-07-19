@@ -333,6 +333,9 @@ function movePiece(pieceToMove, tileToMoveTo) {
 
             ch_board.updateBoard(updateBoardArray(board, pieceId, coords[0], coords[1]));
 
+            //delete tile's children
+            $("#" + id).empty();
+
             //append child to div
             tileToMoveTo.append(pieceToMove);
 

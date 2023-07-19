@@ -53,6 +53,18 @@ const Pattern = function(board, isWhite, startRow, startCol) {
         
         return validMoves;
     }
+
+    this.getValidRookMoves = function() {
+        validMoves = []
+
+        //moving up
+        for (let i = 1; i < 8; i++) {
+            const element = array[i];
+            
+        }
+
+        return validMoves;
+    }
 };
 
 //#region oop test
