@@ -81,6 +81,60 @@ const Pattern = function(board, isWhite, startRow, startCol) {
 
         return validMoves;
     }
+
+    this.getValidKnightMoves = function() {
+        validMoves = []
+        const ourColour = (board[startRow][startCol].includes(("w"))) ? "White" : "Black";
+        
+        deltas = [[-2, 1], [-1, 2], [1, 2], [2, 1], [2, -1], [1, -2], [-1, -2], [-2, -1]]
+        for (let i = 0; i < deltas.length; i++) {
+            let checkRow = startRow + deltas[i][0];
+            let checkCol = startCol + deltas[i][1];
+
+            if(checkRow >= 0 && checkRow <= 7 && checkCol >= 0 && checkCol <= 7) {
+                const oppColour = (board[checkRow][checkCol].includes(("w"))) ? "White" : "Black";
+                if (board[checkRow][checkCol] == ' ') {
+                    //moving
+                    validMoves.push(checkRow + "-" + checkCol);
+                }
+                else {
+                    //capturing
+                    if(ourColour != oppColour) {
+                        validMoves.push(checkRow + "-" + checkCol);
+                    }
+                }
+            }
+        }
+
+        return validMoves;
+    }
+
+    this.getValidKingMoves = function() {
+        validMoves = []
+        const ourColour = (board[startRow][startCol].includes(("w"))) ? "White" : "Black";
+        
+        deltas = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, -1], [-1, 1], [1, 1]]
+        for (let i = 0; i < deltas.length; i++) {
+            let checkRow = startRow + deltas[i][0];
+            let checkCol = startCol + deltas[i][1];
+
+            if(checkRow >= 0 && checkRow <= 7 && checkCol >= 0 && checkCol <= 7) {
+                const oppColour = (board[checkRow][checkCol].includes(("w"))) ? "White" : "Black";
+                if (board[checkRow][checkCol] == ' ') {
+                    //moving
+                    validMoves.push(checkRow + "-" + checkCol);
+                }
+                else {
+                    //capturing
+                    if(ourColour != oppColour) {
+                        validMoves.push(checkRow + "-" + checkCol);
+                    }
+                }
+            }
+        }
+
+        return validMoves;
+    }
 };
 
 //function for generating valid moves in straight lines
@@ -92,7 +146,7 @@ function addValidLineMoves(board, startRow, startCol, rowDelta, colDelta, validM
 
     while (checkRow >= 0 && checkRow <= 7 && checkCol >= 0 && checkCol <= 7) {
         //moving
-        if (board[checkRow][checkCol] === ' ') {
+        if (board[checkRow][checkCol] == ' ') {
             validMoves.push(checkRow + "-" + checkCol);
             checkRow += rowDelta;
             checkCol += colDelta;

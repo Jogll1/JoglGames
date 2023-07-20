@@ -110,7 +110,7 @@ $(document).ready(function() {
         //if haven't clicked on already selected tile
         if(id !== ch_selectedTile.getState()) {
             //if tile clicked has a piece in it (and not a highlight circle)
-            if ($(this).children().length >= 1 && !$(this).children(0).attr("id").includes('validTile') || !$(this).children(0).attr("id").includes('validTakeTile')) {
+            if ($(this).children().length >= 1 && !$(this).children(0).attr("id").includes('validTile') && !$(this).children(0).attr("id").includes('validTakeTile')) {
                 //check if our turn and we clicked our colour
                 if(isMyTurn($(this).children(0).attr("id"))) {
                     //select this tile
@@ -242,10 +242,10 @@ function setGame() {
 
     createPiece(ch_board.getBoard(), true, "Rook", "wR", 0, 7, 0);
     createPiece(ch_board.getBoard(), true, "Rook", "wR", 1, 7, 7);
-    createPiece(ch_board.getBoard(), true, "Bishop", "wB", 0, 7, 1);
-    createPiece(ch_board.getBoard(), true, "Bishop", "wB", 1, 7, 6);
-    createPiece(ch_board.getBoard(), true, "Knight", "wN", 0, 7, 2);
-    createPiece(ch_board.getBoard(), true, "Knight", "wN", 1, 7, 5);
+    createPiece(ch_board.getBoard(), true, "Bishop", "wB", 0, 7, 2);
+    createPiece(ch_board.getBoard(), true, "Bishop", "wB", 1, 7, 5);
+    createPiece(ch_board.getBoard(), true, "Knight", "wN", 0, 7, 1);
+    createPiece(ch_board.getBoard(), true, "Knight", "wN", 1, 7, 6);
     createPiece(ch_board.getBoard(), true, "Queen", "wQ", 0, 7, 3);
     createPiece(ch_board.getBoard(), true, "King", "wK", 0, 7, 4);
     //#endregion
@@ -257,10 +257,10 @@ function setGame() {
 
     createPiece(ch_board.getBoard(), false, "Rook", "bR", 0, 0, 0);
     createPiece(ch_board.getBoard(), false, "Rook", "bR", 1, 0, 7);
-    createPiece(ch_board.getBoard(), false, "Bishop", "bB", 0, 0, 1);
-    createPiece(ch_board.getBoard(), false, "Bishop", "bB", 1, 0, 6);
-    createPiece(ch_board.getBoard(), false, "Knight", "bN", 0, 0, 2);
-    createPiece(ch_board.getBoard(), false, "Knight", "bN", 1, 0, 5);
+    createPiece(ch_board.getBoard(), false, "Bishop", "bB", 0, 0, 2);
+    createPiece(ch_board.getBoard(), false, "Bishop", "bB", 1, 0, 5);
+    createPiece(ch_board.getBoard(), false, "Knight", "bN", 0, 0, 1);
+    createPiece(ch_board.getBoard(), false, "Knight", "bN", 1, 0, 6);
     createPiece(ch_board.getBoard(), false, "Queen", "bQ", 0, 0, 3);
     createPiece(ch_board.getBoard(), false, "King", "bK", 0, 0, 4);
     //#endregion
@@ -314,14 +314,7 @@ function movePiece(pieceToMove, tileToMoveTo) {
     let board = ch_board.getBoard();
     let pieceId = board[originalCoords[0]][originalCoords[1]]; //wp0 or bN1 etc
 
-    //check if white
-    const isWhite = pieceId.includes('w');
-
-    const pattern = new Pattern(ch_board.getBoard(), isWhite, originalCoords[0], originalCoords[1]);
-    //if is pawn && ((is white && in row index 6) || (is black && in row index 1))
-    const isFirstTurn = (pieceId.includes('p') && ((pieceId.includes('w') && originalCoords[0] == 6) || (pieceId.includes('b') && originalCoords[0] == 1)))
-    // const validMoves = pattern.getValidPawnMoves(isFirstTurn);
-    const validMoves = pattern.getValidQueenMoves();
+    const validMoves = getValidMoves(board, originalCoords[0], originalCoords[1]);
     
     //if piece trying to move to is in validmoves
     if(validMoves != null) {
@@ -378,14 +371,8 @@ function showValidMoves(board, tile) {
     let originalId = tile.attr("id");
     let originalCoords = originalId.substring(2).split("-");
 
-    //get the piece id
-    let pieceId = board[originalCoords[0]][originalCoords[1]]; //wp0 or bN1 etc
-    const isWhite = pieceId.includes('w');
-    const isFirstTurn = (pieceId.includes('p') && ((pieceId.includes('w') && originalCoords[0] == 6) || (pieceId.includes('b') && originalCoords[0] == 1)))
-
-    const pattern = new Pattern(ch_board.getBoard(), isWhite, originalCoords[0], originalCoords[1]);
-    // const validMoves = pattern.getValidPawnMoves(isFirstTurn);
-    const validMoves = pattern.getValidQueenMoves();
+    //get the valid moves
+    const validMoves = getValidMoves(board, originalCoords[0], originalCoords[1]);
     
     if(validMoves != null) {
         for (let i = 0; i < validMoves.length; i++) {
@@ -411,6 +398,42 @@ function showValidMoves(board, tile) {
     }
 
     //TODO - add a larger validTile thing to pieces to capture
+}
+
+//function to get all valid moves based on the piece type
+function getValidMoves(board, startRow, startCol) {
+    //piece id should be like wp2
+    validMoves = []
+
+    let pieceId = board[startRow][startCol]; //wp0 or bN1 etc
+
+    const isWhite = pieceId.includes('w');
+    const pattern = new Pattern(board, isWhite, startRow, startCol);
+    
+    if(pieceId.includes('p')) {
+        const isFirstTurn = (pieceId.includes('p') && ((isWhite && startRow == 6) || (!isWhite && startRow == 1)))
+        validMoves = pattern.getValidPawnMoves(isFirstTurn);
+    }
+    else if(pieceId.includes('N')) {
+        validMoves = pattern.getValidKnightMoves();
+    }
+    else if(pieceId.includes('B')) {
+        validMoves = pattern.getValidBishopMoves();
+    }
+    else if(pieceId.includes('R')) {
+        validMoves = pattern.getValidRookMoves();
+    }
+    else if(pieceId.includes('Q')) {
+        validMoves = pattern.getValidQueenMoves();
+    }
+    else if(pieceId.includes('K')) {
+        validMoves = pattern.getValidKingMoves();
+    }
+    else {
+        console.log("Error: invalid piece type");
+    }
+
+    return validMoves;
 }
 
 //function to only let player move their piece on their turn
