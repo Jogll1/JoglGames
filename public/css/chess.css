@@ -28,6 +28,7 @@
     display: grid;
     grid-template-columns: repeat(8, 1fr);
 }
+/*#endregion*/
 
 /*#region Tiles */
 .squareTile { 
@@ -76,6 +77,24 @@
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+.validTakeTile {
+    height: 56.5px;
+    width: 56.5px;
+
+    border-radius: 50%;
+    background-color: none;
+    border: 7.5px solid #474747;
+    opacity: 30%;
+
+    z-index: 400;
+
+    /* centre div */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 /*#endregion*/
 
 /*#region Pieces */
@@ -101,5 +120,4 @@
 
     z-index: 500;
 }
-/*#endregion*/
 /*#endregion*/

@@ -66,9 +66,10 @@ $(document).ready(function() {
 
             //delete all current valid tile spots
             $('.validTile').remove();
+            $('.validTakeTile').remove();
 
             //if tile clicked has a piece in it (and not a highlight circle)
-            if ($(this).children().length >= 1 && !$(this).children(0).attr("id").includes('validTile') && isMyTurn($(this).children(0).attr("id"))) {
+            if ($(this).children().length >= 1 && !$(this).children(0).attr("id").includes('validTile') && !$(this).children(0).attr("id").includes('validTakeTile') && isMyTurn($(this).children(0).attr("id"))) {
                 //when selected a tile give it the selected class
                 if(tile.hasClass('lightTile')) {
                     tile.addClass('lightSelected');
@@ -109,7 +110,7 @@ $(document).ready(function() {
         //if haven't clicked on already selected tile
         if(id !== ch_selectedTile.getState()) {
             //if tile clicked has a piece in it (and not a highlight circle)
-            if ($(this).children().length >= 1 && !$(this).children(0).attr("id").includes('validTile')) {
+            if ($(this).children().length >= 1 && !$(this).children(0).attr("id").includes('validTile') || !$(this).children(0).attr("id").includes('validTakeTile')) {
                 //check if our turn and we clicked our colour
                 if(isMyTurn($(this).children(0).attr("id"))) {
                     //select this tile
@@ -124,6 +125,7 @@ $(document).ready(function() {
 
             //delete all current valid tile spots
             $('.validTile').remove();
+            $('.validTakeTile').remove();
 
             //reset selected tile
             ch_selectedTile.setState("");
@@ -184,11 +186,6 @@ $(document).ready(function() {
         accept: ".pieceContainer",
         greedy: true,
         drop: function(event, ui) {
-            //if a piece is dropped over this drop zone and it has no children, add it as child through movePiece
-            // if ($(this).children().length < 1 || ($(this).children().length == 1 && $(this).children(0).attr("id").includes('validTile'))) {
-            //     //move the piece
-            //     movePiece(ui.draggable, $(this));
-            // }
             movePiece(ui.draggable, $(this));
         }
     });
@@ -323,13 +320,15 @@ function movePiece(pieceToMove, tileToMoveTo) {
     const pattern = new Pattern(ch_board.getBoard(), isWhite, originalCoords[0], originalCoords[1]);
     //if is pawn && ((is white && in row index 6) || (is black && in row index 1))
     const isFirstTurn = (pieceId.includes('p') && ((pieceId.includes('w') && originalCoords[0] == 6) || (pieceId.includes('b') && originalCoords[0] == 1)))
-    const validMoves = pattern.getValidPawnMoves(isFirstTurn);
+    // const validMoves = pattern.getValidPawnMoves(isFirstTurn);
+    const validMoves = pattern.getValidQueenMoves();
     
     //if piece trying to move to is in validmoves
     if(validMoves != null) {
         if(validMoves.includes(id.substring(2))) {
             //delete all current valid tile spots
             $('.validTile').remove();
+            $('.validTakeTile').remove();
 
             ch_board.updateBoard(updateBoardArray(board, pieceId, coords[0], coords[1]));
 
@@ -385,17 +384,27 @@ function showValidMoves(board, tile) {
     const isFirstTurn = (pieceId.includes('p') && ((pieceId.includes('w') && originalCoords[0] == 6) || (pieceId.includes('b') && originalCoords[0] == 1)))
 
     const pattern = new Pattern(ch_board.getBoard(), isWhite, originalCoords[0], originalCoords[1]);
-    const validMoves = pattern.getValidPawnMoves(isFirstTurn);
+    // const validMoves = pattern.getValidPawnMoves(isFirstTurn);
+    const validMoves = pattern.getValidQueenMoves();
     
     if(validMoves != null) {
         for (let i = 0; i < validMoves.length; i++) {
             const coords = validMoves[i]
             const id = "#SQ" + validMoves[i];
+
+            const childCount = $(id).children().length;
         
             //create a new div
             let validTile = $('<div>');
             validTile.attr("id", `validTile${coords[0]}-${coords[1]}`);
-            validTile.addClass('validTile');
+
+            //if div has more than one child add validTakeTile too
+            if(childCount >= 1) {
+                validTile.addClass('validTakeTile');
+            } 
+            else {
+                validTile.addClass('validTile');
+            }
     
             $(id).append(validTile);
         }
