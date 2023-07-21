@@ -47,6 +47,21 @@ var ch_isWhiteTurn = (function(){
         }
     }
 })();
+
+//keep list of peces that have moved
+var ch_movedPieces = (function() {
+    var movedPieces = [];
+
+    return {
+        add : function(toAdd) {
+            return movedPieces.push(toAdd);
+        },
+
+        get : function() {
+            return movedPieces;
+        }
+    }
+})();
 //#endregion
 
 //when document loads up
@@ -343,6 +358,11 @@ function movePiece(pieceToMove, tileToMoveTo) {
                 tileToMoveTo.addClass('darkSelected');
             }
 
+            //add pieces id to movedPieces if haven't moved before
+            if(!ch_movedPieces.get().includes(pieceId)) {
+                ch_movedPieces.add(pieceId);
+            }
+
             //alternate turn
             ch_isWhiteTurn.swapState()
         }
@@ -403,7 +423,7 @@ function showValidMoves(board, tile) {
 //function to get all valid moves based on the piece type
 function getValidMoves(board, startRow, startCol) {
     //piece id should be like wp2
-    validMoves = []
+    _validMoves = []
 
     let pieceId = board[startRow][startCol]; //wp0 or bN1 etc
 
@@ -411,29 +431,31 @@ function getValidMoves(board, startRow, startCol) {
     const pattern = new Pattern(board, isWhite, startRow, startCol);
     
     if(pieceId.includes('p')) {
-        const isFirstTurn = (pieceId.includes('p') && ((isWhite && startRow == 6) || (!isWhite && startRow == 1)))
-        validMoves = pattern.getValidPawnMoves(isFirstTurn);
+        // const isFirstTurn = (pieceId.includes('p') && ((isWhite && startRow == 6) || (!isWhite && startRow == 1)))
+        const isFirstTurn = !ch_movedPieces.get().includes(pieceId);
+        _validMoves = pattern.getValidPawnMoves(isFirstTurn);
     }
     else if(pieceId.includes('N')) {
-        validMoves = pattern.getValidKnightMoves();
+        _validMoves = pattern.getValidKnightMoves();
     }
     else if(pieceId.includes('B')) {
-        validMoves = pattern.getValidBishopMoves();
+        _validMoves = pattern.getValidBishopMoves();
     }
     else if(pieceId.includes('R')) {
-        validMoves = pattern.getValidRookMoves();
+        _validMoves = pattern.getValidRookMoves();
     }
     else if(pieceId.includes('Q')) {
-        validMoves = pattern.getValidQueenMoves();
+        _validMoves = pattern.getValidQueenMoves();
     }
     else if(pieceId.includes('K')) {
-        validMoves = pattern.getValidKingMoves();
+        const isFirstTurn = !ch_movedPieces.get().includes(pieceId);
+        _validMoves = pattern.getValidKingMoves(isFirstTurn);
     }
     else {
         console.log("Error: invalid piece type");
     }
 
-    return validMoves;
+    return _validMoves;
 }
 
 //function to only let player move their piece on their turn

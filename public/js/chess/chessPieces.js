@@ -3,8 +3,14 @@ const Pattern = function(board, isWhite, startRow, startCol) {
     startRow = parseInt(startRow);
     startCol = parseInt(startCol);
 
+    //need to add
+    //en passant
+    //castling
+    //stalemate
+    //checkmate
+
     this.getValidPawnMoves = function(isFirstTurn) {
-        validMoves = []
+        pawnValidMoves = []
         let distance = (isFirstTurn) ? 2 : 1; //set the distance it can move based on if it's its first turn
         
         //moving
@@ -12,7 +18,7 @@ const Pattern = function(board, isWhite, startRow, startCol) {
             let checkRow = startRow + parseInt((isWhite) ? -i : i);
             if(checkRow >= 0 && checkRow <= 7) { //check if on board
                 if(board[checkRow][startCol] == ' ') {
-                    validMoves.push(checkRow + "-" + startCol);
+                    pawnValidMoves.push(checkRow + "-" + startCol);
                 }
                 else {
                     break;
@@ -31,7 +37,7 @@ const Pattern = function(board, isWhite, startRow, startCol) {
                 let oppColour = (board[checkRow][checkCol].includes(("w"))) ? "White" : "Black";
                 //if piece in place and its not our colour
                 if(board[checkRow][checkCol] != ' ' && ourColour != oppColour) {
-                    validMoves.push(checkRow + "-" + checkCol);
+                    pawnValidMoves.push(checkRow + "-" + checkCol);
                 }
             }
 
@@ -41,49 +47,49 @@ const Pattern = function(board, isWhite, startRow, startCol) {
                 let oppColour = (board[checkRow][checkCol].includes(("w"))) ? "White" : "Black";
                 //if piece in place and its not our colour
                 if(board[checkRow][checkCol] != ' '  && ourColour != oppColour) {
-                    validMoves.push(checkRow + "-" + checkCol);
+                    pawnValidMoves.push(checkRow + "-" + checkCol);
                 }
             }
         }
         
-        return validMoves;
+        return pawnValidMoves;
     }
 
     this.getValidRookMoves = function() {
-        validMoves = []
+        rookValidMoves = []
 
         deltas = [[-1, 0], [1, 0], [0, -1], [0, 1]]
         for (let i = 0; i < deltas.length; i++) {
-            addValidLineMoves(board, startRow, startCol, deltas[i][0], deltas[i][1], validMoves);
+            addValidLineMoves(board, startRow, startCol, deltas[i][0], deltas[i][1], rookValidMoves);
         }
 
-        return validMoves;
+        return rookValidMoves;
     }
 
     this.getValidBishopMoves = function() {
-        validMoves = []
+        bishopValidMoves = []
 
         deltas = [[-1, -1], [1, -1], [-1, 1], [1, 1]]
         for (let i = 0; i < deltas.length; i++) {
-            addValidLineMoves(board, startRow, startCol, deltas[i][0], deltas[i][1], validMoves);
+            addValidLineMoves(board, startRow, startCol, deltas[i][0], deltas[i][1], bishopValidMoves);
         }
 
-        return validMoves;
+        return bishopValidMoves;
     }
 
     this.getValidQueenMoves = function() {
-        validMoves = []
+        queenValidMoves = []
 
         deltas = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, -1], [-1, 1], [1, 1]]
         for (let i = 0; i < deltas.length; i++) {
-            addValidLineMoves(board, startRow, startCol, deltas[i][0], deltas[i][1], validMoves);
+            addValidLineMoves(board, startRow, startCol, deltas[i][0], deltas[i][1], queenValidMoves);
         }
 
-        return validMoves;
+        return queenValidMoves;
     }
 
     this.getValidKnightMoves = function() {
-        validMoves = []
+        knightValidMoves = []
         const ourColour = (board[startRow][startCol].includes(("w"))) ? "White" : "Black";
         
         deltas = [[-2, 1], [-1, 2], [1, 2], [2, 1], [2, -1], [1, -2], [-1, -2], [-2, -1]]
@@ -95,22 +101,22 @@ const Pattern = function(board, isWhite, startRow, startCol) {
                 const oppColour = (board[checkRow][checkCol].includes(("w"))) ? "White" : "Black";
                 if (board[checkRow][checkCol] == ' ') {
                     //moving
-                    validMoves.push(checkRow + "-" + checkCol);
+                    knightValidMoves.push(checkRow + "-" + checkCol);
                 }
                 else {
                     //capturing
                     if(ourColour != oppColour) {
-                        validMoves.push(checkRow + "-" + checkCol);
+                        knightValidMoves.push(checkRow + "-" + checkCol);
                     }
                 }
             }
         }
 
-        return validMoves;
+        return knightValidMoves;
     }
 
-    this.getValidKingMoves = function() {
-        validMoves = []
+    this.getValidKingMoves = function(isFirstTurn) {
+        kingValidMoves = []
         const ourColour = (board[startRow][startCol].includes(("w"))) ? "White" : "Black";
         
         deltas = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, -1], [-1, 1], [1, 1]]
@@ -122,18 +128,59 @@ const Pattern = function(board, isWhite, startRow, startCol) {
                 const oppColour = (board[checkRow][checkCol].includes(("w"))) ? "White" : "Black";
                 if (board[checkRow][checkCol] == ' ') {
                     //moving
-                    validMoves.push(checkRow + "-" + checkCol);
+                    kingValidMoves.push(checkRow + "-" + checkCol);
                 }
                 else {
                     //capturing
                     if(ourColour != oppColour) {
-                        validMoves.push(checkRow + "-" + checkCol);
+                        kingValidMoves.push(checkRow + "-" + checkCol);
                     }
                 }
             }
         }
 
-        return validMoves;
+        //castling
+        //if king hasnt moved
+        if(isFirstTurn) {
+            const row = (ourColour === "White") ? 7 : 0;
+
+            //queenside
+            const isRookNotMovedQ = (ourColour === "White") ? !ch_movedPieces.get().includes('wR0') : !ch_movedPieces.get().includes('bR0');
+            const spacesFreeQ = (board[row][1] == ' ' && board[row][2] == ' ' && board[row][3] == ' ');
+
+            if (isRookNotMovedQ && spacesFreeQ) {
+                // check no one is threatening these squares
+                underThreatTiles = getUnderThreatTiles(board, ourColour);
+              
+                const threat1 = `${row}-1`;
+                const threat2 = `${row}-2`;
+                const threat3 = `${row}-3`;
+              
+                if (!underThreatTiles.includes(threat1) && !underThreatTiles.includes(threat2) && !underThreatTiles.includes(threat3)) {
+                    // castle
+                    console.log("can castle queenside");
+                }
+            }
+
+            //kingside
+            const isRookNotMovedK = (ourColour === "White") ? !ch_movedPieces.get().includes('wR1') : !ch_movedPieces.get().includes('bR1');
+            const spacesFreeK = (board[row][5] == ' ' && board[row][6] == ' ');
+
+            if (isRookNotMovedK && spacesFreeK) {
+                // check no one is threatening these squares
+                underThreatTiles = getUnderThreatTiles(board, ourColour);
+              
+                const threat1 = `${row}-5`;
+                const threat2 = `${row}-6`;
+              
+                if (!underThreatTiles.includes(threat1) && !underThreatTiles.includes(threat2)) {
+                    // castle
+                    console.log("can castle kingside");
+                }
+            }
+        }
+
+        return kingValidMoves;
     }
 };
 
@@ -160,6 +207,23 @@ function addValidLineMoves(board, startRow, startCol, rowDelta, colDelta, validM
             break;
         }
     }
+}
+
+//function to get a list of all tiles that are under threat
+function getUnderThreatTiles(board, ourColour) {
+    tiles = []
+
+    const colourCheck = (ourColour == "White") ? 'w' : 'b';
+
+    for (let r = 0; r < ch_ROWS; r++) {
+        for (let c = 0; c < ch_COLUMNS; c++) {
+            if(!board[r][c].includes(colourCheck) && !board[r][c].includes('K') && board[r][c] !== ' ') {
+                tiles = tiles.concat(getValidMoves(board, r, c));
+            }
+        }
+    }
+
+    return tiles;
 }
 
 //#region oop test
