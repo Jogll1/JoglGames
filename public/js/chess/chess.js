@@ -103,7 +103,7 @@ $(document).ready(function() {
                 if(ch_selectedTile.getState() != "")
                 {
                     //if empty, move selected piece to this square
-                    let pieceToMove = $("#" + ch_selectedTile.getState()).children(0);
+                    const pieceToMove = $("#" + ch_selectedTile.getState()).children(0);
 
                     //only move piece if colour matches whos turn it is
                     if(isMyTurn(pieceToMove.attr("id"))) {
@@ -338,6 +338,39 @@ function movePiece(pieceToMove, tileToMoveTo) {
             $('.validTile').remove();
             $('.validTakeTile').remove();
 
+            //#region Castling
+            //check if castling
+            const ourColour = (pieceId.includes('w')) ? "White" : "Black";
+            const row = (ourColour === "White") ? 7 : 0;
+            if(canCastle(pieceId)) {
+                if(id.substring(2) == `${row}-2` || id.substring(2) == `${row}-0`) {
+                    //queenside
+                    id = `SQ${row}-2`;
+                    coords[0] = row;
+                    coords[1] = 2;
+                    tileToMoveTo = $('#' + id);
+
+                    //move rook
+                    const rookPiece = $(`#SQ${row}-0`).children(0);
+                    const rookTileToMoveTo = $(`#SQ${row}-3`)
+                    moveRookForCastling(rookPiece, rookTileToMoveTo)
+                }
+                else if(id.substring(2) == `${row}-6` || id.substring(2) == `${row}-7`) {
+                    //kngside
+                    id = `SQ${row}-6`;
+                    coords[0] = row;
+                    coords[1] = 6;
+                    tileToMoveTo = $('#' + id);
+
+                    //move rook
+                    const rookPiece = $(`#SQ${row}-7`).children(0);
+                    const rookTileToMoveTo = $(`#SQ${row}-5`)
+                    moveRookForCastling(rookPiece, rookTileToMoveTo)
+                }
+            }
+            //#endregion
+
+            //update board
             ch_board.updateBoard(updateBoardArray(board, pieceId, coords[0], coords[1]));
 
             //delete tile's children
@@ -469,5 +502,45 @@ function isMyTurn(pieceId) {
     }
     else {
         return false;
+    }
+}
+
+//function to check if we can castle
+function canCastle(pieceId) {
+    // const ourColour = (pieceId.includes('w')) ? "White" : "Black";
+    // const row = (ourColour === "White") ? 7 : 0;
+    const isKing = (pieceId.includes('K')) ? true : false;
+    const pieceMoved = ch_movedPieces.get().includes(pieceId)
+
+    return isKing && !pieceMoved
+}
+
+//function to move the rook when castling
+function moveRookForCastling(pieceToMove, tileToMoveTo) {
+    //get piece original coords
+    let originalId = pieceToMove.parent().attr("id");
+    let originalCoords = originalId.substring(2).split("-");
+
+    //get coords of tile trying to move to
+    let id = tileToMoveTo.attr("id");
+    let coords = id.substring(2).split("-");
+
+    //update board
+    //get the piece id
+    let board = ch_board.getBoard();
+    let pieceId = board[originalCoords[0]][originalCoords[1]]; //wp0 or bN1 etc
+
+    //update board
+    ch_board.updateBoard(updateBoardArray(board, pieceId, coords[0], coords[1]));
+
+    //delete tile's children
+    $("#" + id).empty();
+
+    //append child to div
+    tileToMoveTo.append(pieceToMove);
+
+    //add pieces id to movedPieces if haven't moved before
+    if(!ch_movedPieces.get().includes(pieceId)) {
+        ch_movedPieces.add(pieceId);
     }
 }

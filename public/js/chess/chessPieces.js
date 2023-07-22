@@ -158,7 +158,8 @@ const Pattern = function(board, isWhite, startRow, startCol) {
               
                 if (!underThreatTiles.includes(threat1) && !underThreatTiles.includes(threat2) && !underThreatTiles.includes(threat3)) {
                     // castle
-                    console.log("can castle queenside");
+                    kingValidMoves.push(row + "-2"); //place king moves to
+                    kingValidMoves.push(row + "-0"); //option to capture rook instead
                 }
             }
 
@@ -175,7 +176,8 @@ const Pattern = function(board, isWhite, startRow, startCol) {
               
                 if (!underThreatTiles.includes(threat1) && !underThreatTiles.includes(threat2)) {
                     // castle
-                    console.log("can castle kingside");
+                    kingValidMoves.push(row + "-6"); //place king moves to
+                    kingValidMoves.push(row + "-7"); //option to capture rook instead
                 }
             }
         }
