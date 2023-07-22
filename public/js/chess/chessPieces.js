@@ -5,7 +5,6 @@ const Pattern = function(board, isWhite, startRow, startCol) {
 
     //need to add
     //en passant
-    //castling
     //stalemate
     //checkmate
 
@@ -27,14 +26,14 @@ const Pattern = function(board, isWhite, startRow, startCol) {
         }
 
         //capturing
-        let ourColour = (board[startRow][startCol].includes(("w"))) ? "White" : "Black";
+        let ourColour = (board[startRow][startCol].includes('w')) ? "White" : "Black";
 
         let checkRow = startRow + parseInt((isWhite) ? -1 : 1)
         if(checkRow >= 0 && checkRow <= 7) {
             //right
             let checkCol = startCol + 1;
             if(checkCol <= 7) {
-                let oppColour = (board[checkRow][checkCol].includes(("w"))) ? "White" : "Black";
+                let oppColour = (board[checkRow][checkCol].includes('w')) ? "White" : "Black";
                 //if piece in place and its not our colour
                 if(board[checkRow][checkCol] != ' ' && ourColour != oppColour) {
                     pawnValidMoves.push(checkRow + "-" + checkCol);
@@ -44,10 +43,36 @@ const Pattern = function(board, isWhite, startRow, startCol) {
             //left
             checkCol = startCol - 1;
             if(checkCol >= 0) {
-                let oppColour = (board[checkRow][checkCol].includes(("w"))) ? "White" : "Black";
+                let oppColour = (board[checkRow][checkCol].includes('w')) ? "White" : "Black";
                 //if piece in place and its not our colour
                 if(board[checkRow][checkCol] != ' '  && ourColour != oppColour) {
                     pawnValidMoves.push(checkRow + "-" + checkCol);
+                }
+            }
+        }
+
+        //en passant
+        //if last piece in ch_movedPieces is a pawn and its only in there once
+        //this pawn needs be next to that pawn
+        deltas = [-1, 1];
+        for (let i = 0; i < deltas.length; i++) {
+            let checkCol = startCol + deltas[i];
+            if(checkCol >= 0 && checkCol <= 7) {
+                const oppColour = (board[startRow][checkCol].includes('w')) ? "White" : "Black";
+                if(oppColour != ourColour && board[startRow][checkCol].includes('p')) {
+                    //check the pawn we are checking has only moved once
+                    instances = 0
+                    for (let j = 0; j < ch_movedPieces.get().length; j++) {
+                        if(ch_movedPieces.get()[j] == board[startRow][checkCol]) {
+                            instances += 1;
+                        }
+                    }
+
+                    //if the pawn next to this pawn is in moved pieces only once and is at the end 
+                    if(instances == 1 && ch_movedPieces.get()[ch_movedPieces.get().length - 1] == board[startRow][checkCol]) {
+                        //allow en passant
+                        console.log("google");
+                    }
                 }
             }
         }

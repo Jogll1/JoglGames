@@ -391,10 +391,8 @@ function movePiece(pieceToMove, tileToMoveTo) {
                 tileToMoveTo.addClass('darkSelected');
             }
 
-            //add pieces id to movedPieces if haven't moved before
-            if(!ch_movedPieces.get().includes(pieceId)) {
-                ch_movedPieces.add(pieceId);
-            }
+            //add pieces id to movedPieces
+            ch_movedPieces.add(pieceId);
 
             //alternate turn
             ch_isWhiteTurn.swapState()
@@ -539,8 +537,6 @@ function moveRookForCastling(pieceToMove, tileToMoveTo) {
     //append child to div
     tileToMoveTo.append(pieceToMove);
 
-    //add pieces id to movedPieces if haven't moved before
-    if(!ch_movedPieces.get().includes(pieceId)) {
-        ch_movedPieces.add(pieceId);
-    }
+    //add pieces id to movedPieces
+    ch_movedPieces.add(pieceId);
 }
