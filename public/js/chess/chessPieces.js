@@ -3,6 +3,8 @@ const Pattern = function(board, isWhite, startRow, startCol) {
     startRow = parseInt(startRow);
     startCol = parseInt(startCol);
 
+    const ourColour = (board[startRow][startCol].includes('w')) ? "White" : "Black";
+
     //need to add
     //en passant
     //stalemate
@@ -26,8 +28,6 @@ const Pattern = function(board, isWhite, startRow, startCol) {
         }
 
         //capturing
-        let ourColour = (board[startRow][startCol].includes('w')) ? "White" : "Black";
-
         let checkRow = startRow + parseInt((isWhite) ? -1 : 1)
         if(checkRow >= 0 && checkRow <= 7) {
             //right
@@ -71,7 +71,8 @@ const Pattern = function(board, isWhite, startRow, startCol) {
                     //if the pawn next to this pawn is in moved pieces only once and is at the end 
                     if(instances == 1 && ch_movedPieces.get()[ch_movedPieces.get().length - 1] == board[startRow][checkCol]) {
                         //allow en passant
-                        console.log("google");
+                        const takeRow = parseInt(startRow + ((ourColour == "White") ? -1 : 1));
+                        pawnValidMoves.push(takeRow + "-" + checkCol);
                     }
                 }
             }
@@ -115,7 +116,6 @@ const Pattern = function(board, isWhite, startRow, startCol) {
 
     this.getValidKnightMoves = function() {
         knightValidMoves = []
-        const ourColour = (board[startRow][startCol].includes(("w"))) ? "White" : "Black";
         
         deltas = [[-2, 1], [-1, 2], [1, 2], [2, 1], [2, -1], [1, -2], [-1, -2], [-2, -1]]
         for (let i = 0; i < deltas.length; i++) {
@@ -142,8 +142,7 @@ const Pattern = function(board, isWhite, startRow, startCol) {
 
     this.getValidKingMoves = function(isFirstTurn) {
         kingValidMoves = []
-        const ourColour = (board[startRow][startCol].includes(("w"))) ? "White" : "Black";
-        
+
         deltas = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, -1], [-1, 1], [1, 1]]
         for (let i = 0; i < deltas.length; i++) {
             let checkRow = startRow + deltas[i][0];

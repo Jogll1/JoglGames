@@ -338,35 +338,50 @@ function movePiece(pieceToMove, tileToMoveTo) {
             $('.validTile').remove();
             $('.validTakeTile').remove();
 
+            const ourColour = (pieceId.includes('w')) ? "White" : "Black";
+
             //#region Castling
             //check if castling
-            const ourColour = (pieceId.includes('w')) ? "White" : "Black";
-            const row = (ourColour === "White") ? 7 : 0;
+            const kingRow = (ourColour === "White") ? 7 : 0;
             if(canCastle(pieceId)) {
-                if(id.substring(2) == `${row}-2` || id.substring(2) == `${row}-0`) {
+                if(id.substring(2) == `${kingRow}-2` || id.substring(2) == `${kingRow}-0`) {
                     //queenside
-                    id = `SQ${row}-2`;
-                    coords[0] = row;
+                    id = `SQ${kingRow}-2`;
+                    coords[0] = kingRow;
                     coords[1] = 2;
                     tileToMoveTo = $('#' + id);
 
                     //move rook
-                    const rookPiece = $(`#SQ${row}-0`).children(0);
-                    const rookTileToMoveTo = $(`#SQ${row}-3`)
+                    const rookPiece = $(`#SQ${kingRow}-0`).children(0);
+                    const rookTileToMoveTo = $(`#SQ${kingRow}-3`)
                     moveRookForCastling(rookPiece, rookTileToMoveTo)
                 }
-                else if(id.substring(2) == `${row}-6` || id.substring(2) == `${row}-7`) {
+                else if(id.substring(2) == `${kingRow}-6` || id.substring(2) == `${kingRow}-7`) {
                     //kngside
-                    id = `SQ${row}-6`;
-                    coords[0] = row;
+                    id = `SQ${kingRow}-6`;
+                    coords[0] = kingRow;
                     coords[1] = 6;
                     tileToMoveTo = $('#' + id);
 
                     //move rook
-                    const rookPiece = $(`#SQ${row}-7`).children(0);
-                    const rookTileToMoveTo = $(`#SQ${row}-5`)
+                    const rookPiece = $(`#SQ${kingRow}-7`).children(0);
+                    const rookTileToMoveTo = $(`#SQ${kingRow}-5`)
                     moveRookForCastling(rookPiece, rookTileToMoveTo)
                 }
+            }
+            //#endregion
+
+            //#region En passant
+            if(isEnPassanting(board, pieceId, coords)[0]) {
+                //capture the pawn
+                const coordsToTake = isEnPassanting(board, pieceId, coords)[1]
+                $(`#SQ${coordsToTake}`).empty();
+                //capture pawn and update the board
+                coordsToUpdate = coordsToTake.split('-');
+                const index = findIndex2DArray(board, board[coordsToUpdate[0]][coordsToUpdate[1]]);
+                let newBoard = board;
+                newBoard[index.row][index.column] = ' ';
+                ch_board.updateBoard(newBoard);
             }
             //#endregion
 
@@ -407,7 +422,7 @@ function movePiece(pieceToMove, tileToMoveTo) {
 
 //function to update the board array
 function updateBoardArray(board, id, endRow, endCol){
-    let index = findIndex2DArray(board, id);
+    const index = findIndex2DArray(board, id);
     let newBoard = board;
 
     newBoard[index.row][index.column] = " ";
@@ -419,7 +434,7 @@ function updateBoardArray(board, id, endRow, endCol){
 //function to check all the valid moves of a given piece and highlights them when selected
 function showValidMoves(board, tile) {
     //get piece original coords (tile should be a reference to a square tile)
-    let originalId = tile.attr("id");
+    const originalId = tile.attr("id");
     let originalCoords = originalId.substring(2).split("-");
 
     //get the valid moves
@@ -505,12 +520,47 @@ function isMyTurn(pieceId) {
 
 //function to check if we can castle
 function canCastle(pieceId) {
-    // const ourColour = (pieceId.includes('w')) ? "White" : "Black";
-    // const row = (ourColour === "White") ? 7 : 0;
     const isKing = (pieceId.includes('K')) ? true : false;
     const pieceMoved = ch_movedPieces.get().includes(pieceId)
 
     return isKing && !pieceMoved
+}
+
+//function to check if we are trying to en passant
+function isEnPassanting(board, pieceId, coords) {
+    const isPawn = (pieceId.includes('p')) ? true : false;
+    const ourColour = (pieceId.includes('w')) ? "White" : "Black";
+    const colourDelta = parseInt((ourColour == "White") ? 1 : -1);
+    const rowCheck = parseInt(coords[0]) + colourDelta;
+
+    if(rowCheck >= 0 && rowCheck <= 7) {
+        const pieceToTake = board[rowCheck][coords[1]];
+
+        if(isPawn && pieceToTake != ' ') {
+            if(pieceToTake.includes('p')) 
+            {
+                const oppColour = (pieceToTake.includes('w')) ? "White" : "Black";
+                if(oppColour != ourColour) {
+                    //check the pawn we are checking has only moved once
+                    instances = 0
+                    for (let j = 0; j < ch_movedPieces.get().length; j++) {
+                        if(ch_movedPieces.get()[j] == pieceToTake) {
+                            instances += 1;
+                        }
+                    }
+    
+                    //if the pawn next to this pawn is in moved pieces only once and is at the end 
+                    if(instances == 1 && ch_movedPieces.get()[ch_movedPieces.get().length - 1] == pieceToTake) {
+                        //allow en passant
+                        //return true and coords of pawn to capture
+                        return [true, `${rowCheck}-${coords[1]}`];
+                    }
+                }
+            }
+        }
+    }
+
+    return [false, "nan"];
 }
 
 //function to move the rook when castling
