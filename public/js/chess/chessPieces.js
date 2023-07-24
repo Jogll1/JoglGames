@@ -5,8 +5,10 @@ const Pattern = function(board, isWhite, startRow, startCol) {
 
     const ourColour = (board[startRow][startCol].includes('w')) ? "White" : "Black";
 
+    // const kingUnderThreat = false;
+
     //need to add
-    //pawn promotion
+    //check
     //stalemate
     //checkmate
 
@@ -72,7 +74,9 @@ const Pattern = function(board, isWhite, startRow, startCol) {
                     if(instances == 1 && ch_movedPieces.get()[ch_movedPieces.get().length - 1] == board[startRow][checkCol]) {
                         //allow en passant
                         const takeRow = parseInt(startRow + ((ourColour == "White") ? -1 : 1));
-                        pawnValidMoves.push(takeRow + "-" + checkCol);
+                        if(board[takeRow][checkCol] == ' ') {
+                            pawnValidMoves.push(takeRow + "-" + checkCol);
+                        }
                     }
                 }
             }
@@ -143,6 +147,11 @@ const Pattern = function(board, isWhite, startRow, startCol) {
     this.getValidKingMoves = function(isFirstTurn) {
         kingValidMoves = []
 
+        //get under threat tiles
+        const underThreatTiles = getUnderThreatTiles(board, ourColour);
+
+        // kingUnderThreat = underThreatTiles.includes(`${startRow}-${startCol}`);
+
         deltas = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, -1], [-1, 1], [1, 1]]
         for (let i = 0; i < deltas.length; i++) {
             let checkRow = startRow + deltas[i][0];
@@ -150,14 +159,16 @@ const Pattern = function(board, isWhite, startRow, startCol) {
 
             if(checkRow >= 0 && checkRow <= 7 && checkCol >= 0 && checkCol <= 7) {
                 const oppColour = (board[checkRow][checkCol].includes(("w"))) ? "White" : "Black";
-                if (board[checkRow][checkCol] == ' ') {
-                    //moving
-                    kingValidMoves.push(checkRow + "-" + checkCol);
-                }
-                else {
-                    //capturing
-                    if(ourColour != oppColour) {
+                if(!underThreatTiles.includes(`${checkRow}-${checkCol}`)) {
+                    if (board[checkRow][checkCol] == ' ') {
+                        //moving
                         kingValidMoves.push(checkRow + "-" + checkCol);
+                    }
+                    else {
+                        //capturing
+                        if(ourColour != oppColour) {
+                            kingValidMoves.push(checkRow + "-" + checkCol);
+                        }
                     }
                 }
             }
@@ -173,9 +184,6 @@ const Pattern = function(board, isWhite, startRow, startCol) {
             const spacesFreeQ = (board[row][1] == ' ' && board[row][2] == ' ' && board[row][3] == ' ');
 
             if (isRookNotMovedQ && spacesFreeQ) {
-                // check no one is threatening these squares
-                underThreatTiles = getUnderThreatTiles(board, ourColour);
-              
                 const threat1 = `${row}-1`;
                 const threat2 = `${row}-2`;
                 const threat3 = `${row}-3`;
@@ -192,9 +200,6 @@ const Pattern = function(board, isWhite, startRow, startCol) {
             const spacesFreeK = (board[row][5] == ' ' && board[row][6] == ' ');
 
             if (isRookNotMovedK && spacesFreeK) {
-                // check no one is threatening these squares
-                underThreatTiles = getUnderThreatTiles(board, ourColour);
-              
                 const threat1 = `${row}-5`;
                 const threat2 = `${row}-6`;
               
@@ -251,30 +256,3 @@ function getUnderThreatTiles(board, ourColour) {
 
     return tiles;
 }
-
-//#region oop test
-class Piece {
-    constructor(isWhite) {
-        this.isWhite = isWhite;
-    }
-
-    getColour() {
-        return (this.isWhite) ? "White" : "Black";
-    }
-
-    move() {
-        console.log("Move piece");
-    }
-}
-
-class Pawn extends Piece {
-    constructor(isWhite, isFirstTurn) {
-        super(isWhite);
-        this.isFirstTurn = isFirstTurn;
-    }
-
-    move() {
-        console.log((this.isFirstTurn) ? "First turn" : "Not first turn");
-    }
-}
-//#endregion

@@ -7,7 +7,7 @@ var ch_board = (function() {
 
     return {
         updateBoard : function(array) {
-            logArray(board);
+            // logArray(board);
             return board = array;
         },
 
@@ -541,7 +541,7 @@ function canCastle(pieceId) {
 
 //function to check if we are trying to en passant
 function isEnPassanting(board, pieceId, coords) {
-    const isPawn = (pieceId.includes('p')) ? true : false;
+    const isPawn = pieceId.includes('p');
     const ourColour = (pieceId.includes('w')) ? "White" : "Black";
     const colourDelta = parseInt((ourColour == "White") ? 1 : -1);
     const rowCheck = parseInt(coords[0]) + colourDelta;
@@ -606,8 +606,8 @@ function moveRookForCastling(pieceToMove, tileToMoveTo) {
 
 //function to promote a pawn
 function promotePiece(board, pieceId, coords) {
-    const isPawn = (pieceId.includes('p')) ? true : false;
-    const isWhite = (pieceId.includes('w')) ? true : false;
+    const isPawn = pieceId.includes('p');
+    const isWhite = pieceId.includes('w');
     const row = (isWhite) ? 0 : 7;
 
     if(isPawn) {
