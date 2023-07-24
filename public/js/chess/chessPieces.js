@@ -1,11 +1,18 @@
 //move patterns
-const Pattern = function(board, isWhite, startRow, startCol) {
+const Pattern = function(board, isWhite, startRow, startCol, runRecursively) {
     startRow = parseInt(startRow);
     startCol = parseInt(startCol);
 
     const ourColour = (board[startRow][startCol].includes('w')) ? "White" : "Black";
 
-    // const kingUnderThreat = false;
+    //get under threat tiles
+    let underThreatTiles = [];
+    if(runRecursively) {
+        underThreatTiles = getUnderThreatTiles(board, ourColour);
+    }
+
+    let kingUnderThreat = underThreatTiles.some(tile => board[tile.split('-')[0]][tile.split('-')[1]].includes('K'));
+    console.log(kingUnderThreat);
 
     //need to add
     //check
@@ -16,66 +23,69 @@ const Pattern = function(board, isWhite, startRow, startCol) {
         pawnValidMoves = []
         let distance = (isFirstTurn) ? 2 : 1; //set the distance it can move based on if it's its first turn
         
-        //moving
-        for (let i = 1; i < distance + 1; i++) {
-            let checkRow = startRow + parseInt((isWhite) ? -i : i);
-            if(checkRow >= 0 && checkRow <= 7) { //check if on board
-                if(board[checkRow][startCol] == ' ') {
-                    pawnValidMoves.push(checkRow + "-" + startCol);
-                }
-                else {
-                    break;
-                }
-            }
-        }
-
-        //capturing
-        let checkRow = startRow + parseInt((isWhite) ? -1 : 1)
-        if(checkRow >= 0 && checkRow <= 7) {
-            //right
-            let checkCol = startCol + 1;
-            if(checkCol <= 7) {
-                let oppColour = (board[checkRow][checkCol].includes('w')) ? "White" : "Black";
-                //if piece in place and its not our colour
-                if(board[checkRow][checkCol] != ' ' && ourColour != oppColour) {
-                    pawnValidMoves.push(checkRow + "-" + checkCol);
-                }
-            }
-
-            //left
-            checkCol = startCol - 1;
-            if(checkCol >= 0) {
-                let oppColour = (board[checkRow][checkCol].includes('w')) ? "White" : "Black";
-                //if piece in place and its not our colour
-                if(board[checkRow][checkCol] != ' '  && ourColour != oppColour) {
-                    pawnValidMoves.push(checkRow + "-" + checkCol);
-                }
-            }
-        }
-
-        //en passant
-        //if last piece in ch_movedPieces is a pawn and its only in there once
-        //this pawn needs be next to that pawn
-        deltas = [-1, 1];
-        for (let i = 0; i < deltas.length; i++) {
-            let checkCol = startCol + deltas[i];
-            if(checkCol >= 0 && checkCol <= 7) {
-                const oppColour = (board[startRow][checkCol].includes('w')) ? "White" : "Black";
-                if(oppColour != ourColour && board[startRow][checkCol].includes('p')) {
-                    //check the pawn we are checking has only moved once
-                    instances = 0
-                    for (let j = 0; j < ch_movedPieces.get().length; j++) {
-                        if(ch_movedPieces.get()[j] == board[startRow][checkCol]) {
-                            instances += 1;
-                        }
+        //only let this piece move if king isn't under threat
+        if(!kingUnderThreat) {
+            //moving
+            for (let i = 1; i < distance + 1; i++) {
+                let checkRow = startRow + parseInt((isWhite) ? -i : i);
+                if(checkRow >= 0 && checkRow <= 7) { //check if on board
+                    if(board[checkRow][startCol] == ' ') {
+                        pawnValidMoves.push(checkRow + "-" + startCol);
                     }
+                    else {
+                        break;
+                    }
+                }
+            }
 
-                    //if the pawn next to this pawn is in moved pieces only once and is at the end 
-                    if(instances == 1 && ch_movedPieces.get()[ch_movedPieces.get().length - 1] == board[startRow][checkCol]) {
-                        //allow en passant
-                        const takeRow = parseInt(startRow + ((ourColour == "White") ? -1 : 1));
-                        if(board[takeRow][checkCol] == ' ') {
-                            pawnValidMoves.push(takeRow + "-" + checkCol);
+            //capturing
+            let checkRow = startRow + parseInt((isWhite) ? -1 : 1)
+            if(checkRow >= 0 && checkRow <= 7) {
+                //right
+                let checkCol = startCol + 1;
+                if(checkCol <= 7) {
+                    let oppColour = (board[checkRow][checkCol].includes('w')) ? "White" : "Black";
+                    //if piece in place and its not our colour
+                    if(board[checkRow][checkCol] != ' ' && ourColour != oppColour) {
+                        pawnValidMoves.push(checkRow + "-" + checkCol);
+                    }
+                }
+
+                //left
+                checkCol = startCol - 1;
+                if(checkCol >= 0) {
+                    let oppColour = (board[checkRow][checkCol].includes('w')) ? "White" : "Black";
+                    //if piece in place and its not our colour
+                    if(board[checkRow][checkCol] != ' '  && ourColour != oppColour) {
+                        pawnValidMoves.push(checkRow + "-" + checkCol);
+                    }
+                }
+            }
+
+            //en passant
+            //if last piece in ch_movedPieces is a pawn and its only in there once
+            //this pawn needs be next to that pawn
+            deltas = [-1, 1];
+            for (let i = 0; i < deltas.length; i++) {
+                let checkCol = startCol + deltas[i];
+                if(checkCol >= 0 && checkCol <= 7) {
+                    const oppColour = (board[startRow][checkCol].includes('w')) ? "White" : "Black";
+                    if(oppColour != ourColour && board[startRow][checkCol].includes('p')) {
+                        //check the pawn we are checking has only moved once
+                        instances = 0
+                        for (let j = 0; j < ch_movedPieces.get().length; j++) {
+                            if(ch_movedPieces.get()[j] == board[startRow][checkCol]) {
+                                instances += 1;
+                            }
+                        }
+
+                        //if the pawn next to this pawn is in moved pieces only once and is at the end 
+                        if(instances == 1 && ch_movedPieces.get()[ch_movedPieces.get().length - 1] == board[startRow][checkCol]) {
+                            //allow en passant
+                            const takeRow = parseInt(startRow + ((ourColour == "White") ? -1 : 1));
+                            if(board[takeRow][checkCol] == ' ') {
+                                pawnValidMoves.push(takeRow + "-" + checkCol);
+                            }
                         }
                     }
                 }
@@ -88,9 +98,12 @@ const Pattern = function(board, isWhite, startRow, startCol) {
     this.getValidRookMoves = function() {
         rookValidMoves = []
 
-        deltas = [[-1, 0], [1, 0], [0, -1], [0, 1]]
-        for (let i = 0; i < deltas.length; i++) {
-            addValidLineMoves(board, startRow, startCol, deltas[i][0], deltas[i][1], rookValidMoves);
+        //only let this piece move if king isn't under threat
+        if(!kingUnderThreat) {
+            deltas = [[-1, 0], [1, 0], [0, -1], [0, 1]]
+            for (let i = 0; i < deltas.length; i++) {
+                addValidLineMoves(board, startRow, startCol, deltas[i][0], deltas[i][1], rookValidMoves);
+            }
         }
 
         return rookValidMoves;
@@ -99,9 +112,12 @@ const Pattern = function(board, isWhite, startRow, startCol) {
     this.getValidBishopMoves = function() {
         bishopValidMoves = []
 
-        deltas = [[-1, -1], [1, -1], [-1, 1], [1, 1]]
-        for (let i = 0; i < deltas.length; i++) {
-            addValidLineMoves(board, startRow, startCol, deltas[i][0], deltas[i][1], bishopValidMoves);
+        //only let this piece move if king isn't under threat
+        if(!kingUnderThreat) {
+            deltas = [[-1, -1], [1, -1], [-1, 1], [1, 1]]
+            for (let i = 0; i < deltas.length; i++) {
+                addValidLineMoves(board, startRow, startCol, deltas[i][0], deltas[i][1], bishopValidMoves);
+            }
         }
 
         return bishopValidMoves;
@@ -110,9 +126,12 @@ const Pattern = function(board, isWhite, startRow, startCol) {
     this.getValidQueenMoves = function() {
         queenValidMoves = []
 
-        deltas = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, -1], [-1, 1], [1, 1]]
-        for (let i = 0; i < deltas.length; i++) {
-            addValidLineMoves(board, startRow, startCol, deltas[i][0], deltas[i][1], queenValidMoves);
+        //only let this piece move if king isn't under threat
+        if(!kingUnderThreat) {
+            deltas = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, -1], [-1, 1], [1, 1]]
+            for (let i = 0; i < deltas.length; i++) {
+                addValidLineMoves(board, startRow, startCol, deltas[i][0], deltas[i][1], queenValidMoves);
+            }
         }
 
         return queenValidMoves;
@@ -121,21 +140,24 @@ const Pattern = function(board, isWhite, startRow, startCol) {
     this.getValidKnightMoves = function() {
         knightValidMoves = []
         
-        deltas = [[-2, 1], [-1, 2], [1, 2], [2, 1], [2, -1], [1, -2], [-1, -2], [-2, -1]]
-        for (let i = 0; i < deltas.length; i++) {
-            let checkRow = startRow + deltas[i][0];
-            let checkCol = startCol + deltas[i][1];
+        //only let this piece move if king isn't under threat
+        if(!kingUnderThreat) {
+            deltas = [[-2, 1], [-1, 2], [1, 2], [2, 1], [2, -1], [1, -2], [-1, -2], [-2, -1]]
+            for (let i = 0; i < deltas.length; i++) {
+                let checkRow = startRow + deltas[i][0];
+                let checkCol = startCol + deltas[i][1];
 
-            if(checkRow >= 0 && checkRow <= 7 && checkCol >= 0 && checkCol <= 7) {
-                const oppColour = (board[checkRow][checkCol].includes(("w"))) ? "White" : "Black";
-                if (board[checkRow][checkCol] == ' ') {
-                    //moving
-                    knightValidMoves.push(checkRow + "-" + checkCol);
-                }
-                else {
-                    //capturing
-                    if(ourColour != oppColour) {
+                if(checkRow >= 0 && checkRow <= 7 && checkCol >= 0 && checkCol <= 7) {
+                    const oppColour = (board[checkRow][checkCol].includes(("w"))) ? "White" : "Black";
+                    if (board[checkRow][checkCol] == ' ') {
+                        //moving
                         knightValidMoves.push(checkRow + "-" + checkCol);
+                    }
+                    else {
+                        //capturing
+                        if(ourColour != oppColour) {
+                            knightValidMoves.push(checkRow + "-" + checkCol);
+                        }
                     }
                 }
             }
@@ -146,11 +168,6 @@ const Pattern = function(board, isWhite, startRow, startCol) {
 
     this.getValidKingMoves = function(isFirstTurn) {
         kingValidMoves = []
-
-        //get under threat tiles
-        const underThreatTiles = getUnderThreatTiles(board, ourColour);
-
-        // kingUnderThreat = underThreatTiles.includes(`${startRow}-${startCol}`);
 
         deltas = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, -1], [-1, 1], [1, 1]]
         for (let i = 0; i < deltas.length; i++) {
@@ -248,8 +265,9 @@ function getUnderThreatTiles(board, ourColour) {
 
     for (let r = 0; r < ch_ROWS; r++) {
         for (let c = 0; c < ch_COLUMNS; c++) {
-            if(!board[r][c].includes(colourCheck) && !board[r][c].includes('K') && board[r][c] !== ' ') {
-                tiles = tiles.concat(getValidMoves(board, r, c));
+            // && !board[r][c].includes('K')
+            if(!board[r][c].includes(colourCheck) && board[r][c] !== ' ') {
+                tiles = tiles.concat(getValidMoves(board, r, c, false));
             }
         }
     }

@@ -338,7 +338,7 @@ function movePiece(pieceToMove, tileToMoveTo) {
     let board = ch_board.getBoard();
     let pieceId = board[originalCoords[0]][originalCoords[1]]; //wp0 or bN1 etc
 
-    const validMoves = getValidMoves(board, originalCoords[0], originalCoords[1]);
+    const validMoves = getValidMoves(board, originalCoords[0], originalCoords[1], true);
     
     //if piece trying to move to is in validmoves
     if(validMoves != null) {
@@ -451,7 +451,7 @@ function showValidMoves(board, tile) {
     let originalCoords = originalId.substring(2).split("-");
 
     //get the valid moves
-    const validMoves = getValidMoves(board, originalCoords[0], originalCoords[1]);
+    const validMoves = getValidMoves(board, originalCoords[0], originalCoords[1], true);
     
     if(validMoves != null) {
         for (let i = 0; i < validMoves.length; i++) {
@@ -480,18 +480,17 @@ function showValidMoves(board, tile) {
 }
 
 //function to get all valid moves based on the piece type
-function getValidMoves(board, startRow, startCol) {
+function getValidMoves(board, startRow, startCol, runRecursively) {
     //piece id should be like wp2
     _validMoves = []
 
     let pieceId = board[startRow][startCol]; //wp0 or bN1 etc
 
     const isWhite = pieceId.includes('w');
-    const pattern = new Pattern(board, isWhite, startRow, startCol);
+    const isFirstTurn = !ch_movedPieces.get().includes(pieceId);
+    const pattern = new Pattern(board, isWhite, startRow, startCol, runRecursively);
     
     if(pieceId.includes('p')) {
-        // const isFirstTurn = (pieceId.includes('p') && ((isWhite && startRow == 6) || (!isWhite && startRow == 1)))
-        const isFirstTurn = !ch_movedPieces.get().includes(pieceId);
         _validMoves = pattern.getValidPawnMoves(isFirstTurn);
     }
     else if(pieceId.includes('N')) {
@@ -507,7 +506,6 @@ function getValidMoves(board, startRow, startCol) {
         _validMoves = pattern.getValidQueenMoves();
     }
     else if(pieceId.includes('K')) {
-        const isFirstTurn = !ch_movedPieces.get().includes(pieceId);
         _validMoves = pattern.getValidKingMoves(isFirstTurn);
     }
     else {
