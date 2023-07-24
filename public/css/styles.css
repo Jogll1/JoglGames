@@ -18,6 +18,10 @@ a {
     -ms-user-select: none;
     user-select: none;
     -webkit-touch-callout: none;
+}
+
+/* Additional rule to prevent images with the 'noHighlightOrDrag' class from being draggable */
+img.noHighlightOrDrag {
     -webkit-user-drag: none;
     -khtml-user-drag: none;
     -moz-user-drag: none;

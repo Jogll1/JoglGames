@@ -7,6 +7,7 @@ var ch_board = (function() {
 
     return {
         updateBoard : function(array) {
+            logArray(board);
             return board = array;
         },
 
@@ -307,10 +308,10 @@ function createPiece(board, isWhite, type, notation, i, row, col) {
     //append the image to the container
     $('#SQ' + row + "-" + col).append(pieceContainer);
     $("#" + id).append(pieceImg);
+    pieceImg.addClass('noHighlightOrDrag');
 
     //set the piece in the board
-    console.log()
-    board[row][col] = notation + i;
+    board[row][col] = `${notation}${i}`;
     ch_board.updateBoard(board);
 }
 
@@ -389,10 +390,14 @@ function movePiece(pieceToMove, tileToMoveTo) {
             ch_board.updateBoard(updateBoardArray(board, pieceId, coords[0], coords[1]));
 
             //delete tile's children
-            $("#" + id).empty();
+            $(`#${id}`).empty();
 
             //append child to div
             tileToMoveTo.append(pieceToMove);
+
+            //#region Promotion
+            promotePiece(board, pieceId, coords);
+            //#endregion
 
             //deselect all previously selected tiles
             $('.squareTile').removeClass('lightSelected');
@@ -589,4 +594,36 @@ function moveRookForCastling(pieceToMove, tileToMoveTo) {
 
     //add pieces id to movedPieces
     ch_movedPieces.add(pieceId);
+}
+
+//function to promote a pawn
+function promotePiece(board, pieceId, coords) {
+    const isPawn = (pieceId.includes('p')) ? true : false;
+    const isWhite = (pieceId.includes('w')) ? true : false;
+    const row = (isWhite) ? 0 : 7;
+
+    if(isPawn) {
+        if(coords[0] == row) {
+            //promote to queen for now
+
+            //delete pawn
+            const tileId = `SQ${coords[0]}-${coords[1]}`;
+            $(`#${tileId}`).empty();
+
+            //create a queen in that position
+            const queenType = `${(isWhite) ? 'w' : 'b'}Q`;
+            let queenInt = 0;
+            //count how many queens already in the game
+            for (let r = 0; r < ch_ROWS; r++) {
+                for (let c = 0; c < ch_COLUMNS; c++) {
+                    if(board[r][c].includes(queenType)) {
+                        queenInt += 1;
+                    }
+                }
+            }
+
+            //create the piece which also updates board array
+            createPiece(ch_board.getBoard(), isWhite, "Queen", queenType, queenInt, coords[0], coords[1]);
+        }
+    }
 }

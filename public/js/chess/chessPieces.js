@@ -6,7 +6,7 @@ const Pattern = function(board, isWhite, startRow, startCol) {
     const ourColour = (board[startRow][startCol].includes('w')) ? "White" : "Black";
 
     //need to add
-    //en passant
+    //pawn promotion
     //stalemate
     //checkmate
 

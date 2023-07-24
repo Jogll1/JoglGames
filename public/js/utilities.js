@@ -21,7 +21,7 @@ function logArray(array) {
         for (let c = 0; c < array[r].length; c++) 
         {
             if(array[r][c] == " ") {
-                output = output + "0 "; //output a 0 representing an empty string (" ")
+                output = output + "000 "; //output a 0 representing an empty string (" ")
             }
             else {
                 output = output + array[r][c] + " ";
