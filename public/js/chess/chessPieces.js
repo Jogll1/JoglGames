@@ -162,16 +162,14 @@ const Pattern = function(board, isWhite, startRow, startCol, runRecursively) {
 
             if(checkRow >= 0 && checkRow <= 7 && checkCol >= 0 && checkCol <= 7) {
                 const oppColour = (board[checkRow][checkCol].includes(("w"))) ? "White" : "Black";
-                if(!underThreatTiles.includes(`${checkRow}-${checkCol}`)) {
-                    if (board[checkRow][checkCol] == ' ') {
-                        //moving
+                if (board[checkRow][checkCol] == ' ') {
+                    //moving
+                    kingValidMoves.push(checkRow + "-" + checkCol);
+                }
+                else {
+                    //capturing
+                    if(ourColour != oppColour) {
                         kingValidMoves.push(checkRow + "-" + checkCol);
-                    }
-                    else {
-                        //capturing
-                        if(ourColour != oppColour) {
-                            kingValidMoves.push(checkRow + "-" + checkCol);
-                        }
                     }
                 }
             }
@@ -214,7 +212,8 @@ const Pattern = function(board, isWhite, startRow, startCol, runRecursively) {
             }
         }
 
-        return kingValidMoves;
+        //get this pieces possible moves and make sure none of them put the king into check (or vice versa, only allow moves that break check)
+        return runRecursively ? movesThatDontCheck(board, kingValidMoves, startRow, startCol) : kingValidMoves;
     }
 };
 
@@ -269,7 +268,7 @@ function movesThatDontCheck(_board, _moves, _startRow, _startCol) {
     _startCol = parseInt(_startCol);
 
     const pieceId = _board[_startRow][_startCol];
-    const ourColour = (pieceId.includes('w')) ? "White" : "Black";
+    const ourColour = pieceId.includes('w') ? "White" : "Black";
 
     for (let i = 0; i < _moves.length; i++) {
         const values = _moves[i].split('-');
@@ -280,6 +279,16 @@ function movesThatDontCheck(_board, _moves, _startRow, _startCol) {
         const underThreatTiles = getUnderThreatTiles(boardCopy, ourColour);
 
         //if the coords referencing a king is in underThreatTiles at least once
+        // const kingUnderThreat = false;
+        // for (let j = 0; j < underThreatTiles.length; j++) {
+        //     const tile = underThreatTiles[j];
+        //     const checkPiece = boardCopy[tile.split('-')[0]][tile.split('-')[1]];
+        //     const oppColour = checkPiece.includes('w') ? "White" : "Black";
+
+        //     if(checkPiece.includes('K') && ourColour != oppColour) {
+        //         kingUnderThreat =  true;
+        //     }
+        // }
         const kingUnderThreat = underThreatTiles.some(tile => boardCopy[tile.split('-')[0]][tile.split('-')[1]].includes('K'));
 
         if(!kingUnderThreat) {
