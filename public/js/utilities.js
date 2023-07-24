@@ -31,4 +31,23 @@ function logArray(array) {
     }
     console.log(output);
 }
+
+//function to generate a copy of a 2d array
+function copy2DArray(originalArray) {
+    const numRows = originalArray.length;
+    const numCols = originalArray[0].length;
+  
+    const copiedArray = new Array(numRows);
+    for (let i = 0; i < numRows; i++) {
+        copiedArray[i] = new Array(numCols);
+    }
+  
+    for (let i = 0; i < numRows; i++) {
+        for (let j = 0; j < numCols; j++) {
+            copiedArray[i][j] = originalArray[i][j];
+        }
+    }
+  
+    return copiedArray;
+}
 //#endregion
