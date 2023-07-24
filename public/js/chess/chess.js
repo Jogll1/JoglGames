@@ -160,51 +160,8 @@ $(document).ready(function() {
         $(this).css("cursor", "grab");
     });
 
-    $(".pieceContainer").draggable({
-        start: function(event, ui) {
-            //check if our turn and we clicked our colour
-            if (isMyTurn($(this).attr("id"))) {                
-                //make dragged piece on top
-                $(this).css("z-index", 9999);
-            } else {
-                //disable dragging
-                return false;
-            }
-        },
-        drag: function() {
-            // highlight this tile whilst dragging just to stop that bug
-            let tile = $('#' + $(this).parent().attr("id"));
-            if(tile.hasClass('lightTile')) {
-                tile.addClass('lightSelected');
-            }
-            else if (tile.hasClass('darkTile')) {
-                tile.addClass('darkSelected');
-            }
-        },
-        stop: function() {
-            //if not dropped in the right place, revert back to original position
-            $(this).css({ top: 0, left: 0 });
-            $(this).css("z-index", 500);
-            $(this).css("transform", `translate(0px, 0px)`);
-
-            //reset mouse
-            $(this).css("cursor", "grab");
-        },
-
-        //contain the piece from being dragged outside the screen
-        containment: "#mainContainer",
-
-        //offset the object by half its width and height over the mouse
-        cursorAt: { top: 35.75, left: 33 }
-    });
-
-    $(".dropTile").droppable({
-        accept: ".pieceContainer",
-        greedy: true,
-        drop: function(event, ui) {
-            movePiece(ui.draggable, $(this));
-        }
-    });
+    //initialise drag and drop
+    initDragDrop();
 });
 
 //initialise the game by creating the board and the tiles
@@ -285,6 +242,55 @@ function setGame() {
     ch_isWhiteTurn.setState(true);
 }
 
+//function to initialise dragging and dropping logic on pieces
+function initDragDrop() {
+    $(".pieceContainer").draggable({
+        start: function(event, ui) {
+            //check if our turn and we clicked our colour
+            if (isMyTurn($(this).attr("id"))) {                
+                //make dragged piece on top
+                $(this).css("z-index", 9999);
+            } else {
+                //disable dragging
+                return false;
+            }
+        },
+        drag: function() {
+            // highlight this tile whilst dragging just to stop that bug
+            let tile = $('#' + $(this).parent().attr("id"));
+            if(tile.hasClass('lightTile')) {
+                tile.addClass('lightSelected');
+            }
+            else if (tile.hasClass('darkTile')) {
+                tile.addClass('darkSelected');
+            }
+        },
+        stop: function() {
+            //if not dropped in the right place, revert back to original position
+            $(this).css({ top: 0, left: 0 });
+            $(this).css("z-index", 500);
+            $(this).css("transform", `translate(0px, 0px)`);
+
+            //reset mouse
+            $(this).css("cursor", "grab");
+        },
+
+        //contain the piece from being dragged outside the screen
+        containment: "#mainContainer",
+
+        //offset the object by half its width and height over the mouse
+        cursorAt: { top: 35.75, left: 33 }
+    });
+
+    $(".dropTile").droppable({
+        accept: ".pieceContainer",
+        greedy: true,
+        drop: function(event, ui) {
+            movePiece(ui.draggable, $(this));
+        }
+    });
+}
+
 //function to create a piece on the board
 function createPiece(board, isWhite, type, notation, i, row, col) {
     //type has to be the same as the image file name
@@ -313,6 +319,8 @@ function createPiece(board, isWhite, type, notation, i, row, col) {
     //set the piece in the board
     board[row][col] = `${notation}${i}`;
     ch_board.updateBoard(board);
+
+    initDragDrop();
 }
 
 //function to move a piece to the correct square
