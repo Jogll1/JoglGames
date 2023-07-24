@@ -6,12 +6,9 @@ const Pattern = function(board, isWhite, startRow, startCol, runRecursively) {
     const ourColour = (board[startRow][startCol].includes('w')) ? "White" : "Black";
 
     //get under threat tiles
-    let underThreatTiles = [];
-    if(runRecursively) {
-        underThreatTiles = getUnderThreatTiles(board, ourColour);
-    }
+    const underThreatTiles = runRecursively ? getUnderThreatTiles(board, ourColour) : [];
 
-    let kingUnderThreat = underThreatTiles.some(tile => board[tile.split('-')[0]][tile.split('-')[1]].includes('K'));
+    const kingUnderThreat = underThreatTiles.some(tile => board[tile.split('-')[0]][tile.split('-')[1]].includes('K'));
 
     //need to add
     //check
@@ -88,13 +85,8 @@ const Pattern = function(board, isWhite, startRow, startCol, runRecursively) {
             }
         }
         
-        //only let this piece move normally if king isn't under threat and we can't break check with a move
-        if(!kingUnderThreat) {
-            return pawnValidMoves;
-        }
-        else {
-            return movesThatBreakCheck(board, pawnValidMoves, startRow, startCol)
-        }
+        //get this pieces possible moves and make sure none of them put the king into check (or vice versa, only allow moves that break check)
+        return runRecursively ? movesThatDontCheck(board, pawnValidMoves, startRow, startCol) : pawnValidMoves;
     }
 
     this.getValidRookMoves = function() {
@@ -105,13 +97,8 @@ const Pattern = function(board, isWhite, startRow, startCol, runRecursively) {
             addValidLineMoves(board, startRow, startCol, deltas[i][0], deltas[i][1], rookValidMoves);
         }
 
-        //only let this piece move normally if king isn't under threat and we can't break check with a move
-        if(!kingUnderThreat) {
-            return rookValidMoves;
-        }
-        else {
-            return movesThatBreakCheck(board, rookValidMoves, startRow, startCol)
-        }
+        //get this pieces possible moves and make sure none of them put the king into check (or vice versa, only allow moves that break check)
+        return runRecursively ? movesThatDontCheck(board, rookValidMoves, startRow, startCol) : rookValidMoves;
     }
 
     this.getValidBishopMoves = function() {
@@ -122,13 +109,8 @@ const Pattern = function(board, isWhite, startRow, startCol, runRecursively) {
             addValidLineMoves(board, startRow, startCol, deltas[i][0], deltas[i][1], bishopValidMoves);
         }
 
-        //only let this piece move normally if king isn't under threat and we can't break check with a move
-        if(!kingUnderThreat) {
-            return bishopValidMoves;
-        }
-        else {
-            return movesThatBreakCheck(board, bishopValidMoves, startRow, startCol)
-        }
+        //get this pieces possible moves and make sure none of them put the king into check (or vice versa, only allow moves that break check)
+        return runRecursively ? movesThatDontCheck(board, bishopValidMoves, startRow, startCol) : bishopValidMoves;
     }
 
     this.getValidQueenMoves = function() {
@@ -139,13 +121,8 @@ const Pattern = function(board, isWhite, startRow, startCol, runRecursively) {
             addValidLineMoves(board, startRow, startCol, deltas[i][0], deltas[i][1], queenValidMoves);
         }
 
-        //only let this piece move normally if king isn't under threat and we can't break check with a move
-        if(!kingUnderThreat) {
-            return queenValidMoves;
-        }
-        else {
-            return movesThatBreakCheck(board, queenValidMoves, startRow, startCol)
-        }
+        //get this pieces possible moves and make sure none of them put the king into check (or vice versa, only allow moves that break check)
+        return runRecursively ? movesThatDontCheck(board, queenValidMoves, startRow, startCol) : queenValidMoves;
     }
 
     this.getValidKnightMoves = function() {
@@ -171,13 +148,8 @@ const Pattern = function(board, isWhite, startRow, startCol, runRecursively) {
             }
         }
 
-        //only let this piece move normally if king isn't under threat and we can't break check with a move
-        if(!kingUnderThreat) {
-            return knightValidMoves;
-        }
-        else {
-            return movesThatBreakCheck(board, knightValidMoves, startRow, startCol)
-        }
+        //get this pieces possible moves and make sure none of them put the king into check (or vice versa, only allow moves that break check)
+        return runRecursively ? movesThatDontCheck(board, knightValidMoves, startRow, startCol) : knightValidMoves;
     }
 
     this.getValidKingMoves = function(_isFirstTurn) {
@@ -289,7 +261,7 @@ function getUnderThreatTiles(_board, _ourColour) {
 }
 
 //function to check if moving a piece will stop a check
-function movesThatBreakCheck(_board, _moves, _startRow, _startCol) {
+function movesThatDontCheck(_board, _moves, _startRow, _startCol) {
     //moves is an array of positions in the format 'r-c'
     //simulate a move on the board (so we can check if king is no longer in check)
     let breakMoves = []
@@ -307,7 +279,8 @@ function movesThatBreakCheck(_board, _moves, _startRow, _startCol) {
 
         const underThreatTiles = getUnderThreatTiles(boardCopy, ourColour);
 
-        let kingUnderThreat = underThreatTiles.some(tile => boardCopy[tile.split('-')[0]][tile.split('-')[1]].includes('K'));
+        //if the coords referencing a king is in underThreatTiles at least once
+        const kingUnderThreat = underThreatTiles.some(tile => boardCopy[tile.split('-')[0]][tile.split('-')[1]].includes('K'));
 
         if(!kingUnderThreat) {
             breakMoves.push(_moves[i]);
