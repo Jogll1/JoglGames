@@ -2,6 +2,20 @@ const ch_ROWS = 8;
 const ch_COLUMNS = 8;
 
 //#region globals
+var ch_gameStarted = (function(){ 
+    var gameStarted = false; 
+
+    return { 
+        setState : function(bToSet) {
+            return gameStarted = bToSet;
+        },
+
+        getState : function() {
+            return gameStarted;
+        }
+    }
+})();
+
 var ch_board = (function() {
     var board = [];
 
@@ -69,6 +83,50 @@ var ch_movedPieces = (function() {
 $(document).ready(function() {
     setGame();
 
+    //#region Menu functions
+    $('#playRobotButton').click(function() {
+        $('.menuBackground').hide();
+        $('.friendOrAIMenu').hide();
+
+        // setUpGame(true, 'Player1');
+    });
+
+    $('#playFriendButton').click(function() {
+        $('.onlinePlayMenu').show();
+        $('.friendOrAIMenu').hide();
+    });
+
+    //play online menu
+    $('#onlinePlayMenuForm').submit(function(e) {
+        e.preventDefault(); //prevent form submission
+
+        let username = $('#usernameInput').val();
+        let roomName = $('#roomNameInput').val();
+
+        //if both input fields are empty, display an error
+        if (username.trim() === '' || roomName.trim() === '') {
+            e.preventDefault(); //prevent form submission
+            //display an error message
+            alert('Please fill in both input fields');
+        }
+        else {
+            //connect to socket - or at least attempt to
+            // connectToSocket(roomName, username);
+        }
+
+        //reset input fields
+        $('#usernameInput').val('');
+        $('#roomNameInput').val('');
+    });
+
+    $('#homeButton').click(function() {
+        window.location.href = './index.html';
+    });
+    //#endregion
+
+    //#region Tile functions
+    if(!ch_gameStarted.getState()) return;
+    
     $('.squareTile').mousedown(function() {
         //get the squaretile's id
         let id = $(this).attr("id"); 
@@ -162,6 +220,7 @@ $(document).ready(function() {
 
     //initialise drag and drop
     initDragDrop();
+    //#endregion
 });
 
 //initialise the game by creating the board and the tiles
@@ -247,7 +306,7 @@ function initDragDrop() {
     $(".pieceContainer").draggable({
         start: function(event, ui) {
             //check if our turn and we clicked our colour
-            if (isMyTurn($(this).attr("id"))) {                
+            if (isMyTurn($(this).attr("id")) && ch_gameStarted.getState()) {                
                 //make dragged piece on top
                 $(this).css("z-index", 9999);
             } else {
@@ -518,7 +577,7 @@ function getValidMoves(board, startRow, startCol, runRecursively) {
 //function to only let player move their piece on their turn
 function isMyTurn(pieceId) {
     //get piece colour
-    let colour = (pieceId.includes(("White"))) ? "White" : "Black";
+    const colour = (pieceId.includes(("White"))) ? "White" : "Black";
     
     //check if our turn
     if(colour == "White" && ch_isWhiteTurn.getState() || colour == "Black" && !ch_isWhiteTurn.getState()) {

@@ -12,6 +12,7 @@ a {
     text-decoration: none;
 }
 
+/*#region No highlight or drag */
 .noHighlightOrDrag {
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -27,8 +28,9 @@ img.noHighlightOrDrag {
     -moz-user-drag: none;
     -o-user-drag: none;
 }
+/* #endregion */
 
-/* #region TopNav */
+/*#region TopNav */
 .topnav {
     background-color: #333333;
     overflow: hidden;
@@ -197,7 +199,7 @@ transform: translate(0, -11px) rotate(45deg);
 
     position: absolute;
 
-    opacity: 25%;
+    opacity: 40%;
     background-color: #c1c1c1;
 }
 

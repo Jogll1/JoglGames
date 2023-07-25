@@ -29,6 +29,26 @@
         </div>
     </div>
 
+    <!-- Play Robot or Friend Menu -->
+    <div class="menuBackground"></div>
+    <div class="friendOrAIMenu">
+        <h2>Play Chess</h2>
+        <button id="playFriendButton" class="playButton">Play friend</button>
+        <button id="playRobotButton" class="playButton">Play robot</button>
+    </div>
+
+    <!-- Play Friend Settings -->
+    <div class="onlinePlayMenu">
+        <h2>Play Chess with a friend</h2>
+        <p id="infoText1">To play with a friend, enter a room name. If the room does not exist, it will be created. If the room exists, you will join it.</p>
+        <form id="onlinePlayMenuForm" action="">
+            <input type="text" id="usernameInput" name="username" class="onlineMenuInputs" placeholder="Your name"><br><br>
+            <input type="text" id="roomNameInput" name="roomName" class="onlineMenuInputs" placeholder="Room name"><br><br>
+            <button id="playOnlineButton" class="playButton">Play!</button>
+        </form>
+        <p id="infoText2">Other players can join your room by inputting its name.</p>
+    </div>
+
     <!-- #region Header bar -->
     <!-- Home Icon -->
     <div class="homeIconContainer">

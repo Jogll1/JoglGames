@@ -16,7 +16,7 @@ c4_aiWorker.onmessage = function(event) {
 
 //#region globals
 //test for using global modules
-var c4_gameStarted = (function(){ //create a module
+var c4_gameStarted = (function() { //create a module
     var gameStarted = false; //create a variable inside the module (within scope)
 
     return { //return a fuction that sets the variable
@@ -58,7 +58,7 @@ var c4_isMyTurn = (function(){
     }
 })();
 
-var c4_isPlayingRobot = (function(){ //check if it is the first (human) player's go
+var c4_isPlayingRobot = (function() { //check if it is the first (human) player's go
     var isPlayingRobot = false; //create a variable inside the module (within scope)
 
     return { //return a fuction that sets the variable
@@ -72,7 +72,7 @@ var c4_isPlayingRobot = (function(){ //check if it is the first (human) player's
     }
 })();
 
-var c4_myPiece = (function(){ //check if it is the first (human) player's go
+var c4_myPiece = (function() { 
     var myPiece = "Y"; //create a variable inside the module (within scope)
 
     return { //return a fuction that sets the variable

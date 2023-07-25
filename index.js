@@ -20,7 +20,6 @@ app.get('/', (req, res) => {
 //#region Socket Server Side
 const rooms = {};
 
-//#region Connect 4
 //when a user connects
 io.on('connection', function(socket) {
     console.log('a user connected');
@@ -122,7 +121,6 @@ io.on('connection', function(socket) {
     });
     //#endregion
 });
-//#endregion
 //#endregion
 
 //open port 3000
