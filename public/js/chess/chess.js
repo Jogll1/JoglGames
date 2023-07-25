@@ -82,7 +82,7 @@ var ch_movedPieces = (function() {
 
 //when document loads up
 $(document).ready(function() {
-    setGame(true);
+    setGame();
 
     //#region Menu functions
     $('#playRobotButton').click(function() {
@@ -228,7 +228,7 @@ $(document).ready(function() {
 });
 
 //initialise the game by creating the board and the tiles
-function setGame(_whiteAtBottom) {
+function setGame() {
     //board will be a 2d array
     let board = [];
 
@@ -271,37 +271,37 @@ function setGame(_whiteAtBottom) {
     ch_board.updateBoard(board);
 
     //piece instantiation
-    const bC = _whiteAtBottom ? 'w' : 'b'; //bottom colour
-    const tC = _whiteAtBottom ? 'b' : 'w'; //top colour
+    // const bC = _whiteAtBottom ? 'w' : 'b'; //bottom colour
+    // const tC = _whiteAtBottom ? 'b' : 'w'; //top colour
 
     //#region White
     for (let i = 0; i < 8; i++) {
-        createPiece(ch_board.getBoard(), _whiteAtBottom, "Pawn", `${bC}p`,  i, 6, i);
+        createPiece(ch_board.getBoard(), true, "Pawn", `wp`,  i, 6, i);
     }
 
-    createPiece(ch_board.getBoard(), _whiteAtBottom, "Rook", `${bC}R`, 0, 7, 0);
-    createPiece(ch_board.getBoard(), _whiteAtBottom, "Rook", `${bC}R`, 1, 7, 7);
-    createPiece(ch_board.getBoard(), _whiteAtBottom, "Bishop", `${bC}B`, 0, 7, 2);
-    createPiece(ch_board.getBoard(), _whiteAtBottom, "Bishop", `${bC}B`, 1, 7, 5);
-    createPiece(ch_board.getBoard(), _whiteAtBottom, "Knight", `${bC}N`, 0, 7, 1);
-    createPiece(ch_board.getBoard(), _whiteAtBottom, "Knight", `${bC}N`, 1, 7, 6);
-    createPiece(ch_board.getBoard(), _whiteAtBottom, "Queen", `${bC}Q`, 0, 7, 3);
-    createPiece(ch_board.getBoard(), _whiteAtBottom, "King", `${bC}K`, 0, 7, 4);
+    createPiece(ch_board.getBoard(), true, "Rook", `wR`, 0, 7, 0);
+    createPiece(ch_board.getBoard(), true, "Rook", `wR`, 1, 7, 7);
+    createPiece(ch_board.getBoard(), true, "Bishop", `wB`, 0, 7, 2);
+    createPiece(ch_board.getBoard(), true, "Bishop", `wB`, 1, 7, 5);
+    createPiece(ch_board.getBoard(), true, "Knight", `wN`, 0, 7, 1);
+    createPiece(ch_board.getBoard(), true, "Knight", `wN`, 1, 7, 6);
+    createPiece(ch_board.getBoard(), true, "Queen", `wQ`, 0, 7, 3);
+    createPiece(ch_board.getBoard(), true, "King", `wK`, 0, 7, 4);
     //#endregion
 
     //#region Black
     for (let i = 0; i < 8; i++) {
-        createPiece(ch_board.getBoard(), !_whiteAtBottom, "Pawn", `${tC}p`,  i, 1, i);
+        createPiece(ch_board.getBoard(), false, "Pawn", `bp`,  i, 1, i);
     }
 
-    createPiece(ch_board.getBoard(), !_whiteAtBottom, "Rook", `${tC}R`, 0, 0, 0);
-    createPiece(ch_board.getBoard(), !_whiteAtBottom, "Rook", `${tC}R`, 1, 0, 7);
-    createPiece(ch_board.getBoard(), !_whiteAtBottom, "Bishop", `${tC}B`, 0, 0, 2);
-    createPiece(ch_board.getBoard(), !_whiteAtBottom, "Bishop", `${tC}B`, 1, 0, 5);
-    createPiece(ch_board.getBoard(), !_whiteAtBottom, "Knight", `${tC}N`, 0, 0, 1);
-    createPiece(ch_board.getBoard(), !_whiteAtBottom, "Knight", `${tC}N`, 1, 0, 6);
-    createPiece(ch_board.getBoard(), !_whiteAtBottom, "Queen", `${tC}Q`, 0, 0, 3);
-    createPiece(ch_board.getBoard(), !_whiteAtBottom, "King", `${tC}K`, 0, 0, 4);
+    createPiece(ch_board.getBoard(), false, "Rook", `bR`, 0, 0, 0);
+    createPiece(ch_board.getBoard(), false, "Rook", `bR`, 1, 0, 7);
+    createPiece(ch_board.getBoard(), false, "Bishop", `bB`, 0, 0, 2);
+    createPiece(ch_board.getBoard(), false, "Bishop", `bB`, 1, 0, 5);
+    createPiece(ch_board.getBoard(), false, "Knight", `bN`, 0, 0, 1);
+    createPiece(ch_board.getBoard(), false, "Knight", `bN`, 1, 0, 6);
+    createPiece(ch_board.getBoard(), false, "Queen", `bQ`, 0, 0, 3);
+    createPiece(ch_board.getBoard(), false, "King", `bK`, 0, 0, 4);
     //#endregion
 
     //set white go first

@@ -78,10 +78,7 @@ function connectToSocket(roomName, username) {
 
         //check if we are the second player to join
         if(myData == playerData2) {
-            //empty board
-            $('#board').empty();
-            //set black pieces at the bottom
-            setGame(false);
+            
         }
 
         //set opponent name based on which one is not ours
@@ -102,5 +99,29 @@ function connectToSocket(roomName, username) {
         // c4_isMyTurn.setState(myData.isHost);
         // c4_isPlayingRobot.setState(false);
         // c4_myPiece.setState((myData.isHost) ? "Y" : "R");
+    });
+
+    //detecting when the opponent has left the room
+    socket.on('opponentLeftRoom', function() {
+        //this doesn't have to happen, opponent could just join back
+        //with same name and code and it should let them in
+
+        //show alert
+        alert('Opponent has left the game.');
+
+        //disconnect self from socket
+        socket.close();
+
+        //send user back to play menu
+        //reset board
+        // resetGame();
+        //remove blue circle
+        $('#playerIcon').removeClass('currentGo');
+        $('#opponentIcon').removeClass('currentGo');
+        //hide player icons and score text
+        $('.scoreAndIconParent').hide();
+        //open menu
+        $('.menuBackground').show();
+        $('.friendOrAIMenu').show();
     });
 }
