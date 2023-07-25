@@ -76,6 +76,14 @@ function connectToSocket(roomName, username) {
         const myData = (playerData1.playerID === socket.id) ? playerData1 : playerData2;
         const oppData = (playerData1.playerID === socket.id) ? playerData2 : playerData1;
 
+        //check if we are the second player to join
+        if(myData == playerData2) {
+            //empty board
+            $('#board').empty();
+            //set black pieces at the bottom
+            setGame(false);
+        }
+
         //set opponent name based on which one is not ours
         $('#opponentNameText').text(oppData.username);
 

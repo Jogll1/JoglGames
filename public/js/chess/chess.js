@@ -7,6 +7,7 @@ var ch_gameStarted = (function(){
 
     return { 
         setState : function(bToSet) {
+            console.log(bToSet);
             return gameStarted = bToSet;
         },
 
@@ -21,7 +22,7 @@ var ch_board = (function() {
 
     return {
         updateBoard : function(array) {
-            // logArray(board);
+            logArray(board);
             return board = array;
         },
 
@@ -127,6 +128,8 @@ $(document).ready(function() {
     //#region Tile functions
     $('.squareTile').mousedown(function() {
         if(!ch_gameStarted.getState()) return;
+
+        console.log("click");
 
         //get the squaretile's id
         const id = $(this).attr("id"); 
@@ -288,7 +291,7 @@ function setGame(_whiteAtBottom) {
 
     //#region Black
     for (let i = 0; i < 8; i++) {
-        createPiece(ch_board.getBoard(), !_whiteAtBottom, "Pawn", "${tC}p",  i, 1, i);
+        createPiece(ch_board.getBoard(), !_whiteAtBottom, "Pawn", `${tC}p`,  i, 1, i);
     }
 
     createPiece(ch_board.getBoard(), !_whiteAtBottom, "Rook", `${tC}R`, 0, 0, 0);
