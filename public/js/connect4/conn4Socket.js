@@ -43,12 +43,12 @@ function connectToSocket(roomName, username) {
         if (roomExists) {
             //join room
             console.log('joining room');
-            socket.emit('joinRoom', roomName, username);
+            socket.emit('joinRoom', roomName, username, 'Connect 4');
         }
         else {
             //create room
             console.log("creating room");
-            socket.emit('createRoom', roomName, username);
+            socket.emit('createRoom', roomName, username, 'Connect 4');
         }
     });
 

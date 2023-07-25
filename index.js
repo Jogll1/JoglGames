@@ -37,7 +37,7 @@ io.on('connection', function(socket) {
         roomsIn.forEach((roomName) => {
             rooms[roomName] = rooms[roomName].filter((_playerID) => _playerID.playerID !== socket.id);
 
-            //remove the empty room
+            //remove the empty rooms
             if(rooms[roomName].length === 0) {
                 delete rooms[roomName];
                 socket.leave(roomName);
@@ -56,24 +56,32 @@ io.on('connection', function(socket) {
     });
 
     //joining room
-    socket.on('joinRoom', function(roomName, username) {
+    socket.on('joinRoom', function(roomName, username, roomType) {
         //only join if room contains less than 2 players
         const roomSize = io.sockets.adapter.rooms.get(roomName).size;
         if(roomSize < 2) {
-            //add data of this player to room object
-            const playerData = {playerID: socket.id, username: username, isHost: false};
-            rooms[roomName].push(playerData); 
+            const checkRoomType = rooms[roomName][0].roomType;
+            //make sure you are trying to join a room of the same room type
+            if(checkRoomType == roomType) {
+                //add data of this player to room object
+                const playerData = {playerID: socket.id, username: username, roomType: roomType, isHost: false};
+                rooms[roomName].push(playerData); 
 
-            //join room
-            socket.join(roomName);
+                //join room
+                socket.join(roomName);
 
-            //send room response
-            socket.emit('roomOperationResponse', true, roomName, ''); //success
+                //send room response
+                socket.emit('roomOperationResponse', true, roomName, ''); //success
 
-            //send a message to both players in the room data about both players
-            const playerData1 = rooms[roomName][0];
-            const playerData2 = rooms[roomName][1];
-            io.to(roomName).emit('playerJoined', playerData1, playerData2); //sends to all sockets in a room
+                //send a message to both players in the room data about both players
+                const playerData1 = rooms[roomName][0];
+                const playerData2 = rooms[roomName][1];
+                io.to(roomName).emit('playerJoined', playerData1, playerData2); //sends to all sockets in a room
+            }
+            else {
+                //send room response
+                socket.emit('roomOperationResponse', false, roomName, `Trying to join room of type: ${checkRoomType}`); //failure
+            }
         }
         else {
             //send room response
@@ -82,25 +90,21 @@ io.on('connection', function(socket) {
     });
 
     //creating room
-    socket.on('createRoom', function(roomName, username) {
+    socket.on('createRoom', function(roomName, username, roomType) {
         //make sure room doesn't already exist
         if(!rooms[roomName]) {
             //create empty array of playerIds;
             rooms[roomName] = [];
 
             //add data of this player to room object
-            const playerData = {playerID: socket.id, username: username, isHost: true};
+            const playerData = {playerID: socket.id, username: username, roomType: roomType, isHost: true};
             rooms[roomName].push(playerData);
-
-            console.log(rooms[roomName]);
 
             //join this new room
             socket.join(roomName);
 
             //send room response
             socket.emit('roomOperationResponse', true, roomName, ''); //success
-
-            //TODO -- store room game type in object too
         }
         else {
             //send room response
