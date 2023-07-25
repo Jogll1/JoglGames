@@ -77,7 +77,7 @@ io.on('connection', function(socket) {
         }
         else {
             //send room response
-            socket.emit('roomOperationResponse', false, roomName, 'room full'); //failure
+            socket.emit('roomOperationResponse', false, roomName, 'Room full'); //failure
         }
     });
 
@@ -92,6 +92,8 @@ io.on('connection', function(socket) {
             const playerData = {playerID: socket.id, username: username, isHost: true};
             rooms[roomName].push(playerData);
 
+            console.log(rooms[roomName]);
+
             //join this new room
             socket.join(roomName);
 
@@ -102,7 +104,7 @@ io.on('connection', function(socket) {
         }
         else {
             //send room response
-            socket.emit('roomOperationResponse', false, roomName, 'room already exists'); //failure
+            socket.emit('roomOperationResponse', false, roomName, 'Room already exists'); //failure
         }
     });
 

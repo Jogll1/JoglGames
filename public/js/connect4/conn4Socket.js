@@ -33,7 +33,7 @@ var c4_roomName = (function () {
 function connectToSocket(roomName, username) {
     //var socket = io(); //possibly needs a url?
     var socket = c4_socket.setState(io()); //possibly needs a url?
-    c4_roomName.setState(roomName); //store foomname locally
+    c4_roomName.setState(roomName); //store roomname locally
 
     //check if room exists
     socket.emit('checkRoom', roomName);
@@ -65,7 +65,7 @@ function connectToSocket(roomName, username) {
             setUpGame(false, username);
         }
         else {
-            alert(`failed to join room: ${roomName}\nreason: ${errorReason}`);
+            alert(`failed to join room: ${roomName}\nReason: ${errorReason}`);
         }
     });
 
@@ -129,7 +129,7 @@ function connectToSocket(roomName, username) {
 
     //recieving a remtach that was sent by the other player to the server
     socket.on('conn4RematchResponse', function() {
-        console.log("rematch started by the other player");
+        console.log("Rematch started by the other player");
         //close the menu
         $('.menuBackground').hide();
         $('.rematchMenu').hide();
