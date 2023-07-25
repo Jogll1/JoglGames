@@ -50,7 +50,6 @@ io.on('connection', function(socket) {
 
     //checking if a room exists
     socket.on('checkRoom', function(roomName) {
-        // const roomExists = rooms.includes(roomName);
         const roomExists = rooms[roomName];
         socket.emit('checkRoomResponse', roomExists);
     });

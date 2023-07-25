@@ -31,7 +31,6 @@ var c4_roomName = (function () {
 //#endregion
 
 function connectToSocket(roomName, username) {
-    //var socket = io(); //possibly needs a url?
     var socket = c4_socket.setState(io()); //possibly needs a url?
     c4_roomName.setState(roomName); //store roomname locally
 

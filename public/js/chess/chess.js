@@ -81,14 +81,14 @@ var ch_movedPieces = (function() {
 
 //when document loads up
 $(document).ready(function() {
-    setGame();
+    setGame(true);
 
     //#region Menu functions
     $('#playRobotButton').click(function() {
         $('.menuBackground').hide();
         $('.friendOrAIMenu').hide();
 
-        // setUpGame(true, 'Player1');
+        setUpGame(true, 'Player1');
     });
 
     $('#playFriendButton').click(function() {
@@ -111,7 +111,7 @@ $(document).ready(function() {
         }
         else {
             //connect to socket - or at least attempt to
-            // connectToSocket(roomName, username);
+            connectToSocket(roomName, username);
         }
 
         //reset input fields
@@ -125,12 +125,12 @@ $(document).ready(function() {
     //#endregion
 
     //#region Tile functions
-    if(!ch_gameStarted.getState()) return;
-    
     $('.squareTile').mousedown(function() {
+        if(!ch_gameStarted.getState()) return;
+
         //get the squaretile's id
-        let id = $(this).attr("id"); 
-        let tile = $('#' + id);
+        const id = $(this).attr("id"); 
+        const tile = $('#' + id);
 
         //if haven't clicked on already selected tile
         if(id !== ch_selectedTile.getState()) {
@@ -177,9 +177,10 @@ $(document).ready(function() {
     });
 
     $('.squareTile').mouseup(function() {
+        if(!ch_gameStarted.getState()) return;
+
         //get the squaretile's id
-        let id = $(this).attr("id");
-        let tile = $('#' + id);
+        const id = $(this).attr("id");
         
         //if haven't clicked on already selected tile
         if(id !== ch_selectedTile.getState()) {
@@ -207,7 +208,7 @@ $(document).ready(function() {
     });
 
     $(".pieceContainer").mousedown(function() {
-        if(isMyTurn($(this).attr("id"))) {
+        if(isMyTurn($(this).attr("id")) && ch_gameStarted.getState()) {
             //make mouse grabbing
             $(this).css("cursor", "grabbing");
         }   
@@ -224,7 +225,7 @@ $(document).ready(function() {
 });
 
 //initialise the game by creating the board and the tiles
-function setGame() {
+function setGame(_whiteAtBottom) {
     //board will be a 2d array
     let board = [];
 
@@ -267,34 +268,37 @@ function setGame() {
     ch_board.updateBoard(board);
 
     //piece instantiation
+    const bC = _whiteAtBottom ? 'w' : 'b'; //bottom colour
+    const tC = _whiteAtBottom ? 'b' : 'w'; //top colour
+
     //#region White
     for (let i = 0; i < 8; i++) {
-        createPiece(ch_board.getBoard(), true, "Pawn", "wp",  i, 6, i);
+        createPiece(ch_board.getBoard(), _whiteAtBottom, "Pawn", `${bC}p`,  i, 6, i);
     }
 
-    createPiece(ch_board.getBoard(), true, "Rook", "wR", 0, 7, 0);
-    createPiece(ch_board.getBoard(), true, "Rook", "wR", 1, 7, 7);
-    createPiece(ch_board.getBoard(), true, "Bishop", "wB", 0, 7, 2);
-    createPiece(ch_board.getBoard(), true, "Bishop", "wB", 1, 7, 5);
-    createPiece(ch_board.getBoard(), true, "Knight", "wN", 0, 7, 1);
-    createPiece(ch_board.getBoard(), true, "Knight", "wN", 1, 7, 6);
-    createPiece(ch_board.getBoard(), true, "Queen", "wQ", 0, 7, 3);
-    createPiece(ch_board.getBoard(), true, "King", "wK", 0, 7, 4);
+    createPiece(ch_board.getBoard(), _whiteAtBottom, "Rook", `${bC}R`, 0, 7, 0);
+    createPiece(ch_board.getBoard(), _whiteAtBottom, "Rook", `${bC}R`, 1, 7, 7);
+    createPiece(ch_board.getBoard(), _whiteAtBottom, "Bishop", `${bC}B`, 0, 7, 2);
+    createPiece(ch_board.getBoard(), _whiteAtBottom, "Bishop", `${bC}B`, 1, 7, 5);
+    createPiece(ch_board.getBoard(), _whiteAtBottom, "Knight", `${bC}N`, 0, 7, 1);
+    createPiece(ch_board.getBoard(), _whiteAtBottom, "Knight", `${bC}N`, 1, 7, 6);
+    createPiece(ch_board.getBoard(), _whiteAtBottom, "Queen", `${bC}Q`, 0, 7, 3);
+    createPiece(ch_board.getBoard(), _whiteAtBottom, "King", `${bC}K`, 0, 7, 4);
     //#endregion
 
     //#region Black
     for (let i = 0; i < 8; i++) {
-        createPiece(ch_board.getBoard(), false, "Pawn", "bp",  i, 1, i);
+        createPiece(ch_board.getBoard(), !_whiteAtBottom, "Pawn", "${tC}p",  i, 1, i);
     }
 
-    createPiece(ch_board.getBoard(), false, "Rook", "bR", 0, 0, 0);
-    createPiece(ch_board.getBoard(), false, "Rook", "bR", 1, 0, 7);
-    createPiece(ch_board.getBoard(), false, "Bishop", "bB", 0, 0, 2);
-    createPiece(ch_board.getBoard(), false, "Bishop", "bB", 1, 0, 5);
-    createPiece(ch_board.getBoard(), false, "Knight", "bN", 0, 0, 1);
-    createPiece(ch_board.getBoard(), false, "Knight", "bN", 1, 0, 6);
-    createPiece(ch_board.getBoard(), false, "Queen", "bQ", 0, 0, 3);
-    createPiece(ch_board.getBoard(), false, "King", "bK", 0, 0, 4);
+    createPiece(ch_board.getBoard(), !_whiteAtBottom, "Rook", `${tC}R`, 0, 0, 0);
+    createPiece(ch_board.getBoard(), !_whiteAtBottom, "Rook", `${tC}R`, 1, 0, 7);
+    createPiece(ch_board.getBoard(), !_whiteAtBottom, "Bishop", `${tC}B`, 0, 0, 2);
+    createPiece(ch_board.getBoard(), !_whiteAtBottom, "Bishop", `${tC}B`, 1, 0, 5);
+    createPiece(ch_board.getBoard(), !_whiteAtBottom, "Knight", `${tC}N`, 0, 0, 1);
+    createPiece(ch_board.getBoard(), !_whiteAtBottom, "Knight", `${tC}N`, 1, 0, 6);
+    createPiece(ch_board.getBoard(), !_whiteAtBottom, "Queen", `${tC}Q`, 0, 0, 3);
+    createPiece(ch_board.getBoard(), !_whiteAtBottom, "King", `${tC}K`, 0, 0, 4);
     //#endregion
 
     //set white go first
@@ -380,6 +384,36 @@ function createPiece(board, isWhite, type, notation, i, row, col) {
     ch_board.updateBoard(board);
 
     initDragDrop();
+}
+
+//function to set up the game
+function setUpGame(isPlayingRobot, playerName) {
+    $('.scoreAndIconParent').show();
+
+    //set player name
+    $('#playerNameText').text(playerName);
+
+    //set icons and player names
+    if(isPlayingRobot) {  
+        //set player first
+        $('#playerIcon').addClass('currentGo');
+           
+        //set opponent name
+        $('#opponentNameText').text('Robot');
+
+        //change icon
+        $('#oppImg').attr('src', '/images/RobotIcon.png')
+
+        //start game against robot
+        ch_gameStarted.setState(true);
+        ch_isWhiteTurn.setState(true);
+        console.log(ch_gameStarted.getState());
+        // ch_isPlayingRobot.setState(true);
+    }
+    else {
+        //set opponent name
+        $('#opponentNameText').text('...');
+    }
 }
 
 //function to move a piece to the correct square
