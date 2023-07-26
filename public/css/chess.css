@@ -28,6 +28,16 @@
     display: grid;
     grid-template-columns: repeat(8, 1fr);
 }
+
+.rotateBlack {
+    /* rotate board so black is at the bottom */
+    transform: rotate(180deg);
+}
+
+.rotatePiece {
+    /* rotate pieces so they are right way up */
+    transform: rotate(180deg);
+}
 /*#endregion*/
 
 /*#region Tiles */

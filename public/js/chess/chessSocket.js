@@ -78,7 +78,9 @@ function connectToSocket(roomName, username) {
 
         //check if we are the second player to join
         if(myData == playerData2) {
-            
+            //rotate chess board
+            $('#board').addClass('rotateBlack');
+            $('.pieceContainer').addClass('rotatePiece');
         }
 
         //set opponent name based on which one is not ours
