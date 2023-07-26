@@ -98,9 +98,9 @@ function connectToSocket(roomName, username) {
 
         //start the game against the other player
         ch_gameStarted.setState(true);
-        // c4_isMyTurn.setState(myData.isHost);
-        // c4_isPlayingRobot.setState(false);
-        // c4_myPiece.setState((myData.isHost) ? "Y" : "R");
+        ch_isMyTurn.setState(myData.isHost);
+        ch_myColour.set(myData.isHost ? "White" : "Black");
+        ch_isPlayingRobot.setState(false);
     });
 
     //detecting when the opponent has left the room
@@ -126,4 +126,17 @@ function connectToSocket(roomName, username) {
         $('.menuBackground').show();
         $('.friendOrAIMenu').show();
     });
+
+    //recieving a move that was sent to the server
+    socket.on('chessMoveResponse', function(pieceToMove, tileRef) {
+        movePiece(pieceToMove, tileRef);
+        console.log("received move");
+    });
+}
+
+//function to send a move to the server
+//can only be called when ch_socket is set
+function socketSendChessMove(pieceToMoveId, tileToMoveToId) {
+    var socket = ch_socket.getState();
+    socket.emit('chessSendMove', pieceToMoveId, tileToMoveToId, ch_roomName.getState());
 }

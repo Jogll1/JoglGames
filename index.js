@@ -125,6 +125,15 @@ io.on('connection', function(socket) {
         socket.to(roomName).emit('conn4RematchResponse');
     });
     //#endregion
+
+    //#region Chess
+    socket.on('chessSendMove', function(pieceToMoveId, tileToMoveToId, roomName) {
+        // const msg = `${playerPiece} played in column ${columnNo} in room ${roomName}`;
+        //sends to all sockets in a room, excluding the sender
+        socket.to(roomName).emit('chessMoveResponse', pieceToMoveId, tileToMoveToId);
+        console.log(`${pieceToMoveId} => ${tileToMoveToId} : from ${roomName}`);
+    });
+    //#endregion
 });
 //#endregion
 
