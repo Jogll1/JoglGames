@@ -8,16 +8,9 @@ const Pattern = function(board, isWhite, startRow, startCol, runRecursively) {
     //get under threat tiles
     const underThreatTiles = runRecursively ? getUnderThreatTiles(board, ourColour) : [];
 
-    const kingUnderThreat = underThreatTiles.some(tile => board[tile.split('-')[0]][tile.split('-')[1]].includes('K'));
-
-    //need to add
-    //check
-    //stalemate
-    //checkmate
-
     this.getValidPawnMoves = function(_isFirstTurn) {
-        pawnValidMoves = []
-        let distance = (_isFirstTurn) ? 2 : 1; //set the distance it can move based on if it's its first turn
+        let pawnValidMoves = [];
+        const distance = (_isFirstTurn) ? 2 : 1; //set the distance it can move based on if it's its first turn
         
         //moving
         for (let i = 1; i < distance + 1; i++) {
@@ -90,9 +83,9 @@ const Pattern = function(board, isWhite, startRow, startCol, runRecursively) {
     }
 
     this.getValidRookMoves = function() {
-        rookValidMoves = []
+        let rookValidMoves = [];
 
-        deltas = [[-1, 0], [1, 0], [0, -1], [0, 1]]
+        const deltas = [[-1, 0], [1, 0], [0, -1], [0, 1]];
         for (let i = 0; i < deltas.length; i++) {
             addValidLineMoves(board, startRow, startCol, deltas[i][0], deltas[i][1], rookValidMoves);
         }
@@ -102,9 +95,9 @@ const Pattern = function(board, isWhite, startRow, startCol, runRecursively) {
     }
 
     this.getValidBishopMoves = function() {
-        bishopValidMoves = []
+        let bishopValidMoves = [];
 
-        deltas = [[-1, -1], [1, -1], [-1, 1], [1, 1]]
+        const deltas = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
         for (let i = 0; i < deltas.length; i++) {
             addValidLineMoves(board, startRow, startCol, deltas[i][0], deltas[i][1], bishopValidMoves);
         }
@@ -114,9 +107,9 @@ const Pattern = function(board, isWhite, startRow, startCol, runRecursively) {
     }
 
     this.getValidQueenMoves = function() {
-        queenValidMoves = []
+        let queenValidMoves = [];
 
-        deltas = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, -1], [-1, 1], [1, 1]]
+        const deltas = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, -1], [-1, 1], [1, 1]];
         for (let i = 0; i < deltas.length; i++) {
             addValidLineMoves(board, startRow, startCol, deltas[i][0], deltas[i][1], queenValidMoves);
         }
@@ -126,9 +119,9 @@ const Pattern = function(board, isWhite, startRow, startCol, runRecursively) {
     }
 
     this.getValidKnightMoves = function() {
-        knightValidMoves = []
+        let knightValidMoves = [];
         
-        deltas = [[-2, 1], [-1, 2], [1, 2], [2, 1], [2, -1], [1, -2], [-1, -2], [-2, -1]]
+        const deltas = [[-2, 1], [-1, 2], [1, 2], [2, 1], [2, -1], [1, -2], [-1, -2], [-2, -1]];
         for (let i = 0; i < deltas.length; i++) {
             let checkRow = startRow + deltas[i][0];
             let checkCol = startCol + deltas[i][1];
@@ -153,7 +146,7 @@ const Pattern = function(board, isWhite, startRow, startCol, runRecursively) {
     }
 
     this.getValidKingMoves = function(_isFirstTurn) {
-        kingValidMoves = []
+        let kingValidMoves = [];
 
         deltas = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, -1], [-1, 1], [1, 1]]
         for (let i = 0; i < deltas.length; i++) {
@@ -244,7 +237,7 @@ function addValidLineMoves(_board, _startRow, _startCol, _rowDelta, _colDelta, _
 
 //function to get a list of all tiles that are under threat
 function getUnderThreatTiles(_board, _ourColour) {
-    tiles = []
+    let tiles = []
 
     const colourCheck = (_ourColour == "White") ? 'w' : 'b';
 

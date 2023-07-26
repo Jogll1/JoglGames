@@ -21,6 +21,7 @@ var ch_board = (function() {
 
     return {
         updateBoard : function(array) {
+            logArray(board);
             return board = array;
         },
 
@@ -48,7 +49,7 @@ var ch_isMyTurn = (function(){
     var isMyTurn = false;
 
     return {
-        setState: function(bToSet) {
+        setState : function(bToSet) {
             return isMyTurn = bToSet;
         },
 
@@ -82,12 +83,16 @@ var ch_myColour = (function(){
     var myColour = "White";
 
     return {
-        set: function(value) {
+        set : function(value) {
             return myColour = value;
         },
 
         get : function() {
             return myColour;
+        },
+
+        oppColour : function() {
+            return myColour == "White" ? "Black" : "White";
         }
     }
 })();
@@ -567,6 +572,19 @@ function movePiece(pieceToMoveId, tileToMoveToId) {
             //add pieces id to movedPieces
             ch_movedPieces.add(pieceId);
 
+            //alternate who has the border around their icon
+            if($('#playerIcon').hasClass('currentGo')) {
+                $('#playerIcon').removeClass('currentGo');
+                $('#opponentIcon').addClass('currentGo');
+            }
+            else if ($('#opponentIcon').hasClass('currentGo')) {
+                $('#opponentIcon').removeClass('currentGo');
+                $('#playerIcon').addClass('currentGo');
+            }
+
+            const checkColour = ch_isMyTurn.getState() ? ch_myColour.oppColour() : ch_myColour.get();
+            checkGameOver(ch_board.getBoard(), checkColour);
+
             //alternate turn
             ch_isMyTurn.swapState();
         }
@@ -627,7 +645,7 @@ function showValidMoves(board, tile) {
 //function to get all valid moves based on the piece type
 function getValidMoves(board, startRow, startCol, runRecursively) {
     //piece id should be like wp2
-    _validMoves = []
+    let _validMoves = [];
 
     let pieceId = board[startRow][startCol]; //wp0 or bN1 etc
 
@@ -763,4 +781,67 @@ function promotePiece(board, pieceId, coords) {
             createPiece(ch_board.getBoard(), isWhite, "Queen", queenType, queenInt, coords[0], coords[1]);
         }
     }
+}
+
+//function to check if anyone has drawn or won
+function checkGameOver(_board, _colour) {
+    let validMoves = []
+
+    const colourCheck = (_colour == "White") ? 'w' : 'b';
+
+    for (let r = 0; r < ch_ROWS; r++) {
+        for (let c = 0; c < ch_COLUMNS; c++) {
+            if(_board[r][c].includes(colourCheck) && _board[r][c] !== ' ') {
+                validMoves = validMoves.concat(getValidMoves(_board, r, c, true));
+            }
+        }
+    }
+
+    const kingCheck = `${colourCheck}K`;
+    const underThreatTiles = getUnderThreatTiles(_board, _colour);
+    const kingUnderThreat = underThreatTiles.some(tile => _board[tile.split('-')[0]][tile.split('-')[1]].includes(kingCheck));
+
+    if(validMoves.length == 0) {
+        if(kingUnderThreat) {
+            console.log(`Checkmate. ${_colour == "White" ? "Black" : "White"} wins`);
+        }
+        else {
+            console.log(`Stalemate.`);
+        }
+    }
+}
+
+//function to reset the board
+function resetGame() {
+    //reset the board
+    $('#board').empty();
+    setGame()
+
+    //deselect all previously selected tiles
+    $('.squareTile').removeClass('lightSelected');
+    $('.squareTile').removeClass('darkSelected');
+
+    //delete all current valid tile spots
+    $('.validTile').remove();
+    $('.validTakeTile').remove();
+
+    //set game started
+    ch_gameStarted.setState(true);
+
+    //set blue circle
+    //remove blue circle from icons
+    if(ch_isPlayingRobot.getState()) 
+    {
+        //if you're playing robot, set player first
+        $('#playerIcon').addClass('currentGo');
+    } 
+    else { 
+        //if you're playing online, alternate blue circle
+        if(ch_isMyTurn.getState()) {
+            $('#playerIcon').addClass('currentGo');
+        }
+        else {
+            $('#opponentIcon').addClass('currentGo');
+        }
+    }   
 }
