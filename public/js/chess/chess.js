@@ -21,7 +21,7 @@ var ch_board = (function() {
 
     return {
         updateBoard : function(array) {
-            logArray(board);
+            // logArray(board);
             return board = array;
         },
 
@@ -50,6 +50,7 @@ var ch_isMyTurn = (function(){
 
     return {
         setState : function(bToSet) {
+            console.log("is my turn: " + bToSet);
             return isMyTurn = bToSet;
         },
 
@@ -58,6 +59,7 @@ var ch_isMyTurn = (function(){
         },
 
         swapState : function() {
+            console.log("is my turn: " + !isMyTurn);
             return isMyTurn = !isMyTurn;
         }
     }
@@ -178,6 +180,7 @@ $(document).ready(function() {
             //if our turn
             const childPieceId = $(this).children().length >= 1 ? $(this).children(0).attr("id") : "";
             if(ch_isMyTurn.getState()) {
+                console.log("my turn!");
                 //if tile clicked has a piece in it (and not a highlight circle)
                 if ($(this).children().length >= 1 && childPieceId.includes(ch_myColour.get()) && !childPieceId.includes('validTile') && !childPieceId.includes('validTakeTile') ) {
                     //when selected a tile give it the selected class
@@ -311,9 +314,6 @@ function setGame() {
     ch_board.updateBoard(board);
 
     //piece instantiation
-    // const bC = _whiteAtBottom ? 'w' : 'b'; //bottom colour
-    // const tC = _whiteAtBottom ? 'b' : 'w'; //top colour
-
     //#region White
     for (let i = 0; i < 8; i++) {
         createPiece(ch_board.getBoard(), true, "Pawn", `wp`,  i, 6, i);
@@ -816,14 +816,6 @@ function resetGame() {
     //reset the board
     $('#board').empty();
     setGame()
-
-    //deselect all previously selected tiles
-    $('.squareTile').removeClass('lightSelected');
-    $('.squareTile').removeClass('darkSelected');
-
-    //delete all current valid tile spots
-    $('.validTile').remove();
-    $('.validTakeTile').remove();
 
     //set game started
     ch_gameStarted.setState(true);
