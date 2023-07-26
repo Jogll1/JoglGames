@@ -130,7 +130,6 @@ function connectToSocket(roomName, username) {
     //recieving a move that was sent to the server
     socket.on('chessMoveResponse', function(pieceToMove, tileRef) {
         movePiece(pieceToMove, tileRef);
-        console.log("received move");
     });
 }
 

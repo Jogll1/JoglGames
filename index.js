@@ -131,7 +131,7 @@ io.on('connection', function(socket) {
         // const msg = `${playerPiece} played in column ${columnNo} in room ${roomName}`;
         //sends to all sockets in a room, excluding the sender
         socket.to(roomName).emit('chessMoveResponse', pieceToMoveId, tileToMoveToId);
-        console.log(`${pieceToMoveId} => ${tileToMoveToId} : from ${roomName}`);
+        // console.log(`${pieceToMoveId} => ${tileToMoveToId} : from ${roomName}`);
     });
     //#endregion
 });

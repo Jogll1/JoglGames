@@ -353,7 +353,7 @@ function initDragDrop() {
                 return false;
             }
         },
-        drag: function() {
+        drag: function(event, ui) {
             // highlight this tile whilst dragging just to stop that bug
             let tile = $('#' + $(this).parent().attr("id"));
             if(tile.hasClass('lightTile')) {
@@ -362,12 +362,19 @@ function initDragDrop() {
             else if (tile.hasClass('darkTile')) {
                 tile.addClass('darkSelected');
             }
+
+            // if black, reverse the position of the dragged piece
+            if(ch_myColour.get() == "Black") {
+                const newX = -(ui.position.left);
+                const newY = -(ui.position.top);
+                ui.position.left = newX;
+                ui.position.top = newY;
+            }
         },
         stop: function() {
             //if not dropped in the right place, revert back to original position
             $(this).css({ top: 0, left: 0 });
             $(this).css("z-index", 500);
-            $(this).css("transform", `translate(0px, 0px)`);
 
             //reset mouse
             $(this).css("cursor", "grab");
