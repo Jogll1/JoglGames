@@ -131,6 +131,17 @@ function connectToSocket(roomName, username) {
     socket.on('chessMoveResponse', function(pieceToMove, tileRef) {
         movePiece(pieceToMove, tileRef);
     });
+
+    //recieving a remtach that was sent by the other player to the server
+    socket.on('chessRematchResponse', function() {
+        console.log("Rematch started by the other player");
+        //close the menu
+        $('.menuBackground').hide();
+        $('.rematchMenu').hide();
+
+        //reset the board
+        resetGame();
+    });
 }
 
 //function to send a move to the server
@@ -138,4 +149,10 @@ function connectToSocket(roomName, username) {
 function socketSendChessMove(pieceToMoveId, tileToMoveToId) {
     var socket = ch_socket.getState();
     socket.emit('chessSendMove', pieceToMoveId, tileToMoveToId, ch_roomName.getState());
+}
+
+//function to call a rematch for both players
+function socketSendChessRematch() {
+    var socket = ch_socket.getState();
+    socket.emit('chessSendRematch', ch_roomName.getState());
 }

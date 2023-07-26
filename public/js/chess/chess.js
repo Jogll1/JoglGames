@@ -128,6 +128,7 @@ $(document).ready(function() {
         setUpGame(true, 'Player1');
     });
 
+    //play friend
     $('#playFriendButton').click(function() {
         $('.onlinePlayMenu').show();
         $('.friendOrAIMenu').hide();
@@ -156,6 +157,22 @@ $(document).ready(function() {
         $('#roomNameInput').val('');
     });
 
+    //rematch menu
+    $('#rematchButton').click(function() {
+        //close the menu
+        $('.menuBackground').hide();
+        $('.rematchMenu').hide();
+
+        //reset the board
+        resetGame();
+
+        //-----SOCKET-----
+        //if not playing robot, send rematch to the server
+        if(!ch_isPlayingRobot.getState()) socketSendChessRematch();
+        //----------------
+    });
+
+    //home button
     $('#homeButton').click(function() {
         window.location.href = './index.html';
     });
@@ -805,12 +822,70 @@ function checkGameOver(_board, _colour) {
     if(validMoves.length == 0) {
         if(kingUnderThreat) {
             console.log(`Checkmate. ${_colour == "White" ? "Black" : "White"} wins`);
+            setWinner(`${_colour == "White" ? "Black" : "White"}`);
         }
         else {
             console.log(`Stalemate.`);
+            setWinner("Stalemate");
         }
     }
 }
+
+//function to set the winner
+function setWinner(_winningColour) {
+    //initialise winner string
+    let winnerString = " ";
+    ch_gameStarted.setState(false);
+
+    //increment score counters based on who won
+    if(_winningColour !== ch_myColour.get()) { //opponent
+        let score = parseInt($("#opponentScoreText").text());
+        $("#opponentScoreText").text(score + 1);
+
+        if(ch_isPlayingRobot.getState()) {
+            //if playing ai, say robot won
+            winnerString = "Robot wins!"; 
+        }
+        else {
+            //if playing online, say other player won
+            winnerString = `${_winningColour} wins!`;
+        }
+    }
+    else if (_winningColour === ch_myColour.get()) { //player
+        let score = parseInt($("#playerScoreText").text());
+        $("#playerScoreText").text(score + 1);
+
+        winnerString = "You win!";
+    }
+    else { //stalemate
+        let scoreOpponent = parseInt($("#opponentScoreText").text());
+        $("#opponentScoreText").text(scoreOpponent + 1);
+
+        let scorePlayer = parseInt($("#playerScoreText").text());
+        $("#playerScoreText").text(scorePlayer + 1);
+
+        winnerString = "Stalemate";
+    }
+
+    endGame(winnerString);
+}
+
+//function to end the game and allow for another game
+function endGame(winnerString) {
+    //remove blue circle from icons
+    $('#playerIcon').removeClass('currentGo');
+    $('#opponentIcon').removeClass('currentGo');
+
+    //load rematch menu after a bit
+    setTimeout(function() { 
+        $('.menuBackground').show();
+        $('.rematchMenu').show();
+    }, 700);
+
+    //set rematch menu title
+    $('#rematchMenuTitle').text(winnerString);
+}
+
 
 //function to reset the board
 function resetGame() {
@@ -825,7 +900,14 @@ function resetGame() {
     ch_movedPieces.reset();
 
     //set game started
-    ch_gameStarted.setState(false);
+    ch_gameStarted.setState(true);
+
+    //check if we are the second player to join
+    if(ch_myColour.get() == "Black") {
+        //rotate chess board
+        $('#board').addClass('rotateBlack');
+        $('.pieceContainer').addClass('rotatePiece');
+    }
 
     //set blue circle
     //remove blue circle from icons

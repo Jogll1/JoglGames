@@ -133,6 +133,12 @@ io.on('connection', function(socket) {
         socket.to(roomName).emit('chessMoveResponse', pieceToMoveId, tileToMoveToId);
         // console.log(`${pieceToMoveId} => ${tileToMoveToId} : from ${roomName}`);
     });
+
+    //receiving a call to rematch
+    socket.on('chessSendRematch', function(roomName) {
+        //sends to all sockets in a room, excluding the sender as sender has already reset
+        socket.to(roomName).emit('chessRematchResponse');
+    });
     //#endregion
 });
 //#endregion
