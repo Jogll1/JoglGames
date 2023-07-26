@@ -50,7 +50,6 @@ var ch_isMyTurn = (function(){
 
     return {
         setState : function(bToSet) {
-            console.log("is my turn: " + bToSet);
             return isMyTurn = bToSet;
         },
 
@@ -59,7 +58,6 @@ var ch_isMyTurn = (function(){
         },
 
         swapState : function() {
-            console.log("is my turn: " + !isMyTurn);
             return isMyTurn = !isMyTurn;
         }
     }
@@ -72,6 +70,10 @@ var ch_movedPieces = (function() {
     return {
         add : function(toAdd) {
             return movedPieces.push(toAdd);
+        },
+
+        reset : function() {
+            return movedPieces = [];
         },
 
         get : function() {
@@ -160,7 +162,7 @@ $(document).ready(function() {
     //#endregion
 
     //#region Tile functions
-    $('.squareTile').mousedown(function() {
+    $(document).on('mousedown', '.squareTile', function() {
         if(!ch_gameStarted.getState()) return;
 
         //get the squaretile's id
@@ -180,7 +182,6 @@ $(document).ready(function() {
             //if our turn
             const childPieceId = $(this).children().length >= 1 ? $(this).children(0).attr("id") : "";
             if(ch_isMyTurn.getState()) {
-                console.log("my turn!");
                 //if tile clicked has a piece in it (and not a highlight circle)
                 if ($(this).children().length >= 1 && childPieceId.includes(ch_myColour.get()) && !childPieceId.includes('validTile') && !childPieceId.includes('validTakeTile') ) {
                     //when selected a tile give it the selected class
@@ -222,7 +223,7 @@ $(document).ready(function() {
         }
     });
 
-    $('.squareTile').mouseup(function() {
+    $(document).on('mouseup', '.squareTile', function() {
         if(!ch_gameStarted.getState()) return;
 
         //get the squaretile's id
@@ -253,14 +254,14 @@ $(document).ready(function() {
         }
     });
 
-    $(".pieceContainer").mousedown(function() {
+    $(document).on('mousedown', '.pieceContainer', function() {
         if(ch_isMyTurn.getState() && ch_gameStarted.getState()) {
             //make mouse grabbing
             $(this).css("cursor", "grabbing");
         }   
     });
 
-    $(".pieceContainer").mouseup(function() {
+    $(document).on('mouseup', '.pieceContainer', function() {
         //reset mouse
         $(this).css("cursor", "grab");
     });
@@ -815,10 +816,16 @@ function checkGameOver(_board, _colour) {
 function resetGame() {
     //reset the board
     $('#board').empty();
-    setGame()
+    setGame();
+
+    //reset selected tile
+    ch_selectedTile.setState(" ");
+
+    //reset moved pieces
+    ch_movedPieces.reset();
 
     //set game started
-    ch_gameStarted.setState(true);
+    ch_gameStarted.setState(false);
 
     //set blue circle
     //remove blue circle from icons
