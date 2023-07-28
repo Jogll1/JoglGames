@@ -71,7 +71,8 @@ const Pattern = function(board, isWhite, startRow, startCol, runRecursively) {
                         //allow en passant
                         const takeRow = parseInt(startRow + ((ourColour == "White") ? -1 : 1));
                         if(board[takeRow][checkCol] == ' ') {
-                            pawnValidMoves.push(takeRow + "-" + checkCol);
+                            //only add if doesn't make king in check
+                            if(canEnPassant(board, ourColour, takeRow, checkCol)) pawnValidMoves.push(takeRow + "-" + checkCol);
                         }
                     }
                 }
@@ -271,17 +272,6 @@ function movesThatDontCheck(_board, _moves, _startRow, _startCol) {
 
         const underThreatTiles = getUnderThreatTiles(boardCopy, ourColour);
 
-        //if the coords referencing a king is in underThreatTiles at least once
-        // const kingUnderThreat = false;
-        // for (let j = 0; j < underThreatTiles.length; j++) {
-        //     const tile = underThreatTiles[j];
-        //     const checkPiece = boardCopy[tile.split('-')[0]][tile.split('-')[1]];
-        //     const oppColour = checkPiece.includes('w') ? "White" : "Black";
-
-        //     if(checkPiece.includes('K') && ourColour != oppColour) {
-        //         kingUnderThreat =  true;
-        //     }
-        // }
         const kingUnderThreat = underThreatTiles.some(tile => boardCopy[tile.split('-')[0]][tile.split('-')[1]].includes('K'));
 
         if(!kingUnderThreat) {
@@ -315,4 +305,15 @@ function isRookMoved(_board, _side, _ourColour) {
     }
 
     return false;
+}
+
+//function to check if en passant cause king to be in check
+function canEnPassant(_board, _ourColour, _row, _col) {
+    let boardCopy = copy2DArray(_board);
+
+    boardCopy[_row + parseInt(_ourColour == "White" ? -1 : 1)][_col] = ' ';
+
+    const underThreatTiles = getUnderThreatTiles(boardCopy, _ourColour);
+
+    return !underThreatTiles.some(tile => boardCopy[tile.split('-')[0]][tile.split('-')[1]].includes('K'));
 }
