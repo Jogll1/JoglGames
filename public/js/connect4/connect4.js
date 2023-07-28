@@ -130,7 +130,7 @@ $(document).ready(function() {
         $('.menuBackground').hide();
         $('.robotDifficultyMenu').hide();
 
-        setUpGame(true, 'Player1', 8);
+        setUpGame(true, 'Player1', 7);
     });
     //#endregion
 
