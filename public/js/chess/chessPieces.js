@@ -174,7 +174,7 @@ const Pattern = function(board, isWhite, startRow, startCol, runRecursively) {
             const row = (ourColour === "White") ? 7 : 0;
 
             //queenside
-            const isRookNotMovedQ = (ourColour === "White") ? !ch_movedPieces.get().includes('wR0') : !ch_movedPieces.get().includes('bR0');
+            const isRookNotMovedQ = isRookMoved(board, 'queenside', ourColour);
             const spacesFreeQ = (board[row][1] == ' ' && board[row][2] == ' ' && board[row][3] == ' ');
 
             if (isRookNotMovedQ && spacesFreeQ) {
@@ -190,7 +190,7 @@ const Pattern = function(board, isWhite, startRow, startCol, runRecursively) {
             }
 
             //kingside
-            const isRookNotMovedK = (ourColour === "White") ? !ch_movedPieces.get().includes('wR1') : !ch_movedPieces.get().includes('bR1');
+            const isRookNotMovedK = isRookMoved(board, 'kingside', ourColour);
             const spacesFreeK = (board[row][5] == ' ' && board[row][6] == ' ');
 
             if (isRookNotMovedK && spacesFreeK) {
@@ -290,4 +290,29 @@ function movesThatDontCheck(_board, _moves, _startRow, _startCol) {
     }
 
     return breakMoves;
+}
+
+//function to check if a piece is on the board
+function pieceOnBoard(_board, _pieceId) {
+    for (let r = 0; r < ch_ROWS; r++) {
+        for (let c = 0; c < ch_COLUMNS; c++) {
+            if(_board[r][c] == _pieceId) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+//function to check if rook has moved
+function isRookMoved(_board, _side, _ourColour) {
+    const ourRook = (_ourColour === "White") ? 'wR' : 'bR';
+
+    if (_side === 'queenside' || _side === 'kingside') {
+        const rookId = ourRook + ((_side === 'queenside') ? '0' : '1');
+        return !ch_movedPieces.get().includes(rookId) && pieceOnBoard(_board, rookId);
+    }
+
+    return false;
 }
