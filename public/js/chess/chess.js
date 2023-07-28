@@ -886,7 +886,6 @@ function endGame(winnerString) {
     $('#rematchMenuTitle').text(winnerString);
 }
 
-
 //function to reset the board
 function resetGame() {
     //reset the board
@@ -898,9 +897,6 @@ function resetGame() {
 
     //reset moved pieces
     ch_movedPieces.reset();
-
-    //set game started
-    ch_gameStarted.setState(true);
 
     //check if we are the second player to join
     if(ch_myColour.get() == "Black") {

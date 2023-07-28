@@ -85,6 +85,20 @@ var c4_myPiece = (function() {
         }
     }
 })();
+
+var c4_botDif = (function() { 
+    var botDif = 7; //create a variable inside the module (within scope)
+
+    return { //return a fuction that sets the variable
+        setState: function(value) {
+            return botDif = value;
+        },
+
+        getState : function() {
+            return botDif;
+        }
+    }
+})();
 //#endregion
 
 //when document loads up 
@@ -93,13 +107,32 @@ $(document).ready(function() {
 
     //#region Menu functions
     $('#playRobotButton').click(function() {
-        $('.menuBackground').hide();
         $('.friendOrAIMenu').hide();
-
-        //call timer function to start game
-        //startGameTimer(3);
-        setUpGame(true, 'Player1');
+        $('.robotDifficultyMenu').show();
     });
+
+    //#region Difficulty buttons
+    $('#easyButton').click(function() {
+        $('.menuBackground').hide();
+        $('.robotDifficultyMenu').hide();
+
+        setUpGame(true, 'Player1', 4);
+    });
+
+    $('#mediumButton').click(function() {
+        $('.menuBackground').hide();
+        $('.robotDifficultyMenu').hide();
+
+        setUpGame(true, 'Player1', 6);
+    });
+
+    $('#hardButton').click(function() {
+        $('.menuBackground').hide();
+        $('.robotDifficultyMenu').hide();
+
+        setUpGame(true, 'Player1', 8);
+    });
+    //#endregion
 
     $('#playFriendButton').click(function() {
         $('.onlinePlayMenu').show();
@@ -165,7 +198,7 @@ $(document).ready(function() {
             if(c4_isPlayingRobot.getState()) { //if playing against the robot
                 if(!c4_isMyTurn.getState()) { //if not player one's turn, call ai turn
                     //send the board state to the aiworker for it to calculate its move
-                    let depth = 7; //max 8 nearly 9, 7 is good
+                    let depth = c4_botDif.getState(); //max 8 nearly 9, 7 is good
                     
                     //set the message to be sent
                     const message = {
@@ -313,7 +346,7 @@ function setBoardHovers() {
 }
 
 //function to set up the game
-function setUpGame(isPlayingRobot, playerName) {
+function setUpGame(isPlayingRobot, playerName, botDif) {
     $('.scoreAndIconParent').show();
 
     //set player name
@@ -334,6 +367,8 @@ function setUpGame(isPlayingRobot, playerName) {
         c4_gameStarted.setState(true);
         c4_isMyTurn.setState(true);
         c4_isPlayingRobot.setState(true);
+
+        c4_botDif.setState(botDif);
     }
     else {
         //set opponent name

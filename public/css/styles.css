@@ -268,6 +268,61 @@ transform: translate(0, -11px) rotate(45deg);
 }
 /*#endregion*/
 
+/*#region Robot difficulty menu*/
+.robotDifficultyMenu {
+    opacity: 100%;
+    /* This menu starts hidden */
+    display: none;
+    /* width: 20vw;
+    height: 24.5vh; */
+    width: 350px;
+    height: 120px;
+
+    background-color: #282828;
+    border-radius: 40px;
+    border: 35px solid #282828;
+
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+
+    /* centre div */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/*#region Difficulty buttons*/
+#easyButton {
+    transform: translate(-10%, 72.5%);
+    background-color: limegreen;
+}
+
+#easyButton:hover {
+    background-color: #2ec22e;
+}
+
+#mediumButton {
+    transform: translate(0%, 72.5%);
+    background-color: #f6ae2d;
+}
+
+#mediumButton:hover {
+    background-color: #e0a027;
+}
+
+#hardButton {
+    transform: translate(10%, 72.5%);
+    background-color: #c91847;
+}
+
+#hardButton:hover {
+    background-color: #a51038;
+}
+/*#endregion*/
+/*#endregion*/
+
 /*#region Online play menu */
 .onlinePlayMenu {
     opacity: 100%;

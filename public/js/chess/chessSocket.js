@@ -141,6 +141,9 @@ function connectToSocket(roomName, username) {
 
         //reset the board
         resetGame();
+        
+        //set game started
+        ch_gameStarted.setState(true);
     });
 }
 
