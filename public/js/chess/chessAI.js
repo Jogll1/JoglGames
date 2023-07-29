@@ -84,7 +84,9 @@ function evaluateBoard(_board) {
     let value = 0;
     for (let r = 0; r < ch_ROWS; r++) {
         for (let c = 0; c < ch_COLUMNS; c++) {
-            value += getPieceValue(_board[r][c]) * parseInt((_board[r][c].includes('w')) ? 1 : -1);
+            if(_board[r][c] != ' ') {
+                value += getPieceValue(_board[r][c]) * parseInt((_board[r][c].includes('w')) ? 1 : -1);
+            }
         }
     }
     return value;
@@ -124,7 +126,7 @@ function getBestMove(_board, _colour) {
                 //if bestMove empty
                 const bestMoveKeys = Object.keys(bestMove);
                 //change best move if best moves is empty, the new value is better than the old, or randomely change if they are equal
-                if (bestMoveKeys.length === 0 || Math.abs(bestValue) < Math.abs(value) || (Math.abs(bestValue) === Math.abs(value) && getRandomInt(0, 1) === 0)) {
+                if (bestMoveKeys.length === 0 || bestValue > value || (bestValue === value && getRandomInt(0, 1) === 0)) {
                     bestValue = value;
                     delete bestMove[bestMoveKeys[0]];
                     bestMove[pieces[i]] = move;

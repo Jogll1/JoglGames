@@ -311,13 +311,8 @@ function setGame() {
             //allow pieces to be dropped on it
             squareTile.classList.add("dropTile");
 
-            //alternate light tile or dark tile (odd = light)
-            if(c % 2 == 0) {
-                squareTile.classList.add((r % 2 == 0) ? 'lightTile' : 'darkTile');
-            }
-            else {
-                squareTile.classList.add((r % 2 == 0) ? 'darkTile' : 'lightTile');
-            }
+            //alternate light tile or dark tile (odd = dark)
+            squareTile.classList.add((c + r) % 2 == 0 ? 'lightTile' : 'darkTile');
 
             //append squareTile to board
             $('#board').append(squareTile);
