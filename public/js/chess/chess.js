@@ -7,6 +7,7 @@ var ch_gameStarted = (function(){
 
     return { 
         setState : function(bToSet) {
+            console.log(bToSet);
             return gameStarted = bToSet;
         },
 
@@ -166,13 +167,16 @@ $(document).ready(function() {
         //reset the board
         resetGame();
 
-        //set game started
-        ch_gameStarted.setState(true);
-
-        //-----SOCKET-----
-        //if not playing robot, send rematch to the server
-        if(!ch_isPlayingRobot.getState()) socketSendChessRematch();
-        //----------------
+        if(ch_isPlayingRobot.getState()) {
+            ch_isMyTurn.setState(true);
+            ch_myColour.set("White");
+        }
+        else {
+            //-----SOCKET-----
+            //if not playing robot, send rematch to the server
+            socketSendChessRematch();
+            //----------------
+        }
     });
 
     //home button
@@ -415,15 +419,21 @@ function initDragDrop() {
 
 //function to call our move and retrieve opponent's move
 function sendMove(_pieceToMoveId, _tileToMoveToId) {
-    movePiece(_pieceToMoveId, _tileToMoveToId);
-    //if not playing robot, send move to opponent, else get robot move
-    if(ch_isPlayingRobot.getState()) {
-        console.log("robot move");
-    }
-    else {
-        //-----SOCKET-----
-        socketSendChessMove(_pieceToMoveId, _tileToMoveToId);
-        //----------------
+    if(movePiece(_pieceToMoveId, _tileToMoveToId)){
+        //if not playing robot, send move to opponent, else get robot move
+        if(ch_isPlayingRobot.getState()) {
+            console.log("robot move");
+
+            const ranMove = randomMove(ch_board.getBoard(), ch_myColour.oppColour());
+            if(ranMove != 'game over') {
+                movePiece(ranMove.pieceToMoveId, ranMove.tileToMoveToId);
+            }
+        }
+        else {
+            //-----SOCKET-----
+            socketSendChessMove(_pieceToMoveId, _tileToMoveToId);
+            //----------------
+        }
     }
 }
 
@@ -490,6 +500,7 @@ function setUpGame(isPlayingRobot, playerName) {
 
 //function to move a piece to the correct square
 function movePiece(pieceToMoveId, tileToMoveToId) {
+    if(pieceToMoveId == null) return;
     //get piece original coords
     let pieceToMove = $(`#${pieceToMoveId}`);
     let originalId = pieceToMove.parent().attr("id");
@@ -604,13 +615,19 @@ function movePiece(pieceToMoveId, tileToMoveToId) {
 
             //alternate turn
             ch_isMyTurn.swapState();
+
+            //moved
+            return true;
         }
     }
 
     //reset selected tile
     ch_selectedTile.setState("");
-
+    
     // logArray(ch_board.getBoard());
+
+    //not moved
+    return false;
 }
 
 //function to update the board array
@@ -837,26 +854,7 @@ function setWinner(_winningColour) {
     ch_gameStarted.setState(false);
 
     //increment score counters based on who won
-    if(_winningColour !== ch_myColour.get()) { //opponent
-        let score = parseInt($("#opponentScoreText").text());
-        $("#opponentScoreText").text(score + 1);
-
-        if(ch_isPlayingRobot.getState()) {
-            //if playing ai, say robot won
-            winnerString = "Robot wins!"; 
-        }
-        else {
-            //if playing online, say other player won
-            winnerString = `${_winningColour} wins!`;
-        }
-    }
-    else if (_winningColour === ch_myColour.get()) { //player
-        let score = parseInt($("#playerScoreText").text());
-        $("#playerScoreText").text(score + 1);
-
-        winnerString = "You win!";
-    }
-    else { //stalemate
+    if(_winningColour == "Stalemate") {
         let scoreOpponent = parseInt($("#opponentScoreText").text());
         $("#opponentScoreText").text(scoreOpponent + 1);
 
@@ -864,6 +862,27 @@ function setWinner(_winningColour) {
         $("#playerScoreText").text(scorePlayer + 1);
 
         winnerString = "Stalemate";
+    }
+    else {
+        if(_winningColour !== ch_myColour.get()) { //opponent
+            let score = parseInt($("#opponentScoreText").text());
+            $("#opponentScoreText").text(score + 1);
+    
+            if(ch_isPlayingRobot.getState()) {
+                //if playing ai, say robot won
+                winnerString = "Robot wins!"; 
+            }
+            else {
+                //if playing online, say other player won
+                winnerString = `${_winningColour} wins!`;
+            }
+        }
+        else if (_winningColour === ch_myColour.get()) { //player
+            let score = parseInt($("#playerScoreText").text());
+            $("#playerScoreText").text(score + 1);
+    
+            winnerString = "You win!";
+        }
     }
 
     endGame(winnerString);
@@ -903,6 +922,9 @@ function resetGame() {
         $('#board').addClass('rotateBlack');
         $('.pieceContainer').addClass('rotatePiece');
     }
+
+    //set game started
+    ch_gameStarted.setState(true);
 
     //set blue circle
     //remove blue circle from icons

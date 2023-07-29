@@ -117,6 +117,9 @@ function connectToSocket(roomName, username) {
         //send user back to play menu
         //reset board
         resetGame();
+        //reset scores
+        $("#opponentScoreText").text(0);
+        $("#playerScoreText").text(0);
         //remove blue circle
         $('#playerIcon').removeClass('currentGo');
         $('#opponentIcon').removeClass('currentGo');
