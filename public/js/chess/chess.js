@@ -417,10 +417,10 @@ function sendMove(_pieceToMoveId, _tileToMoveToId) {
     if(movePiece(_pieceToMoveId, _tileToMoveToId)){
         //if not playing robot, send move to opponent, else get robot move
         if(ch_isPlayingRobot.getState()) {
-            const bestMove = getBestMove(ch_board.getBoard(), ch_myColour.oppColour());
-            if(bestMove != "game over") {
-                movePiece(bestMove.pieceToMoveId, bestMove.tileToMoveToId);
-            }
+            // const bestMove = getBestMove(ch_board.getBoard(), ch_myColour.oppColour());
+            // if(bestMove != "game over") {
+            //     movePiece(bestMove.pieceToMoveId, bestMove.tileToMoveToId);
+            // }
         }
         else {
             //-----SOCKET-----

@@ -26,8 +26,8 @@ function randomMove(_board, _colour) {
     }
 }
 
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+function getRandomInt(_min, _max) {
+    return Math.floor(Math.random() * (_max - _min + 1)) + _min;
 }
 
 //function to turn piece id in format wp4 to WhitePawn4
@@ -92,8 +92,8 @@ function evaluateBoard(_board) {
     return value;
 }
 
-//function to calculate best move based on value of the board
-function getBestMove(_board, _colour) {
+//function to generate a dictionary of legal moves for a colour
+function getAllLegalMoves(_board, _colour) {
     const checkColour = (_colour == "White") ? 'w' : 'b';
     let myMoves = {};
 
@@ -108,44 +108,50 @@ function getBestMove(_board, _colour) {
         }
     }
 
+    return myMoves;
+}
+
+//minimax function to get ai's best move
+function minimax1(_board, _colour, _depth, _alpha, _beta) {
+    if(depth == 0) {
+        return evaluateBoard(_board);
+    }
+
+    //get a dictionary of all legal moves this player can make
+    const myMoves = getAllLegalMoves(_board, _colour);
     const pieces = Object.keys(myMoves);
-    let bestValue = 0;
-    let bestMove = {};
-    if(pieces.length > 0) {
-        for (let i = 0; i < pieces.length; i++) {
-            for (let j = 0; j < myMoves[pieces[i]].length; j++) {
-                console.log(`${pieces[i]} : ${myMoves[pieces[i]][j]}`);
 
-                let boardCopy = copy2DArray(_board);
-                const move = myMoves[pieces[i]][j];
-                boardCopy = performMove(boardCopy, _colour, pieces[i], move.split('-')[0], move.split('-')[1]);
-
-                const value = parseInt(evaluateBoard(boardCopy));
-                console.log(`value if play: ${value}`);
-
-                //if bestMove empty
-                const bestMoveKeys = Object.keys(bestMove);
-                //change best move if best moves is empty, the new value is better than the old, or randomely change if they are equal
-                if (bestMoveKeys.length === 0 || bestValue > value || (bestValue === value && getRandomInt(0, 1) === 0)) {
-                    bestValue = value;
-                    delete bestMove[bestMoveKeys[0]];
-                    bestMove[pieces[i]] = move;
-                    console.log(`new best value: ${value}`);
-                }
-            }
+    //if game over
+    if(pieces == 0) {
+        //if checkmate
+        if(inCheck) {
+            return -Infinity;
         }
 
-        const bestMoveKeys = Object.keys(bestMove);
-        console.log(`best move: ${bestMoveKeys[0]} => SQ${bestMove[bestMoveKeys[0]]}`)
-        return {pieceToMoveId: constructPieceId(bestMoveKeys[0]), tileToMoveToId: `SQ${bestMove[bestMoveKeys[0]]}`};
+        //if draw
+        return 0;
     }
-    else {
-        return "game over";
+
+    for (let i = 0; i < pieces.length; i++) {
+        const coords = myMoves[pieces[i]].split('-');
+        const boardCopy = copy2DArray(_board);
+        const moveBoard = performMove(boardCopy, _colour, pieces[i], coords[0], coords[1]);
+
+        const eval = minimax1(moveBoard, _colour == "White" ? "Black" : "White", _depth - 1, _alpha, _beta);
+
+        if(eval >= _beta) {
+            //prune branch
+            return _beta;
+        }
+
+        _alpha = Math.max(_alpha, eval);
     }
+
+    return _alpha;
 }
 
 //function to test a move
-function performMove(_board, _ourColour, _pieceId, _endRow, _endCol) {
+function performMove(_board, _colour, _pieceId, _endRow, _endCol) {
     const index = findIndex2DArray(_board, _pieceId);
     let newBoard = _board;
 
@@ -153,4 +159,13 @@ function performMove(_board, _ourColour, _pieceId, _endRow, _endCol) {
     newBoard[_endRow][_endCol] = _pieceId;
 
     return newBoard;
+}
+
+//function to check if a king in check
+function inCheck(_board, _colour) {
+    const colourCheck = _colour == "White" ? 'w' : 'b';
+    const kingCheck = `${colourCheck}K`;
+
+    const underThreatTiles = getUnderThreatTiles(_board, _colour);
+    return underThreatTiles.some(tile => _board[tile.split('-')[0]][tile.split('-')[1]].includes(kingCheck));
 }

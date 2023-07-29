@@ -238,6 +238,7 @@ function addValidLineMoves(_board, _startRow, _startCol, _rowDelta, _colDelta, _
 
 //function to get a list of all tiles that are under threat
 function getUnderThreatTiles(_board, _ourColour) {
+    //_ourColour is for the player who is checking if their king is in check for example
     let tiles = []
 
     const colourCheck = (_ourColour == "White") ? 'w' : 'b';

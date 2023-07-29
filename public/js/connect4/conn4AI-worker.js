@@ -2,7 +2,7 @@
 const ROWS = 6;
 const COLUMNS = 7;
 
-//minimax function to get ai's best move - so far perform minimax of depth 1
+//minimax function to get ai's best move
 function minimax3(board, depth, alpha, beta, maximisingPlayer) {
     //this array holds the order of most valuable columns
     //using this array optimises alpha beta pruning by trying to put most valuable moves first
@@ -15,10 +15,10 @@ function minimax3(board, depth, alpha, beta, maximisingPlayer) {
     if(depth == 0 || terminalState !== null) {
         if (terminalState !== null) {
             if(terminalState == "R") { //if ai won
-                return {eval: 10000000000000000000, index: null};
+                return {eval: 10000000000000, index: null};
             }
             else if(terminalState == "Y") { //if player won
-                return {eval: -10000000000000000000, index: null};
+                return {eval: -10000000000000, index: null};
             }
             else { //draw
                 return {eval: 0, index: null};
