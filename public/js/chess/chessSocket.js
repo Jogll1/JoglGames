@@ -122,6 +122,8 @@ function connectToSocket(roomName, username) {
         $('#opponentIcon').removeClass('currentGo');
         //hide player icons and score text
         $('.scoreAndIconParent').hide();
+        //hide rematch menu
+        $('.rematchMenu').hide();
         //open menu
         $('.menuBackground').show();
         $('.friendOrAIMenu').show();

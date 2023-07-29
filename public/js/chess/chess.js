@@ -166,6 +166,9 @@ $(document).ready(function() {
         //reset the board
         resetGame();
 
+        //set game started
+        ch_gameStarted.setState(true);
+
         //-----SOCKET-----
         //if not playing robot, send rematch to the server
         if(!ch_isPlayingRobot.getState()) socketSendChessRematch();
@@ -221,16 +224,7 @@ $(document).ready(function() {
                         //if empty, move selected piece to this square
                         const pieceToMove = $("#" + ch_selectedTile.getState()).children(0);
 
-                        movePiece(pieceToMove.attr("id"), $(this).attr("id"));
-                        //if not playing robot, send move to opponent, else get robot move
-                        if(ch_isPlayingRobot.getState()) {
-                            
-                        }
-                        else {
-                            //-----SOCKET-----
-                            socketSendChessMove(pieceToMove.attr("id"), $(this).attr("id"));
-                            //----------------
-                        }
+                        sendMove(pieceToMove.attr("id"), $(this).attr("id"));
                     }
 
                     //reset selected tile
@@ -414,18 +408,23 @@ function initDragDrop() {
         accept: ".pieceContainer",
         greedy: true,
         drop: function(event, ui) {
-            movePiece(ui.draggable.attr("id"), $(this).attr("id"));
-            //if not playing robot, send move to opponent, else get robot move
-            if(ch_isPlayingRobot.getState()) {
-                
-            }
-            else {
-                //-----SOCKET-----
-                socketSendChessMove(ui.draggable.attr("id"), $(this).attr("id"));
-                //----------------
-            }
+            sendMove(ui.draggable.attr("id"), $(this).attr("id"));
         }
     });
+}
+
+//function to call our move and retrieve opponent's move
+function sendMove(_pieceToMoveId, _tileToMoveToId) {
+    movePiece(_pieceToMoveId, _tileToMoveToId);
+    //if not playing robot, send move to opponent, else get robot move
+    if(ch_isPlayingRobot.getState()) {
+        console.log("robot move");
+    }
+    else {
+        //-----SOCKET-----
+        socketSendChessMove(_pieceToMoveId, _tileToMoveToId);
+        //----------------
+    }
 }
 
 //function to create a piece on the board
