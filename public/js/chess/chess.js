@@ -7,7 +7,7 @@ var ch_gameStarted = (function(){
 
     return { 
         setState : function(bToSet) {
-            console.log(bToSet);
+            // console.log(bToSet);
             return gameStarted = bToSet;
         },
 
@@ -422,8 +422,6 @@ function sendMove(_pieceToMoveId, _tileToMoveToId) {
     if(movePiece(_pieceToMoveId, _tileToMoveToId)){
         //if not playing robot, send move to opponent, else get robot move
         if(ch_isPlayingRobot.getState()) {
-            console.log("robot move");
-
             const ranMove = randomMove(ch_board.getBoard(), ch_myColour.oppColour());
             if(ranMove != 'game over') {
                 movePiece(ranMove.pieceToMoveId, ranMove.tileToMoveToId);

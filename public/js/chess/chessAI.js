@@ -1,5 +1,6 @@
 function randomMove(_board, _colour) {
-    const checkColour = _colour == "White" ? 'w' : 'b';
+    console.log(evaluateBoard(_board));
+    const checkColour = (_colour == "White") ? 'w' : 'b';
     let myMoves = {};
 
     for (let r = 0; r < ch_ROWS; r++) {
@@ -55,4 +56,36 @@ function constructPieceId(_pieceId) {
 
 
     return pieceId;
+}
+
+//function to get the value of a piece on the board
+function getPieceValue(_pieceId) {
+    //takes a pieceId in format 'wp4'
+    switch (_pieceId[1]) {
+        case 'p':
+            return 10;
+        case 'N':
+            return 30;
+        case 'B':
+            return 30;
+        case 'R':
+            return 50;
+        case 'Q':
+            return 90;
+        case 'K':
+            return 900;
+        default:
+            return 0;
+    }
+}
+
+//function to get the value of the board
+function evaluateBoard(_board) {
+    let value = 0;
+    for (let r = 0; r < ch_ROWS; r++) {
+        for (let c = 0; c < ch_COLUMNS; c++) {
+            value += getPieceValue(_board[r][c]) * parseInt((_board[r][c].includes('w')) ? 1 : -1);
+        }
+    }
+    return value;
 }
