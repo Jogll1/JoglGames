@@ -24,7 +24,7 @@ function minimax3(board, depth, alpha, beta, maximisingPlayer) {
                 return {eval: 0, index: null};
             }
         }
-        else { //depth is 1
+        else { //depth is 0
             return {eval: scoreBoard(board), index: null};
         }
     }
@@ -36,7 +36,7 @@ function minimax3(board, depth, alpha, beta, maximisingPlayer) {
         //for i in range(0, colOrder.length)
         //board[row][colOrder[col]]
         for (let col = 0; col < colOrder.length; col++) {
-            if(board[0][colOrder[col]] == ' ') { //if column empty
+            if(board[0][colOrder[col]] == ' ') { //if column has room 
                 //copy board
                 let boardCopy = copy2DArray(board);
 
@@ -53,17 +53,11 @@ function minimax3(board, depth, alpha, beta, maximisingPlayer) {
                 let eval = minimax3(boardCopy, (depth - 1), alpha, beta, false).eval;
 
                 //maxEval = Math.max(maxEval, eval);
-                if(eval > maxEval) {
+                if(eval > maxEval || eval == maxEval && Math.random > 0.5) {
                     //console.log(eval + ">" + maxEval);
                     maxEval = eval;
                     bestMove = colOrder[col];
                     //console.log("max best move = " + col);
-                }
-                else if (eval == maxEval) { //incase the evals are the same, pick a random to set as maxEval
-                    if(Math.random > 0.5) { //idk if this does anything
-                        maxEval = eval;
-                        bestMove = colOrder[col];
-                    }
                 }
 
                 //set alpha to bigger of alpha and eval
@@ -101,17 +95,11 @@ function minimax3(board, depth, alpha, beta, maximisingPlayer) {
                 let eval = minimax3(boardCopy, (depth - 1), alpha, beta, true).eval;
 
                 //minEval = Math.min(minEval, eval);
-                if(eval < minEval) {
+                if(eval < minEval || eval == minEval && Math.random > 0.5) {
                     //console.log(eval + "<" + minEval);
                     minEval = eval;
                     bestMove = colOrder[col];
                     //console.log("min best move = " + col);
-                }
-                else if (eval == minEval) { //incase the evals are the same, pick a random to set as maxEval
-                    if(Math.random > 0.5) { //idk if this does anything
-                        maxEval = eval;
-                        bestMove = colOrder[col];
-                    }
                 }
 
                 //set alpha to bigger of alpha and eval
@@ -400,7 +388,6 @@ function evaluatePos(board, col, row, pieceToCheck) {
 
 //function to get the score of the board (from ai's pov)
 function scoreBoard(board) {
-    //yep
     let score = 0;
     let aiPiece = "R";
     let playerPiece = "Y";
@@ -428,7 +415,7 @@ function scoreBoard(board) {
 }
 //#endregion
 
-//#region other utility functions
+//#region Other utility functions
 //function to check if a game is at a terminal state (win or draw)
 function isTerminalState(board) {
     //check all directions - this can probably be optimised

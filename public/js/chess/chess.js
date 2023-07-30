@@ -1,6 +1,21 @@
 const ch_ROWS = 8;
 const ch_COLUMNS = 8;
 
+//#region Web worker
+//create a worker instance
+const ch_aiWorker = new Worker('../js/chess/chessAI-worker.js');
+
+//set up the message event listener to recieve ai moves from the worker
+ch_aiWorker.onmessage = function(event) {
+    const aiMove = event.data;
+
+    //perform ai's move
+    if(aiMove != "game over") {
+        movePiece(bestMove.pieceToMoveId, bestMove.tileToMoveToId);
+    }
+}
+//#endregion
+
 //#region globals
 var ch_gameStarted = (function(){ 
     var gameStarted = false; 
@@ -417,10 +432,21 @@ function sendMove(_pieceToMoveId, _tileToMoveToId) {
     if(movePiece(_pieceToMoveId, _tileToMoveToId)){
         //if not playing robot, send move to opponent, else get robot move
         if(ch_isPlayingRobot.getState()) {
-            // const bestMove = getBestMove(ch_board.getBoard(), ch_myColour.oppColour());
-            // if(bestMove != "game over") {
-            //     movePiece(bestMove.pieceToMoveId, bestMove.tileToMoveToId);
-            // }
+            //send the board state to the aiworker for it to calculate its move
+            let depth = 4; 
+                    
+            //set the message to be sent
+            const message = {
+                _board: ch_board.getBoard(),
+                _depth: depth,
+                _colour: ch_myColour.oppColour()
+            }
+
+            //add minimum time limit to send the move
+            let minTime = 450;
+            setTimeout(function() { 
+                ch_aiWorker.postMessage(message) 
+            }, minTime);
         }
         else {
             //-----SOCKET-----
