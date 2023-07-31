@@ -3,19 +3,19 @@ const ROWS = 8;
 const COLUMNS = 8;
 
 //minimax function to get ai's best move
-function minimax1(_board, _colour, _depth, _alpha, _beta, _maximisingPlayer) {
+function minimax1(_board, _movedPieces, _colour, _depth, _alpha, _beta, _maximisingPlayer) {
     if(_depth == 0) {
         return {eval: evaluateBoard(_board), bestMove: null};
     }
 
     //get a dictionary of all legal moves this player can make
-    const myMoves = getAllLegalMoves(_board, _colour);
+    const myMoves = getAllLegalMoves(_board, _movedPieces, _colour);
     const pieces = Object.keys(myMoves);
 
     //if game over
     if(pieces == 0) {
         //if checkmate
-        if(inCheck(_board, _colour)) {
+        if(inCheck(_board, _movedPieces, _colour)) {
             return {eval: Number.NEGATIVE_INFINITY, bestMove: null};
         }
 
@@ -34,9 +34,9 @@ function minimax1(_board, _colour, _depth, _alpha, _beta, _maximisingPlayer) {
 
                 //perform move
                 const move = myMoves[pieces[i]][j];
-                const moveBoard = performMove(boardCopy, _colour, pieces[i], move.split('-')[0], move.split('-')[1]);
+                const moveBoard = performMove(boardCopy, movedPieces, _colour, pieces[i], move.split('-')[0], move.split('-')[1]);
 
-                const eval = minimax1(moveBoard, _colour == "White" ? "Black" : "White", _depth - 1, _alpha, _beta, false).eval;
+                const eval = minimax1(moveBoard.board, moveBoard.movedPieces, _colour == "White" ? "Black" : "White", _depth - 1, _alpha, _beta, false).eval;
 
                 if(eval > maxEval || eval == maxEval && Math.random > 0.5) {
                     maxEval = eval;
@@ -67,9 +67,9 @@ function minimax1(_board, _colour, _depth, _alpha, _beta, _maximisingPlayer) {
 
                 //perform move
                 const move = myMoves[pieces[i]][j];
-                const moveBoard = performMove(boardCopy, _colour, pieces[i], move.split('-')[0], move.split('-')[1]);
+                const moveBoard = performMove(boardCopy, movedPieces, _colour, pieces[i], move.split('-')[0], move.split('-')[1]);
 
-                const eval = minimax1(moveBoard, _colour == "White" ? "Black" : "White", _depth - 1, _alpha, _beta, true).eval;
+                const eval = minimax1(moveBoard.board, moveBoard.movedPieces, _colour == "White" ? "Black" : "White", _depth - 1, _alpha, _beta, true).eval;
 
                 if(eval < minEval || eval == maxEval && Math.random > 0.5) {
                     maxEval = eval;
@@ -101,6 +101,7 @@ function evaluateBoard(_board) {
             }
         }
     }
+    
     return value;
 }
 
@@ -144,7 +145,6 @@ function constructPieceId(_pieceId) {
         pieceId = `${colour}King${num}`;
     }
 
-
     return pieceId;
 }
 
@@ -170,23 +170,23 @@ function getPieceValue(_pieceId) {
 }
 
 //function to check if a king in check
-function inCheck(_board, _colour) {
+function inCheck(_board, _movedPieces, _colour) {
     const colourCheck = _colour == "White" ? 'w' : 'b';
     const kingCheck = `${colourCheck}K`;
 
-    const underThreatTiles = getUnderThreatTiles(_board, _colour);
+    const underThreatTiles = getUnderThreatTiles(_board, _movedPieces, _colour);
     return underThreatTiles.some(tile => _board[tile.split('-')[0]][tile.split('-')[1]].includes(kingCheck));
 }
 
 //function to generate a dictionary of legal moves for a colour
-function getAllLegalMoves(_board, _colour) {
+function getAllLegalMoves(_board, _movedPieces, _colour) {
     const checkColour = (_colour == "White") ? 'w' : 'b';
     let myMoves = {};
 
     for (let r = 0; r < ROWS; r++) {
         for (let c = 0; c < COLUMNS; c++) {
             if(_board[r][c].includes(checkColour)) {
-                let pieceMoves = getValidMoves(_board, r, c, true);
+                let pieceMoves = getValidMoves(_board, _movedPieces, r, c, true);
                 if(pieceMoves.length > 0) {
                     myMoves[_board[r][c]] = pieceMoves;
                 }
@@ -198,28 +198,56 @@ function getAllLegalMoves(_board, _colour) {
 }
 
 //function to test a move
-function performMove(_board, _colour, _pieceId, _endRow, _endCol) {
+function performMove(_board, _movedPieces, _colour, _pieceId, _endRow, _endCol) {
     const index = findIndex2DArray(_board, _pieceId);
     let newBoard = copy2DArray(_board);
 
     newBoard[index.row][index.column] = " ";
     newBoard[_endRow][_endCol] = _pieceId;
 
-    return newBoard;
+    newMovedPieces = _movedPieces.push(_pieceId);
+
+    return {board: newBoard, movedPieces: newMovedPieces};
 }
 
 //function to get all valid moves based on the piece type
-function getValidMoves(_board, _startRow, _startCol, _runRecursively) {
+function getValidMoves(_board, _movedPieces, _startRow, _startCol, _runRecursively) {
     //piece id should be like wp2
     let _validMoves = [];
 
+    let pieceId = board[startRow][startCol]; //wp0 or bN1 etc
+
+    const isWhite = pieceId.includes('w');
+    const isFirstTurn = !_movedPieces.includes(pieceId);
+    const pattern = new Pattern(board, isWhite, startRow, startCol, runRecursively);
     
+    if(pieceId.includes('p')) {
+        _validMoves = pattern.getValidPawnMoves(isFirstTurn);
+    }
+    else if(pieceId.includes('N')) {
+        _validMoves = pattern.getValidKnightMoves();
+    }
+    else if(pieceId.includes('B')) {
+        _validMoves = pattern.getValidBishopMoves();
+    }
+    else if(pieceId.includes('R')) {
+        _validMoves = pattern.getValidRookMoves();
+    }
+    else if(pieceId.includes('Q')) {
+        _validMoves = pattern.getValidQueenMoves();
+    }
+    else if(pieceId.includes('K')) {
+        _validMoves = pattern.getValidKingMoves(isFirstTurn);
+    }
+    else {
+        console.log("Error: invalid piece type");
+    }
 
     return _validMoves;
 }
 
 //function to get a list of all tiles that are under threat
-function getUnderThreatTiles(_board, _ourColour) {
+function getUnderThreatTiles(_board, _movedPieces, _ourColour) {
     //_ourColour is for the player who is checking if their king is in check for example
     let tiles = []
 
@@ -228,7 +256,7 @@ function getUnderThreatTiles(_board, _ourColour) {
     for (let r = 0; r < ROWS; r++) {
         for (let c = 0; c < COLUMNS; c++) {
             if(!_board[r][c].includes(colourCheck) && _board[r][c] !== ' ') {
-                tiles = tiles.concat(getValidMoves(_board, r, c, false));
+                tiles = tiles.concat(getValidMoves(_board, _movedPieces, r, c, false));
             }
         }
     }
@@ -267,8 +295,9 @@ self.addEventListener('message', function(event) {
     const board = event.data._board;
     const depth = event.data._depth;
     const colour = event.data._colour;
+    const movedPieces = event.data._movedPieces;
 
-    const bestMove = getBestMove(board, colour, depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).bestMove;
+    const bestMove = getBestMove(board, movedPieces, colour, depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).bestMove;
 
     setTimeout(this.self.postMessage(bestMove), 2000); //supposed to speed it up by sending bestmove
 })

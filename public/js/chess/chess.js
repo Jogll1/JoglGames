@@ -11,7 +11,8 @@ ch_aiWorker.onmessage = function(event) {
 
     //perform ai's move
     if(aiMove != "game over") {
-        movePiece(bestMove.pieceToMoveId, bestMove.tileToMoveToId);
+        // movePiece(bestMove.pieceToMoveId, bestMove.tileToMoveToId);
+        console.log("wip");
     }
 }
 //#endregion
@@ -439,7 +440,8 @@ function sendMove(_pieceToMoveId, _tileToMoveToId) {
             const message = {
                 _board: ch_board.getBoard(),
                 _depth: depth,
-                _colour: ch_myColour.oppColour()
+                _colour: ch_myColour.oppColour(),
+                _movedPieces: ch_movedPieces.get()
             }
 
             //add minimum time limit to send the move
