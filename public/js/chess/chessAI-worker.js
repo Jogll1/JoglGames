@@ -1,21 +1,27 @@
+import { Chess } from 'chess.js'
+
+//to bundle with chess.js so this works use npx rollup -c
+
 //this script is ran in the background by a web worker
 const ROWS = 8;
 const COLUMNS = 8;
 
+//#region old/needs-reworking code
+//#region Minimax
 //minimax function to get ai's best move
-function minimax1(_board, _movedPieces, _colour, _depth, _alpha, _beta, _maximisingPlayer) {
+function minimax1(_board, _colour, _depth, _alpha, _beta, _maximisingPlayer) {
     if(_depth == 0) {
         return {eval: evaluateBoard(_board), bestMove: null};
     }
 
     //get a dictionary of all legal moves this player can make
-    const myMoves = getAllLegalMoves(_board, _movedPieces, _colour);
+    const myMoves = getAllLegalMoves(_board, _colour);
     const pieces = Object.keys(myMoves);
 
     //if game over
     if(pieces == 0) {
         //if checkmate
-        if(inCheck(_board, _movedPieces, _colour)) {
+        if(inCheck(_board, _colour)) {
             return {eval: Number.NEGATIVE_INFINITY, bestMove: null};
         }
 
@@ -36,17 +42,17 @@ function minimax1(_board, _movedPieces, _colour, _depth, _alpha, _beta, _maximis
                 const move = myMoves[pieces[i]][j];
                 const moveBoard = performMove(boardCopy, movedPieces, _colour, pieces[i], move.split('-')[0], move.split('-')[1]);
 
-                const eval = minimax1(moveBoard.board, moveBoard.movedPieces, _colour == "White" ? "Black" : "White", _depth - 1, _alpha, _beta, false).eval;
+                const newEval = minimax1(moveBoard, _colour == "White" ? "Black" : "White", _depth - 1, _alpha, _beta, false).eval;
 
-                if(eval > maxEval || eval == maxEval && Math.random > 0.5) {
-                    maxEval = eval;
+                if(newEval > maxEval || newEval == maxEval && Math.random > 0.5) {
+                    maxEval = newEval;
 
                     delete bestMove[Object.keys(bestMove)[0]];
                     bestMove[pieces[i]] = myMoves[pieces[i]][j];
                 }
 
                 //set alpha to bigger of alpha and eval
-                _alpha = Math.max(_alpha, eval);
+                _alpha = Math.max(_alpha, newEval);
 
                 //beta cutoff
                 if(_beta <= _alpha) break;
@@ -69,17 +75,17 @@ function minimax1(_board, _movedPieces, _colour, _depth, _alpha, _beta, _maximis
                 const move = myMoves[pieces[i]][j];
                 const moveBoard = performMove(boardCopy, movedPieces, _colour, pieces[i], move.split('-')[0], move.split('-')[1]);
 
-                const eval = minimax1(moveBoard.board, moveBoard.movedPieces, _colour == "White" ? "Black" : "White", _depth - 1, _alpha, _beta, true).eval;
+                const newEval = minimax1(moveBoard, _colour == "White" ? "Black" : "White", _depth - 1, _alpha, _beta, true).eval;
 
-                if(eval < minEval || eval == maxEval && Math.random > 0.5) {
-                    maxEval = eval;
+                if(newEval < minEval || newEval == maxEval && Math.random > 0.5) {
+                    maxEval = newEval;
 
                     delete bestMove[Object.keys(bestMove)[0]];
                     bestMove[pieces[i]] = myMoves[pieces[i]][j];
                 }
 
                 //set alpha to bigger of alpha and eval
-                _beta = Math.min(_beta, eval);
+                _beta = Math.min(_beta, newEval);
 
                 //alpha cutoff
                 if(_beta <= _alpha) break;
@@ -119,6 +125,7 @@ function getBestMove(_board, _colour) {
         return "game over";
     }
 }
+//#endregion
 
 //#region AI Utility functions
 //function to turn piece id in format wp4 to WhitePawn4
@@ -169,100 +176,6 @@ function getPieceValue(_pieceId) {
     }
 }
 
-//function to check if a king in check
-function inCheck(_board, _movedPieces, _colour) {
-    const colourCheck = _colour == "White" ? 'w' : 'b';
-    const kingCheck = `${colourCheck}K`;
-
-    const underThreatTiles = getUnderThreatTiles(_board, _movedPieces, _colour);
-    return underThreatTiles.some(tile => _board[tile.split('-')[0]][tile.split('-')[1]].includes(kingCheck));
-}
-
-//function to generate a dictionary of legal moves for a colour
-function getAllLegalMoves(_board, _movedPieces, _colour) {
-    const checkColour = (_colour == "White") ? 'w' : 'b';
-    let myMoves = {};
-
-    for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLUMNS; c++) {
-            if(_board[r][c].includes(checkColour)) {
-                let pieceMoves = getValidMoves(_board, _movedPieces, r, c, true);
-                if(pieceMoves.length > 0) {
-                    myMoves[_board[r][c]] = pieceMoves;
-                }
-            }
-        }
-    }
-
-    return myMoves;
-}
-
-//function to test a move
-function performMove(_board, _movedPieces, _colour, _pieceId, _endRow, _endCol) {
-    const index = findIndex2DArray(_board, _pieceId);
-    let newBoard = copy2DArray(_board);
-
-    newBoard[index.row][index.column] = " ";
-    newBoard[_endRow][_endCol] = _pieceId;
-
-    newMovedPieces = _movedPieces.push(_pieceId);
-
-    return {board: newBoard, movedPieces: newMovedPieces};
-}
-
-//function to get all valid moves based on the piece type
-function getValidMoves(_board, _movedPieces, _startRow, _startCol, _runRecursively) {
-    //piece id should be like wp2
-    let _validMoves = [];
-
-    let pieceId = board[startRow][startCol]; //wp0 or bN1 etc
-
-    const isWhite = pieceId.includes('w');
-    const isFirstTurn = !_movedPieces.includes(pieceId);
-    const pattern = new Pattern(board, isWhite, startRow, startCol, runRecursively);
-    
-    if(pieceId.includes('p')) {
-        _validMoves = pattern.getValidPawnMoves(isFirstTurn);
-    }
-    else if(pieceId.includes('N')) {
-        _validMoves = pattern.getValidKnightMoves();
-    }
-    else if(pieceId.includes('B')) {
-        _validMoves = pattern.getValidBishopMoves();
-    }
-    else if(pieceId.includes('R')) {
-        _validMoves = pattern.getValidRookMoves();
-    }
-    else if(pieceId.includes('Q')) {
-        _validMoves = pattern.getValidQueenMoves();
-    }
-    else if(pieceId.includes('K')) {
-        _validMoves = pattern.getValidKingMoves(isFirstTurn);
-    }
-    else {
-        console.log("Error: invalid piece type");
-    }
-
-    return _validMoves;
-}
-
-//function to get a list of all tiles that are under threat
-function getUnderThreatTiles(_board, _movedPieces, _ourColour) {
-    //_ourColour is for the player who is checking if their king is in check for example
-    let tiles = []
-
-    const colourCheck = (_ourColour == "White") ? 'w' : 'b';
-
-    for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLUMNS; c++) {
-            if(!_board[r][c].includes(colourCheck) && _board[r][c] !== ' ') {
-                tiles = tiles.concat(getValidMoves(_board, _movedPieces, r, c, false));
-            }
-        }
-    }
-
-    return tiles;
-}
 //#endregion
 
 //#region Other utility functions
@@ -289,16 +202,87 @@ function copy2DArray(originalArray) {
     return copiedArray;
 }
 //#endregion
+//#endregion
+
+//#region chess utilities
+//function to convert my way of storing chess moves to a fen string
+function convertMyChessArrayToFEN(_board, _toMove, _castleBools, _epTargetSq, _halfMoveClock, _fullmoveNo) {
+    //castle bools is an array like [kingsideW, queensideW, kingsideB, queensideB]
+    //_epTargeSq is the square a pawn has just doubled moved over
+    let fenString = '';
+    const toMove = _toMove == "White" ? 'w' : 'b';
+
+    //ranks
+    let gapCounter = 0;
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLUMNS; c++) {
+            if (_board[r][c] == ' ') {
+                gapCounter += 1;
+            }
+            else {
+                if (gapCounter > 0) fenString = fenString.concat(gapCounter);
+                gapCounter = 0;
+                let toAppend = gapCounter;
+                if (_board[r][c].includes('w')) {
+                    toAppend = _board[r][c][1].toUpperCase();
+                }
+                else if (_board[r][c].includes('b')) {
+                    toAppend = _board[r][c][1].toLowerCase();
+                }
+                fenString = fenString.concat(toAppend);
+            }
+        }
+        if (gapCounter > 0) fenString = fenString.concat(gapCounter);
+        fenString = (r < 7) ? fenString.concat('/') : fenString.concat(' ');
+        gapCounter = 0;
+    }
+
+    //castling string
+    let castlingString = '';
+    const castlingChars = ['K', 'Q', 'k', 'q'];
+    if(_castleBools.length > 0) {
+        for(let i = 0; i < _castleBools.length; i++) {
+            if(_castleBools[i]) {
+                castlingString = castlingString.concat(castlingChars[i]);
+            }
+        }
+
+        //if castling string still empty
+        if(castlingString == '') {
+            castlingString = '-';
+        }
+    }
+
+    fenString = fenString.concat(`${toMove} ${castlingString} ${_epTargetSq} ${_halfMoveClock} ${_fullmoveNo}`);
+    return fenString;
+}
+//#endregion
+
+function chessJsTest() {
+    const chess = new Chess();
+
+    //possible solution
+    //convert my game state into a fen then use it with this library?
+
+    //import starting fen
+    chess.load('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
+
+    const board = chess.board();
+
+    return chess.pgn();
+}
 
 //#region -----------Web Worker stuff-----------
 self.addEventListener('message', function(event) {
+    console.log("yo");
     const board = event.data._board;
     const depth = event.data._depth;
     const colour = event.data._colour;
     const movedPieces = event.data._movedPieces;
 
-    const bestMove = getBestMove(board, movedPieces, colour, depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).bestMove;
+    // const bestMove = getBestMove(board, movedPieces, colour, depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).bestMove;
 
-    setTimeout(this.self.postMessage(bestMove), 2000); //supposed to speed it up by sending bestmove
+    const msg = `msg: ${chessJsTest()}`;
+    setTimeout(this.self.postMessage(msg), 2000); //supposed to speed it up by sending bestmove
 })
 //#endregion

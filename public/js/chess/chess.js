@@ -3,7 +3,7 @@ const ch_COLUMNS = 8;
 
 //#region Web worker
 //create a worker instance
-const ch_aiWorker = new Worker('../js/chess/chessAI-worker.js');
+const ch_aiWorker = new Worker('../js/chess/bundle-chessWorker.js', { type: 'module' });
 
 //set up the message event listener to recieve ai moves from the worker
 ch_aiWorker.onmessage = function(event) {
@@ -12,8 +12,12 @@ ch_aiWorker.onmessage = function(event) {
     //perform ai's move
     if(aiMove != "game over") {
         // movePiece(bestMove.pieceToMoveId, bestMove.tileToMoveToId);
-        console.log("wip");
+        console.log(aiMove);
     }
+}
+
+ch_aiWorker.onerror = function(event) {
+    console.log(`Error with worker: ${event}`);
 }
 //#endregion
 
@@ -447,7 +451,7 @@ function sendMove(_pieceToMoveId, _tileToMoveToId) {
             //add minimum time limit to send the move
             let minTime = 450;
             setTimeout(function() { 
-                ch_aiWorker.postMessage(message) 
+                ch_aiWorker.postMessage(message);
             }, minTime);
         }
         else {

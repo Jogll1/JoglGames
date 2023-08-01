@@ -10,7 +10,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "chess.js": "^1.0.0-beta.6",
     "express": "^4.18.2",
     "socket.io": "^4.7.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.3",
+    "@rollup/plugin-node-resolve": "^15.1.0",
+    "rollup": "^3.27.0"
   }
 }
