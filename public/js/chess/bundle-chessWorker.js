@@ -1978,7 +1978,7 @@ function minimax1(_chess, _depth, _toMove, _alpha, _beta, _maximisingPlayer) {
             //perform move
             _chess.move(myMoves[i].san);
 
-            const newEval = minimax1(_chess, _depth - 1, _toMove == "White" ? "Black" : "White", _alpha, _beta, false).eval;
+            const newEval = -minimax1(_chess, _depth - 1, _toMove == "White" ? "Black" : "White", _alpha, _beta, false).eval;
 
             //undo move
             _chess.undo();
@@ -2006,7 +2006,7 @@ function minimax1(_chess, _depth, _toMove, _alpha, _beta, _maximisingPlayer) {
             //perform move
             _chess.move(myMoves[i].san);
 
-            const newEval = minimax1(_chess, _depth - 1, _toMove == "White" ? "Black" : "White", _alpha, _beta, true).eval;
+            const newEval = -minimax1(_chess, _depth - 1, _toMove == "White" ? "Black" : "White", _alpha, _beta, true).eval;
 
             //undo move
             _chess.undo();
