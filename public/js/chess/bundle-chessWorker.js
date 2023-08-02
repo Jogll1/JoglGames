@@ -1837,10 +1837,13 @@ class Chess {
 
 //#endregion
 
+const ROWS = 8;
+const COLUMNS = 8;
+
 //#region chess utilities
 //function to convert my way of storing chess moves to a fen string
-function convertMyChessArrayToFEN(_board, _toMove, _castleBools, _epTargetSq, _halfmoveClock, _fullmoveNo) {
-    //castle bools is an array like [kingsideW, queensideW, kingsideB, queensideB]
+function convertMyChessArrayToFEN(_board, _toMove, _castles, _epTargetSq, _halfmoveClock, _fullmoveNo) {
+    //castles is an array in order ['K', 'Q', 'k', 'q']
     //_epTargeSq is the square a pawn has just doubled moved over
     let fenString = '';
     const toMove = _toMove == "White" ? 'w' : 'b';
@@ -1871,20 +1874,7 @@ function convertMyChessArrayToFEN(_board, _toMove, _castleBools, _epTargetSq, _h
     }
 
     //castling string
-    let castlingString = '';
-    const castlingChars = ['K', 'Q', 'k', 'q'];
-    if(_castleBools.length > 0) {
-        for(let i = 0; i < _castleBools.length; i++) {
-            if(_castleBools[i]) {
-                castlingString = castlingString.concat(castlingChars[i]);
-            }
-        }
-
-        //if castling string still empty
-        if(castlingString == '') {
-            castlingString = '-';
-        }
-    }
+    const castlingString = _castles.length > 0 ? _castles.join('') : '-';
 
     fenString = fenString.concat(`${toMove} ${castlingString} ${_epTargetSq} ${_halfmoveClock} ${_fullmoveNo}`);
     return fenString;
@@ -1905,14 +1895,15 @@ self.addEventListener('message', function(event) {
     const board = event.data._board;
     const depth = event.data._depth;
     const toMove = event.data._colourToMove;
-    const castleBools = event.data._castleBools;
+    const castles = event.data._castles;
+    const epTargetSq = event.data._epTargetSq;
     const halfmoveClock = event.data._halfmoveClock;
     const fullmoveNo = event.data._fullmoveNo;
 
-    // const fenString = convertMyChessArrayToFEN(board, toMove)
+    const fenString = convertMyChessArrayToFEN(board, toMove, castles, epTargetSq, halfmoveClock, fullmoveNo);
 
     // const bestMove = getBestMove(board, movedPieces, colour, depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).bestMove;
 
-    setTimeout(this.self.postMessage(chessJsTest()), 2000); //supposed to speed it up by sending bestmove
+    setTimeout(this.self.postMessage(fenString), 2000); //supposed to speed it up by sending bestmove
 });
 //#endregion

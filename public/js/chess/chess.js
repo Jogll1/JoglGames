@@ -3,7 +3,7 @@ const ch_COLUMNS = 8;
 
 //#region Web worker
 //create a worker instance
-const ch_aiWorker = new Worker('../js/chess/bundle-chessWorker.js', { type: 'module' });
+const ch_aiWorker = new Worker('../js/chess/bundle-chessWorker.js');
 
 //set up the message event listener to recieve ai moves from the worker
 ch_aiWorker.onmessage = function(event) {
@@ -136,6 +136,7 @@ var ch_isPlayingRobot = (function() {
     }
 })();
 
+//#region FEN conversion variables
 //keep list of castles that are left
 var ch_castles = (function() {
     var castles = ['K', 'Q', 'k', 'q'];
@@ -150,7 +151,22 @@ var ch_castles = (function() {
         },
 
         get : function() {
-            return movedPieces;
+            return castles;
+        }
+    }
+})();
+
+//keep track of this player's colour
+var ch_epTargetSq = (function(){
+    var epTargetSq = '-';
+
+    return {
+        set : function(value) {
+            return epTargetSq = value;
+        },
+
+        get : function() {
+            return epTargetSq;
         }
     }
 })();
@@ -192,6 +208,7 @@ var ch_fullmoveNo = (function() {
         }
     }
 })();
+//#endregion
 //#endregion
 
 //when document loads up
@@ -498,12 +515,12 @@ function sendMove(_pieceToMoveId, _tileToMoveToId) {
             let depth = 4; 
                     
             //set the message to be sent
-            castleBools = [];
             const message = {
                 _board: ch_board.getBoard(),
                 _depth: depth,
                 _colourToMove: ch_myColour.oppColour(),
-                _castleBools: castleBools,
+                _castles: ch_castles.get(),
+                _epTargetSq: ch_epTargetSq.get(),
                 _halfmoveClock: ch_halfmoveClock.get(),
                 _fullmoveNo: ch_fullmoveNo.get()
             }
@@ -700,6 +717,34 @@ function movePiece(pieceToMoveId, tileToMoveToId) {
             const checkColour = ch_isMyTurn.getState() ? ch_myColour.oppColour() : ch_myColour.get();
             checkGameOver(ch_board.getBoard(), checkColour);
 
+            //#region FEN conversion
+            //set castles array
+            const colourChar = (ourColour === "White") ? 'w' : 'b';        
+            if(ch_movedPieces.get().includes(`${colourChar}K${0}`)) {
+                //if can't castle anymore
+                ch_castles.remove(ourColour == "White" ? 'Q' : 'q');
+                ch_castles.remove(ourColour == "White" ? 'K' : 'k');
+            }
+            else if (ch_movedPieces.get().includes(`${colourChar}R${0}`)) {
+                ch_castles.remove(ourColour == "White" ? 'Q' : 'q');
+            }
+            else if (ch_movedPieces.get().includes(`${colourChar}R${1}`)) {
+                ch_castles.remove(ourColour == "White" ? 'K' : 'k');
+            }
+
+            //update ep target square if pawn takes the double step
+            if(pieceToMoveId.includes('Pawn')) {
+                if(Math.abs(parseInt(coords[0]) - parseInt(originalCoords[0])) === 2 && originalCoords[1] == coords[1]) {
+                    //probably need a better way to convert nums to algebraic coord
+                    const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+                    const ranks = [8, 7, 6, 5, 4, 3, 2, 1];
+                    ch_epTargetSq.set(`${files[coords[1]]}${ranks[parseInt(coords[0]) + parseInt(ourColour === "White" ? 1 : -1)]}`);
+                }
+            }
+            else {
+                ch_epTargetSq.set('-');
+            }
+
             //increment fullmove number if blacks moved
             if(pieceToMoveId.includes("Black")) {
                 ch_fullmoveNo.increment();
@@ -712,6 +757,7 @@ function movePiece(pieceToMoveId, tileToMoveToId) {
             else {
                 ch_halfmoveClock.set(0);
             }
+            //#endregion
 
             //alternate turn
             ch_isMyTurn.swapState();
@@ -1023,8 +1069,10 @@ function resetGame() {
         $('.pieceContainer').addClass('rotatePiece');
     }
 
-    //reset castle bool container
+    //reset castles array
     ch_castles.reset();
+    //reset en passant target square
+    ch_epTargetSq.set('-');
     //reset halfmove clock
     ch_halfmoveClock.set(0);
     //reset fullmove number
