@@ -1982,7 +1982,7 @@ function minimax1(_chess, _depth, _alpha, _beta, _maximisingPlayer) {
     const myMoves = _chess.moves({ verbose: true });
 
     //if game over
-    if(_chess.inCheck() || _chess.isCheckmate()) {
+    if(_chess.isCheckmate()) {
         //if checkmate
         return {eval: Number.NEGATIVE_INFINITY, bestMove: null};
     }
@@ -2000,11 +2000,11 @@ function minimax1(_chess, _depth, _alpha, _beta, _maximisingPlayer) {
             _chess.move(myMoves[i].san);
 
             const newEval = minimax1(_chess, _depth - 1, _alpha, _beta, false).eval;
-
+            console.log(`${newEval} for ${myMoves[i].san}. maxEval: ${maxEval}`);
             //undo move
             _chess.undo();
 
-            if(newEval > maxEval || newEval == maxEval && Math.random > 0.5) {
+            if(newEval > maxEval || newEval == maxEval && getRandomInt(0, 1) == 0) {
                 maxEval = newEval;
 
                 bestMove = myMoves[i];
@@ -2028,11 +2028,11 @@ function minimax1(_chess, _depth, _alpha, _beta, _maximisingPlayer) {
             _chess.move(myMoves[i].san);
 
             const newEval = minimax1(_chess, _depth - 1, _alpha, _beta, true).eval;
-
+            console.log(`${newEval} for ${myMoves[i].san}. maxEval: ${minEval}`);
             //undo move
             _chess.undo();
 
-            if(newEval < minEval || newEval == maxEval && Math.random > 0.5) {
+            if(newEval < minEval || newEval == maxEval && getRandomInt(0, 1) == 0) {
                 maxEval = newEval;
 
                 bestMove = myMoves[i];

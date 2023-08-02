@@ -11,6 +11,7 @@ ch_aiWorker.onmessage = function(event) {
 
     //perform ai's move
     if(bestMove != "game over") {
+        console.log(bestMove);
         movePiece(bestMove.pieceToMoveId, bestMove.tileToMoveToId);
     }
 }
