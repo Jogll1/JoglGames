@@ -175,7 +175,6 @@ function getPieceValue(_pieceId) {
             return 0;
     }
 }
-
 //#endregion
 
 //#region Other utility functions
