@@ -512,7 +512,7 @@ function sendMove(_pieceToMoveId, _tileToMoveToId) {
         //if not playing robot, send move to opponent, else get robot move
         if(ch_isPlayingRobot.getState()) {
             //send the board state to the aiworker for it to calculate its move
-            let depth = 4; 
+            let depth = 3; 
                     
             //set the message to be sent
             const message = {
@@ -739,6 +739,9 @@ function movePiece(pieceToMoveId, tileToMoveToId) {
                     const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
                     const ranks = [8, 7, 6, 5, 4, 3, 2, 1];
                     ch_epTargetSq.set(`${files[coords[1]]}${ranks[parseInt(coords[0]) + parseInt(ourColour === "White" ? 1 : -1)]}`);
+                }
+                else {
+                    ch_epTargetSq.set('-');
                 }
             }
             else {

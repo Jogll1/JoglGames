@@ -1929,20 +1929,170 @@ function getPieceValue(_pieceId) {
 }
 
 //function to get the value of the board
-function evaluateBoard(_board) {
+function evaluateBoard(_board, _colourToMove) {
     //using chess.board() which is a 2d array with 8 arrays, each array has 8 values, each value is a dictionary containing piece data
-    let value = 0;
+    let whiteEval = 0;
+    let blackEval = 0;
     for (let i = 0; i < _board.length; i++) {
         for (let j = 0; j < _board[i].length; j++) {
             const piece = _board[i][j];
             if(piece !== null) {
                 //check the dict
-                value += getPieceValue(piece.type) * parseInt(piece.color == 'w' ? 1 : -1);
+                piece.color == 'w' ? whiteEval += getPieceValue(piece.type) : blackEval += getPieceValue(piece.type);
             }
         }
     }
     
-    return value;
+    return (whiteEval - blackEval) * parseInt(_colourToMove == "White" ? 1 : -1);
+}
+//#endregion
+
+//#region Minimax
+//minimax function to get ai's best move
+function minimax1(_chess, _depth, _toMove, _alpha, _beta, _maximisingPlayer) {
+    if(_depth === 0) {
+        return {eval: evaluateBoard(_chess.board(), _toMove), bestMove: null};
+    }
+
+    //get a list of all legal moves this player can make
+    const myMoves = _chess.moves({ verbose: true });
+
+    //if game over
+    if(myMoves.length == 0) {
+        if(_chess.isCheckmate()) {
+            //if checkmate
+            return {eval: Number.NEGATIVE_INFINITY, bestMove: null};
+        }
+        else if(_chess.isDraw() || _chess.isStalemate() || _chess.isThreefoldRepetition()) {
+            // if draw
+            return {eval: 0, bestMove: null};
+        }
+        return {eval: 0, bestMove: null};
+    }
+
+    if(_maximisingPlayer) {
+        let maxEval = Number.NEGATIVE_INFINITY;
+        let bestMove = {};
+
+        for (let i = 0; i < myMoves.length; i++) {
+            //perform move
+            _chess.move(myMoves[i].san);
+
+            const newEval = minimax1(_chess, _depth - 1, _toMove == "White" ? "Black" : "White", _alpha, _beta, false).eval;
+
+            //undo move
+            _chess.undo();
+
+            if(newEval > maxEval || newEval == maxEval && getRandomInt(0, 1) == 0) {
+                maxEval = newEval;
+
+                bestMove = myMoves[i];
+            }
+
+            //set alpha to bigger of alpha and eval
+            _alpha = Math.max(_alpha, maxEval);
+
+            //beta cutoff
+            if(_beta <= _alpha) break;
+        }
+
+        return {eval: maxEval, bestMove: bestMove};
+    }
+    else {
+        let minEval = Number.POSITIVE_INFINITY;
+        let bestMove = '';
+
+        for (let i = 0; i < myMoves.length; i++) {
+            //perform move
+            _chess.move(myMoves[i].san);
+
+            const newEval = minimax1(_chess, _depth - 1, _toMove == "White" ? "Black" : "White", _alpha, _beta, true).eval;
+
+            //undo move
+            _chess.undo();
+
+            if(newEval < minEval || newEval == minEval && getRandomInt(0, 1) == 0) {
+                minEval = newEval;
+
+                bestMove = myMoves[i];
+            }
+
+            //set alpha to bigger of alpha and eval
+            _beta = Math.min(_beta, minEval);
+
+            //alpha cutoff
+            if(_beta <= _alpha) break;
+        }
+
+        return {eval: minEval, bestMove: bestMove};
+    }
+}
+
+function minimax2(_chess, _depth, _toMove, _alpha, _beta) {
+    if(_depth === 0) {
+        return {eval: evaluateBoard(_chess.board(), _toMove), bestMove: null};
+    }
+
+    //get a list of all legal moves this player can make
+    const myMoves = _chess.moves({ verbose: true });
+
+    //if game over
+    if(myMoves.length == 0) {
+        if(_chess.isCheckmate()) {
+            //if checkmate
+            return {eval: Number.NEGATIVE_INFINITY, bestMove: null};
+        }
+        //if draw
+        return {eval: 0, bestMove: null};
+    }
+
+    let bestMove = {};
+    for (let i = 0; i < myMoves.length; i++) {
+        //perform move
+        _chess.move(myMoves[i].san);
+
+        const newEval = -minimax2(_chess, _depth - 1, _toMove == "White" ? "Black" : "White", _alpha, _beta).eval;
+
+        //undo move
+        _chess.undo();
+
+        if(newEval >= _beta) {
+            bestMove = myMoves[i];
+            return {eval: _beta, bestMove: bestMove}; //prune
+        }
+
+        if(_alpha > newEval) 
+        {
+            console.log(myMoves[i]);
+            bestMove = myMoves[i];
+        }
+        _alpha = Math.max(_alpha, newEval);
+    }
+
+    return {eval: _alpha, bestMove: bestMove};
+}
+
+//function to generate the best move from minimax
+function getBestMove(_fenString, _board, _depth, _colourToMove) {
+    const chess = new Chess(_fenString);
+    const bestMove = minimax1(chess, _depth, _colourToMove, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).bestMove;
+    // const bestMove = minimax2(chess, _depth, _colourToMove, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY).bestMove;
+
+    if(bestMove != null) {
+        //convert best move into valid parameters for movePiece()
+        const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        const ranks = [8, 7, 6, 5, 4, 3, 2, 1];
+
+        const originalCoords = [ranks.indexOf(parseInt(bestMove.from[1])), files.indexOf(bestMove.from[0])];
+        const pieceToMove = _board[originalCoords[0]][originalCoords[1]];
+
+        const coords = [ranks.indexOf(parseInt(bestMove.to[1])), files.indexOf(bestMove.to[0])];
+
+        return {pieceToMoveId: constructPieceId(pieceToMove), tileToMoveToId: `SQ${coords.join('-')}`};
+    }
+    else {
+        return "game over";
+    }
 }
 //#endregion
 
@@ -1971,107 +2121,6 @@ function copy2DArray(originalArray) {
 }
 //#endregion
 
-//#region Minimax
-//minimax function to get ai's best move
-function minimax1(_chess, _depth, _alpha, _beta, _maximisingPlayer) {
-    if(_depth === 0) {
-        return {eval: evaluateBoard(_chess.board()), bestMove: null};
-    }
-
-    //get a list of all legal moves this player can make
-    const myMoves = _chess.moves({ verbose: true });
-
-    //if game over
-    if(_chess.isCheckmate()) {
-        //if checkmate
-        return {eval: Number.NEGATIVE_INFINITY, bestMove: null};
-    }
-    else if(_chess.isDraw() || _chess.isStalemate() || _chess.isThreefoldRepetition()) {
-        // if draw
-        return {eval: 0, bestMove: null};
-    }
-
-    if(_maximisingPlayer) {
-        let maxEval = Number.NEGATIVE_INFINITY;
-        let bestMove = {};
-
-        for (let i = 0; i < myMoves.length; i++) {
-            //perform move
-            _chess.move(myMoves[i].san);
-
-            const newEval = minimax1(_chess, _depth - 1, _alpha, _beta, false).eval;
-            console.log(`${newEval} for ${myMoves[i].san}. maxEval: ${maxEval}`);
-            //undo move
-            _chess.undo();
-
-            if(newEval > maxEval || newEval == maxEval && getRandomInt(0, 1) == 0) {
-                maxEval = newEval;
-
-                bestMove = myMoves[i];
-            }
-
-            //set alpha to bigger of alpha and eval
-            _alpha = Math.max(_alpha, newEval);
-
-            //beta cutoff
-            if(_beta <= _alpha) break;
-        }
-
-        return {eval: maxEval, bestMove: bestMove};
-    }
-    else {
-        let minEval = Number.POSITIVE_INFINITY;
-        let bestMove = '';
-
-        for (let i = 0; i < myMoves.length; i++) {
-            //perform move
-            _chess.move(myMoves[i].san);
-
-            const newEval = minimax1(_chess, _depth - 1, _alpha, _beta, true).eval;
-            console.log(`${newEval} for ${myMoves[i].san}. maxEval: ${minEval}`);
-            //undo move
-            _chess.undo();
-
-            if(newEval < minEval || newEval == maxEval && getRandomInt(0, 1) == 0) {
-                maxEval = newEval;
-
-                bestMove = myMoves[i];
-            }
-
-            //set alpha to bigger of alpha and eval
-            _beta = Math.min(_beta, newEval);
-
-            //alpha cutoff
-            if(_beta <= _alpha) break;
-        }
-
-        return {eval: minEval, bestMove: bestMove};
-    }
-}
-
-//function to generate the best move from minimax
-function getBestMove(_fenString, _board) {
-    const chess = new Chess(_fenString);
-    const bestMove = minimax1(chess, 3, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).bestMove;
-
-    if(bestMove != null) {
-        //convert best move into valid parameters for movePiece()
-        const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-        const ranks = [8, 7, 6, 5, 4, 3, 2, 1];
-
-        const originalCoords = [ranks.indexOf(parseInt(bestMove.from[1])), files.indexOf(bestMove.from[0])];
-        const pieceToMove = _board[originalCoords[0]][originalCoords[1]];
-
-        const coords = [ranks.indexOf(parseInt(bestMove.to[1])), files.indexOf(bestMove.to[0])];
-
-        return {pieceToMoveId: constructPieceId(pieceToMove), tileToMoveToId: `SQ${coords.join('-')}`};
-    }
-    else {
-        return "game over";
-    }
-}
-//#endregion
-
 //#region -----------Web Worker stuff-----------
 self.addEventListener('message', function(event) {
     const board = event.data._board;
@@ -2084,7 +2133,7 @@ self.addEventListener('message', function(event) {
 
     const fenString = convertMyChessArrayToFEN(board, toMove, castles, epTargetSq, halfmoveClock, fullmoveNo);
 
-    const bestMove = getBestMove(fenString, board);
+    const bestMove = getBestMove(fenString, board, depth, toMove);
 
     setTimeout(this.self.postMessage(bestMove), 2000);
 });

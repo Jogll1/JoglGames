@@ -211,7 +211,7 @@ const Pattern = function(board, isWhite, startRow, startCol, runRecursively) {
     }
 };
 
-//function for generating valid moves in straight lines
+//function for generating valid moves in straight lines (sliding pieces)
 function addValidLineMoves(_board, _startRow, _startCol, _rowDelta, _colDelta, _validMoves) {
     checkRow = _startRow + _rowDelta;
     checkCol = _startCol + _colDelta;
