@@ -1880,6 +1880,34 @@ function convertMyChessArrayToFEN(_board, _toMove, _castles, _epTargetSq, _halfm
     return fenString;
 }
 
+//function to turn piece id in format wp4 to WhitePawn4
+function constructPieceId(_pieceId) {
+    const colour = _pieceId[0] == 'w' ? "White" : "Black";
+    const num = _pieceId[2];
+    let pieceId = "";
+    
+    if(_pieceId[1] == 'p') {
+        pieceId = `${colour}Pawn${num}`;
+    }
+    else if(_pieceId[1] == 'N') {
+        pieceId = `${colour}Knight${num}`;
+    }
+    else if(_pieceId[1] == 'R') {
+        pieceId = `${colour}Rook${num}`;
+    }
+    else if(_pieceId[1] == 'B') {
+        pieceId = `${colour}Bishop${num}`;
+    }
+    else if(_pieceId[1] == 'Q') {
+        pieceId = `${colour}Queen${num}`;
+    }
+    else if(_pieceId[1] == 'K') {
+        pieceId = `${colour}King${num}`;
+    }
+
+    return pieceId;
+}
+
 //function to get the value of a piece on the board
 function getPieceValue(_pieceId) {
     switch (_pieceId) {
@@ -1951,7 +1979,7 @@ function minimax1(_chess, _depth, _alpha, _beta, _maximisingPlayer) {
     }
 
     //get a list of all legal moves this player can make
-    const myMoves = _chess.moves();
+    const myMoves = _chess.moves({ verbose: true });
 
     //if game over
     if(_chess.inCheck() || _chess.isCheckmate()) {
@@ -1965,11 +1993,11 @@ function minimax1(_chess, _depth, _alpha, _beta, _maximisingPlayer) {
 
     if(_maximisingPlayer) {
         let maxEval = Number.NEGATIVE_INFINITY;
-        let bestMove = '';
+        let bestMove = {};
 
         for (let i = 0; i < myMoves.length; i++) {
             //perform move
-            _chess.move(myMoves[i]);
+            _chess.move(myMoves[i].san);
 
             const newEval = minimax1(_chess, _depth - 1, _alpha, _beta, false).eval;
 
@@ -1997,7 +2025,7 @@ function minimax1(_chess, _depth, _alpha, _beta, _maximisingPlayer) {
 
         for (let i = 0; i < myMoves.length; i++) {
             //perform move
-            _chess.move(myMoves[i]);
+            _chess.move(myMoves[i].san);
 
             const newEval = minimax1(_chess, _depth - 1, _alpha, _beta, true).eval;
 
@@ -2022,22 +2050,25 @@ function minimax1(_chess, _depth, _alpha, _beta, _maximisingPlayer) {
 }
 
 //function to generate the best move from minimax
-function getBestMove(_fenString) {
+function getBestMove(_fenString, _board) {
     const chess = new Chess(_fenString);
     const bestMove = minimax1(chess, 3, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).bestMove;
 
     if(bestMove != null) {
-        //now convert single move such as Nc6 into these values:
+        //convert best move into valid parameters for movePiece()
+        const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        const ranks = [8, 7, 6, 5, 4, 3, 2, 1];
 
-        // console.log(`values: ${keys[0]} => ${values[keys[0]]}`);
+        const originalCoords = [ranks.indexOf(parseInt(bestMove.from[1])), files.indexOf(bestMove.from[0])];
+        const pieceToMove = _board[originalCoords[0]][originalCoords[1]];
 
-        // return {pieceToMoveId: constructPieceId(keys[0]), tileToMoveToId: `SQ${values[keys[0]]}`};
+        const coords = [ranks.indexOf(parseInt(bestMove.to[1])), files.indexOf(bestMove.to[0])];
+
+        return {pieceToMoveId: constructPieceId(pieceToMove), tileToMoveToId: `SQ${coords.join('-')}`};
     }
     else {
         return "game over";
     }
-
-    return bestMove;
 }
 //#endregion
 
@@ -2053,9 +2084,8 @@ self.addEventListener('message', function(event) {
 
     const fenString = convertMyChessArrayToFEN(board, toMove, castles, epTargetSq, halfmoveClock, fullmoveNo);
 
-    // const bestMove = getBestMove(board, movedPieces, colour, depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).bestMove;
-    const bestMove = getBestMove(fenString);
+    const bestMove = getBestMove(fenString, board);
 
-    setTimeout(this.self.postMessage(bestMove), 2000); //supposed to speed it up by sending bestmove
+    setTimeout(this.self.postMessage(bestMove), 2000);
 });
 //#endregion

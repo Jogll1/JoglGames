@@ -7,12 +7,11 @@ const ch_aiWorker = new Worker('../js/chess/bundle-chessWorker.js');
 
 //set up the message event listener to recieve ai moves from the worker
 ch_aiWorker.onmessage = function(event) {
-    const aiMove = event.data;
+    const bestMove = event.data;
 
     //perform ai's move
-    if(aiMove != "game over") {
-        // movePiece(bestMove.pieceToMoveId, bestMove.tileToMoveToId);
-        console.log(aiMove);
+    if(bestMove != "game over") {
+        movePiece(bestMove.pieceToMoveId, bestMove.tileToMoveToId);
     }
 }
 
