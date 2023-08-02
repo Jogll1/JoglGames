@@ -135,6 +135,40 @@ var ch_isPlayingRobot = (function() {
         }
     }
 })();
+
+//number of halfmoves since the last capture or pawn advance
+var ch_halfmoveClock = (function() {
+    var halfmoveClock = 0;
+
+    return {
+        set : function(toSet) {
+            return halfmoveClock = toSet;
+        },
+
+        get : function() {
+            return halfmoveClock;
+        }
+    }
+})();
+
+//number of the full moves. starts at 1 and is incremented after black move
+var ch_fullmoveNo = (function() {
+    var fullmoveNo = 1;
+
+    return {
+        set : function(toSet) {
+            return fullmoveNo = toSet;
+        },
+
+        increment : function() {
+            return fullmoveNo += 1;
+        },
+
+        get : function() {
+            return fullmoveNo;
+        }
+    }
+})();
 //#endregion
 
 //when document loads up
@@ -444,7 +478,7 @@ function sendMove(_pieceToMoveId, _tileToMoveToId) {
             const message = {
                 _board: ch_board.getBoard(),
                 _depth: depth,
-                _colour: ch_myColour.oppColour(),
+                _colourToMove: ch_myColour.oppColour(),
                 _movedPieces: ch_movedPieces.get()
             }
 
@@ -637,6 +671,11 @@ function movePiece(pieceToMoveId, tileToMoveToId) {
 
             const checkColour = ch_isMyTurn.getState() ? ch_myColour.oppColour() : ch_myColour.get();
             checkGameOver(ch_board.getBoard(), checkColour);
+
+            //increment fullmove number if blacks moved
+            if(pieceToMoveId.includes("Black")) {
+                ch_fullmoveNo.set(ch_fullmoveNo.increment());
+            }   
 
             //alternate turn
             ch_isMyTurn.swapState();
@@ -948,6 +987,10 @@ function resetGame() {
         $('.pieceContainer').addClass('rotatePiece');
     }
 
+    //reset fullmove number and halfmove clock
+    ch_halfmoveClock.set(0);
+    ch_fullmoveNo.set(1);
+
     //set game started
     ch_gameStarted.setState(true);
 
@@ -957,13 +1000,21 @@ function resetGame() {
     {
         //if you're playing robot, set player first
         $('#playerIcon').addClass('currentGo');
+
+        //set whites turn
+        //so far only player is white
+        if(ch_myColour.get() == "White") {
+            ch_isMyTurn.setState(true);
+        }
     } 
     else { 
-        //if you're playing online, alternate blue circle
-        if(ch_isMyTurn.getState()) {
+        //if you're playing online, set whites turn
+        if(ch_myColour.get() == "White") {
+            ch_isMyTurn.setState(true);
             $('#playerIcon').addClass('currentGo');
         }
         else {
+            ch_isMyTurn.setState(false);
             $('#opponentIcon').addClass('currentGo');
         }
     }   

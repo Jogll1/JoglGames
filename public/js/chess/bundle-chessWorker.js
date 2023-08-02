@@ -1839,7 +1839,7 @@ class Chess {
 
 //#region chess utilities
 //function to convert my way of storing chess moves to a fen string
-function convertMyChessArrayToFEN(_board, _toMove, _castleBools, _epTargetSq, _halfMoveClock, _fullmoveNo) {
+function convertMyChessArrayToFEN(_board, _toMove, _castleBools, _epTargetSq, _halfmoveClock, _fullmoveNo) {
     //castle bools is an array like [kingsideW, queensideW, kingsideB, queensideB]
     //_epTargeSq is the square a pawn has just doubled moved over
     let fenString = '';
@@ -1886,7 +1886,7 @@ function convertMyChessArrayToFEN(_board, _toMove, _castleBools, _epTargetSq, _h
         }
     }
 
-    fenString = fenString.concat(`${toMove} ${castlingString} ${_epTargetSq} ${_halfMoveClock} ${_fullmoveNo}`);
+    fenString = fenString.concat(`${toMove} ${castlingString} ${_epTargetSq} ${_halfmoveClock} ${_fullmoveNo}`);
     return fenString;
 }
 //#endregion
@@ -1902,11 +1902,12 @@ function chessJsTest() {
 
 //#region -----------Web Worker stuff-----------
 self.addEventListener('message', function(event) {
-    console.log("yo");
-    event.data._board;
-    event.data._depth;
-    event.data._colour;
-    event.data._movedPieces;
+    const board = event.data._board;
+    const depth = event.data._depth;
+    const toMove = event.data._colourToMove;
+    const movedPieces = event.data._movedPieces;
+
+    const fenString = convertMyChessArrayToFEN(board, toMove)
 
     // const bestMove = getBestMove(board, movedPieces, colour, depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).bestMove;
 
