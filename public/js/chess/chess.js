@@ -136,6 +136,25 @@ var ch_isPlayingRobot = (function() {
     }
 })();
 
+//keep list of castles that are left
+var ch_castles = (function() {
+    var castles = ['K', 'Q', 'k', 'q'];
+
+    return {
+        remove : function(toRemove) {
+            return castles = castles.filter((char) => char !== toRemove);
+        },
+
+        reset : function() {
+            return castles = ['K', 'Q', 'k', 'q'];
+        },
+
+        get : function() {
+            return movedPieces;
+        }
+    }
+})();
+
 //number of halfmoves since the last capture or pawn advance
 var ch_halfmoveClock = (function() {
     var halfmoveClock = 0;
@@ -143,6 +162,10 @@ var ch_halfmoveClock = (function() {
     return {
         set : function(toSet) {
             return halfmoveClock = toSet;
+        },
+
+        increment : function() {
+            return halfmoveClock += 1;
         },
 
         get : function() {
@@ -475,11 +498,14 @@ function sendMove(_pieceToMoveId, _tileToMoveToId) {
             let depth = 4; 
                     
             //set the message to be sent
+            castleBools = [];
             const message = {
                 _board: ch_board.getBoard(),
                 _depth: depth,
                 _colourToMove: ch_myColour.oppColour(),
-                _movedPieces: ch_movedPieces.get()
+                _castleBools: castleBools,
+                _halfmoveClock: ch_halfmoveClock.get(),
+                _fullmoveNo: ch_fullmoveNo.get()
             }
 
             //add minimum time limit to send the move
@@ -570,12 +596,14 @@ function movePiece(pieceToMoveId, tileToMoveToId) {
     let id = tileToMoveTo.attr("id");
     let coords = id.substring(2).split("-");
 
-    //update board
-    //get the piece id
+    //get the board and id of the piece moving
     let board = ch_board.getBoard();
     let pieceId = board[originalCoords[0]][originalCoords[1]]; //wp0 or bN1 etc
 
     const validMoves = getValidMoves(board, originalCoords[0], originalCoords[1], true);
+
+    //is capturing if tile is not empty
+    const isCapturing = !board[coords[0]][coords[1]] === ' ';
     
     //if piece trying to move to is in validmoves
     if(validMoves != null) {
@@ -599,8 +627,8 @@ function movePiece(pieceToMoveId, tileToMoveToId) {
 
                     //move rook
                     const rookPiece = $(`#SQ${kingRow}-0`).children(0);
-                    const rookTileToMoveTo = $(`#SQ${kingRow}-3`)
-                    moveRookForCastling(rookPiece, rookTileToMoveTo)
+                    const rookTileToMoveTo = $(`#SQ${kingRow}-3`);
+                    moveRookForCastling(rookPiece, rookTileToMoveTo);
                 }
                 else if(id.substring(2) == `${kingRow}-6` || id.substring(2) == `${kingRow}-7`) {
                     //kngside
@@ -611,8 +639,8 @@ function movePiece(pieceToMoveId, tileToMoveToId) {
 
                     //move rook
                     const rookPiece = $(`#SQ${kingRow}-7`).children(0);
-                    const rookTileToMoveTo = $(`#SQ${kingRow}-5`)
-                    moveRookForCastling(rookPiece, rookTileToMoveTo)
+                    const rookTileToMoveTo = $(`#SQ${kingRow}-5`);
+                    moveRookForCastling(rookPiece, rookTileToMoveTo);
                 }
             }
             //#endregion
@@ -674,8 +702,16 @@ function movePiece(pieceToMoveId, tileToMoveToId) {
 
             //increment fullmove number if blacks moved
             if(pieceToMoveId.includes("Black")) {
-                ch_fullmoveNo.set(ch_fullmoveNo.increment());
-            }   
+                ch_fullmoveNo.increment();
+            }
+
+            //increment halfmove clock if no pawn has been moved or no capture has occurred
+            if(!pieceToMoveId.includes("Pawn") && !isCapturing) {
+                ch_halfmoveClock.increment();
+            }
+            else {
+                ch_halfmoveClock.set(0);
+            }
 
             //alternate turn
             ch_isMyTurn.swapState();
@@ -987,8 +1023,11 @@ function resetGame() {
         $('.pieceContainer').addClass('rotatePiece');
     }
 
-    //reset fullmove number and halfmove clock
+    //reset castle bool container
+    ch_castles.reset();
+    //reset halfmove clock
     ch_halfmoveClock.set(0);
+    //reset fullmove number
     ch_fullmoveNo.set(1);
 
     //set game started

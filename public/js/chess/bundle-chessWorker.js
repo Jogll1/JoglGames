@@ -1905,9 +1905,11 @@ self.addEventListener('message', function(event) {
     const board = event.data._board;
     const depth = event.data._depth;
     const toMove = event.data._colourToMove;
-    const movedPieces = event.data._movedPieces;
+    const castleBools = event.data._castleBools;
+    const halfmoveClock = event.data._halfmoveClock;
+    const fullmoveNo = event.data._fullmoveNo;
 
-    const fenString = convertMyChessArrayToFEN(board, toMove)
+    // const fenString = convertMyChessArrayToFEN(board, toMove)
 
     // const bestMove = getBestMove(board, movedPieces, colour, depth, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).bestMove;
 
