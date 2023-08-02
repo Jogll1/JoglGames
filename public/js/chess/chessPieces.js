@@ -170,8 +170,13 @@ const Pattern = function(board, isWhite, startRow, startCol, runRecursively) {
         }
 
         //castling
-        //if king hasnt moved
-        if(_isFirstTurn) {
+        const kingInCheck = underThreatTiles.some(tile => {
+            const [row, col] = tile.split('-');
+            return board[row][col].includes(`${ourColour === "White" ? 'w' : 'b'}K`);
+        });
+
+        //if king not in check and hasn't moved
+        if(!kingInCheck && _isFirstTurn) {
             const row = (ourColour === "White") ? 7 : 0;
 
             //queenside

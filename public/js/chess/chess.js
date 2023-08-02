@@ -979,6 +979,15 @@ function checkGameOver(_board, _colour) {
         }
     }
 
+    let piecesOnBoard = 0;
+    for (let r = 0; r < ch_ROWS; r++) {
+        for (let c = 0; c < ch_COLUMNS; c++) {
+            if(_board[r][c] !== ' ') {
+                piecesOnBoard += 1;
+            }
+        }
+    }
+
     const kingCheck = `${colourCheck}K`;
     const underThreatTiles = getUnderThreatTiles(_board, _colour);
     const kingUnderThreat = underThreatTiles.some(tile => _board[tile.split('-')[0]][tile.split('-')[1]].includes(kingCheck));
@@ -992,6 +1001,10 @@ function checkGameOver(_board, _colour) {
             console.log(`Stalemate.`);
             setWinner("Stalemate");
         }
+    }
+    else if(piecesOnBoard < 3) {
+        console.log(`Stalemate.`);
+        setWinner("Stalemate");
     }
 }
 
