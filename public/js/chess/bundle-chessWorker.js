@@ -1,7 +1,4 @@
 //#region Chess.js
-
-const { json } = require("express");
-
 /**
  * @license
  * Copyright (c) 2023, Jeff Hlywa (jhlywa@gmail.com)
@@ -1956,25 +1953,29 @@ function getSquaresAttackedByPawns(_chess) {
 
     //iterate through all the enemy pawns
     for (let i = 0; i < _chess.board().length; i++) {
-        for (let j = 0; j < _board[i].length; j++) {
-            const square = _chess.board()[i][j].square;
-            const piece = _chess.get(square);
+        for (let j = 0; j < _chess.board()[i].length; j++) {
+            const tileData = _chess.board()[i][j];
+            if(tileData != null) {
+                const squareName = tileData.square;
+                const piece = _chess.get(squareName);
 
-            if (piece && piece.type === 'p' && piece.color === enemyColor) {
-                //get the attack squares for the enemy pawn
-                const moves = _chess.moves({ square, verbose: true });
-
-                //iterate through the moves of the enemy pawn
-                for (let j = 0; j < moves.length; j++) {
-                    const move = moves[j];
-                    if (move.flags.includes('c') || move.flags.includes('e')) {
-                        //capturing move or en passant capture
-                        attackedSquares.push(move.to);
+                if (piece && piece.type === 'p' && piece.color === enemyColor) {
+                    //get the attack squares for the enemy pawn
+                    const moves = _chess.moves({ square: 'd3', verbose: true });
+                    console.log(moves);
+    
+                    //iterate through the moves of the enemy pawn
+                    for (let k = 0; k < moves.length; k++) {
+                        const move = moves[k];
+                        if (move.captured) {
+                            //capturing move or en passant capture
+                            attackedSquares.push(move.to);
+                        }
                     }
                 }
             }
         }
-        }
+    }
 
     return attackedSquares;
 }
@@ -2084,11 +2085,13 @@ function orderMoves(_chess, _moves) {
         }
 
         //penalise moving to squares being attacked by a pawn
+        _chess.move(_moves[i].san);
         const squaresAttackedByPawns = getSquaresAttackedByPawns(_chess);
         // if() {
 
         // }
         console.log(`pawn attack squares: ${squaresAttackedByPawns}`);
+        _chess.undo();
     }
 }
 
