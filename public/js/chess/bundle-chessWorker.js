@@ -1,4 +1,7 @@
 //#region Chess.js
+
+const { json } = require("express");
+
 /**
  * @license
  * Copyright (c) 2023, Jeff Hlywa (jhlywa@gmail.com)
@@ -1945,9 +1948,39 @@ function evaluateBoard(_board, _colourToMove) {
     
     return (whiteEval - blackEval) * parseInt(_colourToMove == "White" ? 1 : -1);
 }
+
+//get a list of squares being attack by pawns
+function getSquaresAttackedByPawns(_chess) {
+    const attackedSquares = [];
+    const enemyColor = _chess.turn() === 'w' ? 'b' : 'w';
+
+    //iterate through all the enemy pawns
+    for (let i = 0; i < _chess.board().length; i++) {
+        for (let j = 0; j < _board[i].length; j++) {
+            const square = _chess.board()[i][j].square;
+            const piece = _chess.get(square);
+
+            if (piece && piece.type === 'p' && piece.color === enemyColor) {
+                //get the attack squares for the enemy pawn
+                const moves = _chess.moves({ square, verbose: true });
+
+                //iterate through the moves of the enemy pawn
+                for (let j = 0; j < moves.length; j++) {
+                    const move = moves[j];
+                    if (move.flags.includes('c') || move.flags.includes('e')) {
+                        //capturing move or en passant capture
+                        attackedSquares.push(move.to);
+                    }
+                }
+            }
+        }
+        }
+
+    return attackedSquares;
+}
 //#endregion
 
-//#region Minimax
+//#region Getting the best move
 //minimax function to get ai's best move
 function minimax1(_chess, _depth, _toMove, _alpha, _beta, _maximisingPlayer) {
     if(_depth === 0) {
@@ -1956,6 +1989,7 @@ function minimax1(_chess, _depth, _toMove, _alpha, _beta, _maximisingPlayer) {
 
     //get a list of all legal moves this player can make
     const myMoves = _chess.moves({ verbose: true });
+    orderMoves(_chess, myMoves);
 
     //if game over
     if(myMoves.length == 0) {
@@ -2028,53 +2062,41 @@ function minimax1(_chess, _depth, _toMove, _alpha, _beta, _maximisingPlayer) {
     }
 }
 
-function minimax2(_chess, _depth, _toMove, _alpha, _beta) {
-    if(_depth === 0) {
-        return {eval: evaluateBoard(_chess.board(), _toMove), bestMove: null};
-    }
+//function to order moves so alpha-beta pruning is more optimised
+function orderMoves(_chess, _moves) {
+    //using an array of verbose moves (dictionaries)
+    let orderedMoves = [];
 
-    //get a list of all legal moves this player can make
-    const myMoves = _chess.moves({ verbose: true });
+    for (let i = 0; i < _moves.length; i++) {
+        let moveScore = 0;
+        const movePieceType = _moves[i].piece;
+        const capturePieceType = _chess.get(_moves[i].to).type;
 
-    //if game over
-    if(myMoves.length == 0) {
-        if(_chess.isCheckmate()) {
-            //if checkmate
-            return {eval: Number.NEGATIVE_INFINITY, bestMove: null};
-        }
-        //if draw
-        return {eval: 0, bestMove: null};
-    }
-
-    let bestMove = {};
-    for (let i = 0; i < myMoves.length; i++) {
-        //perform move
-        _chess.move(myMoves[i].san);
-
-        const newEval = -minimax2(_chess, _depth - 1, _toMove == "White" ? "Black" : "White", _alpha, _beta).eval;
-
-        //undo move
-        _chess.undo();
-
-        if(newEval >= _beta) {
-            bestMove = myMoves[i];
-            return {eval: _beta, bestMove: bestMove}; //prune
+        //prioritise capturing more valuable pieces with less valuable pieces
+        if(capturePieceType != null) {
+            //if capturing a piece on this move
+            moveScore = 10 * getPieceValue(capturePieceType) - getPieceValue(movePieceType);
         }
 
-        if(_alpha > newEval) 
-        {
-            console.log(myMoves[i]);
-            bestMove = myMoves[i];
+        //promoting a pawn is usually a good bet
+        if(_moves[i].promotion) {
+            moveScore += getPieceValue(_moves[i].promotion); //we can only promote to queens right now
         }
-        _alpha = Math.max(_alpha, newEval);
-    }
 
-    return {eval: _alpha, bestMove: bestMove};
+        //penalise moving to squares being attacked by a pawn
+        const squaresAttackedByPawns = getSquaresAttackedByPawns(_chess);
+        // if() {
+
+        // }
+        console.log(`pawn attack squares: ${squaresAttackedByPawns}`);
+    }
 }
 
 //function to generate the best move from minimax
 function getBestMove(_fenString, _board, _depth, _colourToMove) {
     const chess = new Chess(_fenString);
+    console.log(chess.moves({ verbose: true }));
+
     const bestMove = minimax1(chess, _depth, _colourToMove, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).bestMove;
     // const bestMove = minimax2(chess, _depth, _colourToMove, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY).bestMove;
 
