@@ -1969,8 +1969,8 @@ function minimax1(_chess, _depth, _toMove, _alpha, _beta, _maximisingPlayer) {
     }
 
     //get a list of all legal moves this player can make
-    const myMoves = _chess.moves({ verbose: true });
-    orderMoves(_chess, myMoves);
+    let myMoves = _chess.moves({ verbose: true });
+    // myMoves = orderMoves(_chess, myMoves);
 
     //if game over
     if(myMoves.length == 0) {
@@ -2046,7 +2046,8 @@ function minimax1(_chess, _depth, _toMove, _alpha, _beta, _maximisingPlayer) {
 //function to order moves so alpha-beta pruning is more optimised
 function orderMoves(_chess, _moves) {
     //using an array of verbose moves (dictionaries)
-    let orderedMoves = [];
+    let orderedMoves = _moves;
+    let orderedMoveValues = Array(_moves.length);
 
     for (let i = 0; i < _moves.length; i++) {
         let moveScore = 0;
@@ -2070,15 +2071,31 @@ function orderMoves(_chess, _moves) {
         if(isAttackedByPieceOfLowerValue(_chess, movePieceType, _moves[i].to)) {
             moveScore -= getPieceValue(movePieceType);
         }
-        console.log(isAttackedByPieceOfLowerValue(_chess, movePieceType, _moves[i].to));
         _chess.undo();
+
+        orderedMoveValues[i] == moveScore;
     }
+
+    //sort the ordered moves
+    return sortMovesByScore(orderedMoves, orderedMoveValues).moves;
+}
+
+//function to sort the array of moves in the same way as the array of move scores
+function sortMovesByScore(_moves, _moveScores) {
+    //create an array of indices and sort it based on the values in the integers array
+    const indices = Array.from(_moveScores.keys());
+    indices.sort((a, b) => _moveScores[a] - _moveScores[b]);
+
+    //rearrange the elements in both arrays based on the sorted indices
+    const moveScores = indices.map((index) => _moveScores[index]);
+    const moves = indices.map((index) => _moves[index]);
+
+    return { moveScores, moves };
 }
 
 //function to generate the best move from minimax
 function getBestMove(_fenString, _board, _depth, _colourToMove) {
     const chess = new Chess(_fenString);
-    console.log(chess.moves({ verbose: true }));
 
     const bestMove = minimax1(chess, _depth, _colourToMove, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).bestMove;
     // const bestMove = minimax2(chess, _depth, _colourToMove, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY).bestMove;
