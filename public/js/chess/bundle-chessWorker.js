@@ -1946,38 +1946,18 @@ function evaluateBoard(_board, _colourToMove) {
     return (whiteEval - blackEval) * parseInt(_colourToMove == "White" ? 1 : -1);
 }
 
-//get a list of squares being attack by pawns
-function getSquaresAttackedByPawns(_chess) {
-    const attackedSquares = [];
-    const enemyColor = _chess.turn() === 'w' ? 'b' : 'w';
+//check if piece is under threat by a piece of lower value
+function isAttackedByPieceOfLowerValue(_chess, _movePieceType, _to) {
+    const attackedByPawn = false;
+    const enemyMoves = _chess.moves({ verbose: true });
 
-    //iterate through all the enemy pawns
-    for (let i = 0; i < _chess.board().length; i++) {
-        for (let j = 0; j < _chess.board()[i].length; j++) {
-            const tileData = _chess.board()[i][j];
-            if(tileData != null) {
-                const squareName = tileData.square;
-                const piece = _chess.get(squareName);
-
-                if (piece && piece.type === 'p' && piece.color === enemyColor) {
-                    //get the attack squares for the enemy pawn
-                    const moves = _chess.moves({ square: 'd3', verbose: true });
-                    console.log(moves);
-    
-                    //iterate through the moves of the enemy pawn
-                    for (let k = 0; k < moves.length; k++) {
-                        const move = moves[k];
-                        if (move.captured) {
-                            //capturing move or en passant capture
-                            attackedSquares.push(move.to);
-                        }
-                    }
-                }
-            }
+    for (let i = 0; i < enemyMoves.length; i++) {
+        if((enemyMoves[i].piece === 'p' || getPieceValue(enemyMoves[i].piece) < getPieceValue(_movePieceType)) && enemyMoves[i].to === _to) {
+            return true;
         }
     }
 
-    return attackedSquares;
+    return attackedByPawn;
 }
 //#endregion
 
@@ -2085,12 +2065,12 @@ function orderMoves(_chess, _moves) {
         }
 
         //penalise moving to squares being attacked by a pawn
+        //TODO
         _chess.move(_moves[i].san);
-        const squaresAttackedByPawns = getSquaresAttackedByPawns(_chess);
-        // if() {
-
-        // }
-        console.log(`pawn attack squares: ${squaresAttackedByPawns}`);
+        if(isAttackedByPieceOfLowerValue(_chess, movePieceType, _moves[i].to)) {
+            moveScore -= getPieceValue(movePieceType);
+        }
+        console.log(isAttackedByPieceOfLowerValue(_chess, movePieceType, _moves[i].to));
         _chess.undo();
     }
 }
