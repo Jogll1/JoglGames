@@ -2023,6 +2023,18 @@ function getPieceValue(_pieceId) {
 //#endregion
 
 //#region Evaluating the board
+//test
+function evaluateBoardSimple(_board) {
+    let eval = 0;
+    for (let i = 0; i < _board.length; i++) {
+        for (let j = 0; j < _board[i].length; j++) {
+            const piece = _board[i][j];
+            if(piece !== null) piece.color == 'w' ? eval += getPieceValue(_board[i][j].type) : eval -= getPieceValue(_board[i][j].type);
+        }
+    }
+    return eval;
+}
+
 //function to get the value of the board
 function evaluateBoard(_board, _colourToMove) {
     //using chess.board() which is a 2d array with 8 arrays, each array has 8 values, each value is a dictionary containing piece data
@@ -2200,136 +2212,56 @@ function evaluatePieceSquareTable(_table, _pieceList, _isWhite) {
 //#endregion
 
 //#region Getting the best move
-//minimax function to get ai's best move
-function minimax1(_chess, _depth, _toMove, _alpha, _beta, _maximisingPlayer) {
-    if(_depth === 0) {
-        return {eval: evaluateBoard(_chess.board(), _toMove), bestMove: null};
+//minimax functions to get ai's best move
+function minimaxRoot(_chess, _depth, _maximisingPlayer) {
+    const moves = _chess.moves({ verbose: true });
+    let bestEval = -9999;
+    let bestMove = {};
+
+    for (let i = 0; i < moves.length; i++) {
+        const move = moves[i];
+        
+        //perform move
+        _chess.move(move.san);
+
+        //start minimax search
+        const eval = minimax2(_chess, _depth - 1, !_maximisingPlayer);
+
+        //undo move
+        _chess.undo();
+
+        if(eval >= bestEval) {
+            bestEval = eval;
+            bestMove = move;
+        }
     }
 
-    //get a list of all legal moves this player can make
-    let myMoves = _chess.moves({ verbose: true });
-    // myMoves = orderMoves(_chess, myMoves);
-
-    //if game over
-    if(myMoves.length == 0) {
-        if(_chess.isCheckmate()) {
-            //if checkmate
-            return {eval: Number.NEGATIVE_INFINITY, bestMove: null};
-        }
-        else if(_chess.isDraw() || _chess.isStalemate() || _chess.isThreefoldRepetition()) {
-            // if draw
-            return {eval: 0, bestMove: null};
-        }
-        return {eval: 0, bestMove: null};
-    }
-
-    if(_maximisingPlayer) {
-        let maxEval = Number.NEGATIVE_INFINITY;
-        let bestMove = {};
-
-        for (let i = 0; i < myMoves.length; i++) {
-            let moveScore = scoreMove(_chess, myMoves[i]);
-            //perform move
-            _chess.move(myMoves[i].san);
-
-            const newEval = moveScore + -minimax1(_chess, _depth - 1, _toMove == "White" ? "Black" : "White", _alpha, _beta, false).eval;
-
-            //undo move
-            _chess.undo();
-
-            if(newEval > maxEval || newEval == maxEval && getRandomInt(0, 1) == 0) {
-                maxEval = newEval;
-
-                bestMove = myMoves[i];
-            }
-
-            //set alpha to bigger of alpha and eval
-            _alpha = Math.max(_alpha, maxEval);
-
-            //beta cutoff
-            if(_beta <= _alpha) break;
-        }
-
-        return {eval: maxEval, bestMove: bestMove};
-    }
-    else {
-        let minEval = Number.POSITIVE_INFINITY;
-        let bestMove = '';
-
-        for (let i = 0; i < myMoves.length; i++) {
-            let moveScore = scoreMove(_chess, myMoves[i]);
-            //perform move
-            _chess.move(myMoves[i].san);
-
-            const newEval = moveScore + -minimax1(_chess, _depth - 1, _toMove == "White" ? "Black" : "White", _alpha, _beta, true).eval;
-
-            //undo move
-            _chess.undo();
-
-            if(newEval < minEval || newEval == minEval && getRandomInt(0, 1) == 0) {
-                minEval = newEval;
-
-                bestMove = myMoves[i];
-            }
-
-            //set alpha to bigger of alpha and eval
-            _beta = Math.min(_beta, minEval);
-
-            //alpha cutoff
-            if(_beta <= _alpha) break;
-        }
-
-        return {eval: minEval, bestMove: bestMove};
-    }
+    return bestMove;
 }
 
-//function to score moves
-function scoreMove(_chess, _move) {
-    //using an array of verbose move (dictionaries)
-    let moveScore = 0;
-    const movePieceType = _move.piece;
-    const capturePieceType = _chess.get(_move.to).type;
+function minimax2(_chess, _depth, _maximisingPlayer) {
+    if(_depth === 0) return -evaluateBoardSimple(_chess.board());
 
-    //prioritise capturing more valuable pieces with less valuable pieces
-    if(capturePieceType != null) {
-        //if capturing a piece on this move
-        moveScore = 10 * getPieceValue(capturePieceType) - getPieceValue(movePieceType);
+    const moves = _chess.moves({ verbose: true });
+
+    let bestEval = _maximisingPlayer ? -9999 : 9999;
+
+    for (let i = 0; i < moves.length; i++) {
+        _chess.move(moves[i].san);
+        const eval = minimax2(_chess, _depth - 1, !_maximisingPlayer);
+        bestEval = _maximisingPlayer ? Math.max(bestEval, eval) : Math.min(bestEval, eval);
+        _chess.undo();
     }
 
-    //promoting a pawn is usually a good bet
-    if(_move.promotion) {
-        moveScore += getPieceValue(_move.promotion); //we can only promote to queens right now
-    }
-
-    //penalise moving to squares being attacked by a piece of lower value
-    _chess.move(_move.san);
-    if(isAttackedByPieceOfLowerValue(_chess, movePieceType, _move.to)) {
-        moveScore -= getPieceValue(movePieceType);
-    }
-    _chess.undo();
-
-    return moveScore;
-}
-
-//function to sort the array of moves in the same way as the array of move scores
-function sortMovesByScore(_moves, _moveScores) {
-    //create an array of indices and sort it based on the values in the integers array
-    const indices = Array.from(_moveScores.keys());
-    indices.sort((a, b) => _moveScores[a] - _moveScores[b]);
-
-    //rearrange the elements in both arrays based on the sorted indices
-    const moveScores = indices.map((index) => _moveScores[index]);
-    const moves = indices.map((index) => _moves[index]);
-
-    return { moveScores, moves };
+    return bestEval;
 }
 
 //function to generate the best move from minimax
 function getBestMove(_fenString, _board, _depth, _colourToMove) {
     const chess = new Chess(_fenString);
 
-    const bestMove = minimax1(chess, _depth, _colourToMove, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).bestMove;
-    // const bestMove = minimax2(chess, _depth, _colourToMove, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY).bestMove;
+    // const bestMove = minimax1(chess, _depth, _colourToMove, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).bestMove;
+    const bestMove = minimaxRoot(chess, _depth, true);
 
     if(bestMove != null) {
         //convert best move into valid parameters for movePiece()
