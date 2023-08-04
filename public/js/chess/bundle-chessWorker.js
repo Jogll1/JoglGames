@@ -2228,10 +2228,11 @@ function minimax1(_chess, _depth, _toMove, _alpha, _beta, _maximisingPlayer) {
         let bestMove = {};
 
         for (let i = 0; i < myMoves.length; i++) {
+            let moveScore = scoreMove(_chess, myMoves[i]);
             //perform move
             _chess.move(myMoves[i].san);
 
-            const newEval = -minimax1(_chess, _depth - 1, _toMove == "White" ? "Black" : "White", _alpha, _beta, false).eval;
+            const newEval = moveScore + -minimax1(_chess, _depth - 1, _toMove == "White" ? "Black" : "White", _alpha, _beta, false).eval;
 
             //undo move
             _chess.undo();
@@ -2256,10 +2257,11 @@ function minimax1(_chess, _depth, _toMove, _alpha, _beta, _maximisingPlayer) {
         let bestMove = '';
 
         for (let i = 0; i < myMoves.length; i++) {
+            let moveScore = scoreMove(_chess, myMoves[i]);
             //perform move
             _chess.move(myMoves[i].san);
 
-            const newEval = -minimax1(_chess, _depth - 1, _toMove == "White" ? "Black" : "White", _alpha, _beta, true).eval;
+            const newEval = moveScore + -minimax1(_chess, _depth - 1, _toMove == "White" ? "Black" : "White", _alpha, _beta, true).eval;
 
             //undo move
             _chess.undo();
@@ -2281,41 +2283,32 @@ function minimax1(_chess, _depth, _toMove, _alpha, _beta, _maximisingPlayer) {
     }
 }
 
-//function to order moves so alpha-beta pruning is more optimised
-function orderMoves(_chess, _moves) {
-    //using an array of verbose moves (dictionaries)
-    let orderedMoves = _moves;
-    let orderedMoveValues = Array(_moves.length);
+//function to score moves
+function scoreMove(_chess, _move) {
+    //using an array of verbose move (dictionaries)
+    let moveScore = 0;
+    const movePieceType = _move.piece;
+    const capturePieceType = _chess.get(_move.to).type;
 
-    for (let i = 0; i < _moves.length; i++) {
-        let moveScore = 0;
-        const movePieceType = _moves[i].piece;
-        const capturePieceType = _chess.get(_moves[i].to).type;
-
-        //prioritise capturing more valuable pieces with less valuable pieces
-        if(capturePieceType != null) {
-            //if capturing a piece on this move
-            moveScore = 10 * getPieceValue(capturePieceType) - getPieceValue(movePieceType);
-        }
-
-        //promoting a pawn is usually a good bet
-        if(_moves[i].promotion) {
-            moveScore += getPieceValue(_moves[i].promotion); //we can only promote to queens right now
-        }
-
-        //penalise moving to squares being attacked by a pawn
-        //TODO
-        _chess.move(_moves[i].san);
-        if(isAttackedByPieceOfLowerValue(_chess, movePieceType, _moves[i].to)) {
-            moveScore -= getPieceValue(movePieceType);
-        }
-        _chess.undo();
-
-        orderedMoveValues[i] == moveScore;
+    //prioritise capturing more valuable pieces with less valuable pieces
+    if(capturePieceType != null) {
+        //if capturing a piece on this move
+        moveScore = 10 * getPieceValue(capturePieceType) - getPieceValue(movePieceType);
     }
 
-    //sort the ordered moves
-    return sortMovesByScore(orderedMoves, orderedMoveValues).moves;
+    //promoting a pawn is usually a good bet
+    if(_move.promotion) {
+        moveScore += getPieceValue(_move.promotion); //we can only promote to queens right now
+    }
+
+    //penalise moving to squares being attacked by a piece of lower value
+    _chess.move(_move.san);
+    if(isAttackedByPieceOfLowerValue(_chess, movePieceType, _move.to)) {
+        moveScore -= getPieceValue(movePieceType);
+    }
+    _chess.undo();
+
+    return moveScore;
 }
 
 //function to sort the array of moves in the same way as the array of move scores
