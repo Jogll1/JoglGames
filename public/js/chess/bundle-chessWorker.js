@@ -2007,9 +2007,9 @@ function getPieceValue(_pieceId) {
         case 'p':
             return 100;
         case 'n':
-            return 300;
-        case 'b':
             return 320;
+        case 'b':
+            return 330;
         case 'r':
             return 500;
         case 'q':
@@ -2213,9 +2213,9 @@ function evaluatePieceSquareTable(_table, _pieceList, _isWhite) {
 
 //#region Getting the best move
 //minimax functions to get ai's best move
-function minimaxRoot(_chess, _depth, _maximisingPlayer) {
+function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
     const moves = _chess.moves({ verbose: true });
-    let bestEval = -9999;
+    let bestEval = Number.NEGATIVE_INFINITY;
     let bestMove = {};
 
     for (let i = 0; i < moves.length; i++) {
@@ -2225,7 +2225,7 @@ function minimaxRoot(_chess, _depth, _maximisingPlayer) {
         _chess.move(move.san);
 
         //start minimax search
-        const eval = minimax2(_chess, _depth - 1, !_maximisingPlayer);
+        const eval = minimax2(_chess, _colourToMove, _depth - 1, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, !_maximisingPlayer);
 
         //undo move
         _chess.undo();
@@ -2239,18 +2239,26 @@ function minimaxRoot(_chess, _depth, _maximisingPlayer) {
     return bestMove;
 }
 
-function minimax2(_chess, _depth, _maximisingPlayer) {
+function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlayer) {
+    // if(_depth === 0) return -evaluateBoard(_chess.board(), _colourToMove);
     if(_depth === 0) return -evaluateBoardSimple(_chess.board());
 
     const moves = _chess.moves({ verbose: true });
 
-    let bestEval = _maximisingPlayer ? -9999 : 9999;
+    let bestEval = _maximisingPlayer ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY;
 
     for (let i = 0; i < moves.length; i++) {
         _chess.move(moves[i].san);
-        const eval = minimax2(_chess, _depth - 1, !_maximisingPlayer);
+        const eval = minimax2(_chess, _colourToMove == "White" ? "Black" : "White", _depth - 1, _alpha, _beta, !_maximisingPlayer);
         bestEval = _maximisingPlayer ? Math.max(bestEval, eval) : Math.min(bestEval, eval);
         _chess.undo();
+
+        //alpha-beta pruning
+        _maximisingPlayer ? _alpha = Math.max(_alpha, bestEval) : _beta = Math.min(_beta, bestEval);
+
+        if(_beta <= _alpha) {
+            return bestEval;
+        }
     }
 
     return bestEval;
@@ -2261,7 +2269,7 @@ function getBestMove(_fenString, _board, _depth, _colourToMove) {
     const chess = new Chess(_fenString);
 
     // const bestMove = minimax1(chess, _depth, _colourToMove, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).bestMove;
-    const bestMove = minimaxRoot(chess, _depth, true);
+    const bestMove = minimaxRoot(chess, _colourToMove, _depth, true);
 
     if(bestMove != null) {
         //convert best move into valid parameters for movePiece()
