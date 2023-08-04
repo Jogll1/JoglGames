@@ -1839,6 +1839,99 @@ class Chess {
 
 const ROWS = 8;
 const COLUMNS = 8;
+const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+const RANKS = [8, 7, 6, 5, 4, 3, 2, 1];
+
+//#region Piece square tables
+//function to read the piece square tables
+function readTable(_table, _square, _isWhite) {
+    //convert square to indices
+    const rank = RANKS.indexOf(parseInt(_square[1]));
+    const file = FILES.indexOf(_square[0]);
+    let index = (_isWhite) ? (7 - rank) * 8 + file : rank * 8 + file;
+
+    return _table[index];
+}
+
+//#region tables
+const pawnPST = [
+    0,  0,  0,  0,  0,  0,  0,  0,
+    50, 50, 50, 50, 50, 50, 50, 50,
+    10, 10, 20, 30, 30, 20, 10, 10,
+    5,  5, 10, 25, 25, 10,  5,  5,
+    0,  0,  0, 20, 20,  0,  0,  0,
+    5, -5,-10,  0,  0,-10, -5,  5,
+    5, 10, 10,-20,-20, 10, 10,  5,
+    0,  0,  0,  0,  0,  0,  0,  0
+];
+
+const knightPST = [
+    -50,-40,-30,-30,-30,-30,-40,-50,
+    -40,-20,  0,  0,  0,  0,-20,-40,
+    -30,  0, 10, 15, 15, 10,  0,-30,
+    -30,  5, 15, 20, 20, 15,  5,-30,
+    -30,  0, 15, 20, 20, 15,  0,-30,
+    -30,  5, 10, 15, 15, 10,  5,-30,
+    -40,-20,  0,  5,  5,  0,-20,-40,
+    -50,-40,-30,-30,-30,-30,-40,-50,
+];
+
+const bishopPST = [
+    -20,-10,-10,-10,-10,-10,-10,-20,
+    -10,  0,  0,  0,  0,  0,  0,-10,
+    -10,  0,  5, 10, 10,  5,  0,-10,
+    -10,  5,  5, 10, 10,  5,  5,-10,
+    -10,  0, 10, 10, 10, 10,  0,-10,
+    -10, 10, 10, 10, 10, 10, 10,-10,
+    -10,  5,  0,  0,  0,  0,  5,-10,
+    -20,-10,-10,-10,-10,-10,-10,-20,
+];
+
+const rookPST = [
+    0,  0,  0,  0,  0,  0,  0,  0,
+    5, 10, 10, 10, 10, 10, 10,  5,
+    -5,  0,  0,  0,  0,  0,  0, -5,
+    -5,  0,  0,  0,  0,  0,  0, -5,
+    -5,  0,  0,  0,  0,  0,  0, -5,
+    -5,  0,  0,  0,  0,  0,  0, -5,
+    -5,  0,  0,  0,  0,  0,  0, -5,
+    0,  0,  0,  5,  5,  0,  0,  0
+];
+
+const queenPST = [
+    -20,-10,-10, -5, -5, -10,-10,-20,
+    -10,  0,  0,  0,  0,  0,  0,-10,
+    -10,  0,  5,  5,  5,  5,  0,-10,
+    -5,  0,  5,  5,  5,  5,  0, -5,
+    0,  0,  5,  5,  5,  5,  0, -5,
+    -10,  5,  5,  5,  5,  5,  0,-10,
+    -10,  0,  5,  0,  0,  0,  0,-10,
+    -20,-10,-10, -5, -5,-10,-10,-20
+];
+
+const kingMiddlePST = [
+    -30,-40,-40,-50,-50,-40,-40,-30,
+    -30,-40,-40,-50,-50,-40,-40,-30,
+    -30,-40,-40,-50,-50,-40,-40,-30,
+    -30,-40,-40,-50,-50,-40,-40,-30,
+    -20,-30,-30,-40,-40,-30,-30,-20,
+    -10,-20,-20,-20,-20,-20,-20,-10,
+    20, 20,  0,  0,  0,  0, 20, 20,
+    20, 30, 10,  0,  0, 10, 30, 20
+];
+
+const kingEndPST = [
+    -50,-40,-30,-20,-20,-30,-40,-50,
+    -30,-20,-10,  0,  0,-10,-20,-30,
+    -30,-10, 20, 30, 30, 20,-10,-30,
+    -30,-10, 30, 40, 40, 30,-10,-30,
+    -30,-10, 30, 40, 40, 30,-10,-30,
+    -30,-10, 20, 30, 30, 20,-10,-30,
+    -30,-30,  0,  0,  0,  0,-30,-30,
+    -50,-30,-30,-30,-30,-30,-30,-50
+];
+//#endregion
+//#endregion
 
 //#region Chess utilities
 //function to convert my way of storing chess moves to a fen string
@@ -1912,39 +2005,125 @@ function constructPieceId(_pieceId) {
 function getPieceValue(_pieceId) {
     switch (_pieceId) {
         case 'p':
-            return 10;
+            return 100;
         case 'n':
-            return 30;
+            return 300;
         case 'b':
-            return 30;
+            return 320;
         case 'r':
-            return 50;
+            return 500;
         case 'q':
-            return 90;
-        case 'k':
             return 900;
+        case 'k':
+            return 9000;
         default:
             return 0;
     }
 }
+//#endregion
 
+//#region Evaluating the board
 //function to get the value of the board
 function evaluateBoard(_board, _colourToMove) {
     //using chess.board() which is a 2d array with 8 arrays, each array has 8 values, each value is a dictionary containing piece data
     let whiteEval = 0;
     let blackEval = 0;
+
+    let whiteMaterial = 0;
+    let blackMaterial = 0;
+
+    let whiteMaterialWithoutPawns = 0;
+    let blackMaterialWithoutPawns = 0;
+
     for (let i = 0; i < _board.length; i++) {
         for (let j = 0; j < _board[i].length; j++) {
             const piece = _board[i][j];
             if(piece !== null) {
+                if(piece !== 'p') {
+                    piece.color == 'w' ? whiteMaterialWithoutPawns += getPieceValue(piece.type) : blackMaterialWithoutPawns += getPieceValue(piece.type);
+                }
                 //check the dict
-                piece.color == 'w' ? whiteEval += getPieceValue(piece.type) : blackEval += getPieceValue(piece.type);
+                piece.color == 'w' ? whiteMaterial += getPieceValue(piece.type) : blackMaterial += getPieceValue(piece.type);
             }
         }
     }
-    
+
+    let whiteEndgamePhaseWeight = endgamePhaseWeight(whiteMaterialWithoutPawns);
+    let blackEndgamePhaseWeight = endgamePhaseWeight(blackMaterialWithoutPawns);
+
+    whiteEval += whiteMaterial;
+    blackEval += blackMaterial;
+    whiteEval += mopUpEval('w', 'b', whiteMaterial, blackMaterial, blackEndgamePhaseWeight);
+    blackEval += mopUpEval('b', 'w', blackMaterial, whiteMaterial, whiteEndgamePhaseWeight);
+
+    whiteEval += evaluatePieceSquareTables(_board, 'w', blackEndgamePhaseWeight);
+    blackEval += evaluatePieceSquareTables(_board, 'b', whiteEndgamePhaseWeight);
+
     return (whiteEval - blackEval) * parseInt(_colourToMove == "White" ? 1 : -1);
 }
+
+//function to get endgame phase weight
+function endgamePhaseWeight(_materialWithoutPawns) {
+    const multiplier = 1 / 1620
+    return 1 - Math.min(1, _materialWithoutPawns * multiplier);
+}
+
+//mop up eval function - decides which side has the winning advantage in endgame positions when their is no pawns
+function mopUpEval(_chess, _friendlyColour, _opponentColour, _myMaterial, _opponentMaterial, _endgameWeight) {
+    let mopUpScore = 0;
+    if(_myMaterial > _opponentMaterial + 100 * 2 && _endgameWeight > 0) {
+        let friendlyKingSquare = '';
+        let opponentKingSquare = '';
+        for (let i = 0; i < _chess.board().length; i++) {
+            for (let j = 0; j < _chess.board()[i].length; j++) {
+                if(_chess.board[i][j] !== null) {
+                    if(_chess.board()[i][j].type === 'k') {
+                        if(_chess.board()[i][j].color === _friendlyColour) {
+                            friendlyKingSquare = _chess.board()[i][j].square;
+                        }
+                        else if (_chess.board()[i][j].color === _opponentColour){
+                            opponentKingSquare = _chess.board()[i][j].square;
+                        }
+                    }
+                }
+            }
+        }
+        mopUpScore +=  calculateManhattanCenterDistance(opponentKingSquare) * 10;
+        mopUpScore += (14 - calculateManhattanDistance(friendlyKingSquare, opponentKingSquare)) * 4;
+
+        return parseInt(mopUpScore * _endgameWeight);
+    }
+    return 0;
+}
+
+//#region manhatten distance
+//function to calculate manhatten distance
+function calculateManhattanDistance(square1, square2) {
+    const file1 = square1.charCodeAt(0) - 97; // Convert file to index (a=0, b=1, ..., h=7)
+    const rank1 = parseInt(square1[1]) - 1;   // Convert rank to index (1=0, 2=1, ..., 8=7)
+
+    const file2 = square2.charCodeAt(0) - 97;
+    const rank2 = parseInt(square2[1]) - 1;
+
+    const distance = Math.abs(file1 - file2) + Math.abs(rank1 - rank2);
+    return distance;
+}
+
+//function to calculate centre manhatten distance
+function calculateManhattanCenterDistance(square) {
+    const centerSquares = ['d4', 'e4', 'd5', 'e5']; // Center squares of a chessboard
+    let minDistance = Infinity;
+
+    for (const centerSquare of centerSquares) {
+        const distance = calculateManhattanDistance(square, centerSquare);
+        if (distance < minDistance) {
+            minDistance = distance;
+        }
+    }
+
+    return minDistance;
+}
+//'endregion
 
 //check if piece is under threat by a piece of lower value
 function isAttackedByPieceOfLowerValue(_chess, _movePieceType, _to) {
@@ -1958,6 +2137,63 @@ function isAttackedByPieceOfLowerValue(_chess, _movePieceType, _to) {
     }
 
     return attackedByPawn;
+}
+//#endregion
+
+//function to evaluate piece square tables
+function evaluatePieceSquareTables(_board, _colour, _endgamePhaseWeight) {
+    let value = 0;
+    const isWhite = _colour === 'w';
+    let pawns = [];
+    let knights = [];
+    let bishops = [];
+    let rooks = [];
+    let queens = [];
+    let friendlyKing = {};
+
+    //get piece lists
+    for (let i = 0; i < _board.length; i++) {
+        for (let j = 0; j < _board[i].length; j++) {
+            if(_board[i][j] !== null) {
+                if(_board[i][j].type == 'p'){
+                    pawns.push(_board[i][j]);
+                }
+                else if(_board[i][j].type == 'n'){
+                    knights.push(_board[i][j]);
+                }
+                else if(_board[i][j].type == 'b'){
+                    bishops.push(_board[i][j]);
+                }
+                else if(_board[i][j].type == 'r'){
+                    rooks.push(_board[i][j]);
+                }
+                else if(_board[i][j].type == 'q'){
+                    queens.push(_board[i][j]);
+                }
+                else if(_board[i][j].type == 'k' && _board[i][j].color == _colour){
+                    friendlyKing = _board[i][j];
+                }
+            }
+        }
+    }
+
+    value += evaluatePieceSquareTable(pawnPST, pawns, isWhite);
+    value += evaluatePieceSquareTable(knightPST, knights, isWhite);
+    value += evaluatePieceSquareTable(bishopPST, bishops, isWhite);
+    value += evaluatePieceSquareTable(rookPST, rooks, isWhite);
+    value += evaluatePieceSquareTable(queenPST, queens, isWhite);
+    let kingEarlyPhase = readTable(kingMiddlePST, friendlyKing.square, isWhite);
+    value += parseInt(kingEarlyPhase * (1 - _endgamePhaseWeight));
+
+    return value;
+}
+
+function evaluatePieceSquareTable(_table, _pieceList, _isWhite) {
+    let value = 0;
+    for (let i = 0; i < _pieceList.length; i++) {
+        value += readTable(_table, _pieceList[i].square, _isWhite);
+    }
+    return value;
 }
 //#endregion
 
@@ -1993,7 +2229,7 @@ function minimax1(_chess, _depth, _toMove, _alpha, _beta, _maximisingPlayer) {
             //perform move
             _chess.move(myMoves[i].san);
 
-            const newEval = -minimax1(_chess, _depth - 1, _toMove == "White" ? "Black" : "White", _alpha, _beta, false).eval;
+            const newEval = minimax1(_chess, _depth - 1, _toMove == "White" ? "Black" : "White", _alpha, _beta, false).eval;
 
             //undo move
             _chess.undo();
@@ -2102,13 +2338,11 @@ function getBestMove(_fenString, _board, _depth, _colourToMove) {
 
     if(bestMove != null) {
         //convert best move into valid parameters for movePiece()
-        const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-        const ranks = [8, 7, 6, 5, 4, 3, 2, 1];
 
-        const originalCoords = [ranks.indexOf(parseInt(bestMove.from[1])), files.indexOf(bestMove.from[0])];
+        const originalCoords = [RANKS.indexOf(parseInt(bestMove.from[1])), FILES.indexOf(bestMove.from[0])];
         const pieceToMove = _board[originalCoords[0]][originalCoords[1]];
 
-        const coords = [ranks.indexOf(parseInt(bestMove.to[1])), files.indexOf(bestMove.to[0])];
+        const coords = [RANKS.indexOf(parseInt(bestMove.to[1])), FILES.indexOf(bestMove.to[0])];
 
         return {pieceToMoveId: constructPieceId(pieceToMove), tileToMoveToId: `SQ${coords.join('-')}`};
     }
