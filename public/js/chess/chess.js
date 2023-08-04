@@ -310,17 +310,15 @@ $(document).ready(function() {
                     }
 
                     //show all valid moves
-                    showValidMoves(ch_board.getBoard(), tile);
+                    if(tile !== null) showValidMoves(ch_board.getBoard(), tile);
 
                     // set the selected the tile in mouseup
                 }
                 else {
                     //if tile selected not empty
-                    if(ch_selectedTile.getState() != "")
-                    {
+                    if(ch_selectedTile.getState() !== "" && ch_selectedTile.getState() !== null) {
                         //if empty, move selected piece to this square
                         const pieceToMove = $("#" + ch_selectedTile.getState()).children(0);
-
                         sendMove(pieceToMove.attr("id"), $(this).attr("id"));
                     }
 
@@ -338,9 +336,10 @@ $(document).ready(function() {
         const id = $(this).attr("id");
         
         //if haven't clicked on already selected tile
+        const childPieceId = $(this).children().length >= 1 ? $(this).children(0).attr("id") : "";
         if(id !== ch_selectedTile.getState()) {
             //if tile clicked has a piece in it (and not a highlight circle)
-            if ($(this).children().length >= 1 && !$(this).children(0).attr("id").includes('validTile') && !$(this).children(0).attr("id").includes('validTakeTile')) {
+            if ($(this).children().length >= 1 && !childPieceId.includes('validTile') && !childPieceId.includes('validTakeTile')) {
                 //check if our turn and we clicked our colour
                 if(ch_isMyTurn.getState()) {
                     //select this tile
@@ -507,33 +506,35 @@ function initDragDrop() {
 
 //function to call our move and retrieve opponent's move
 function sendMove(_pieceToMoveId, _tileToMoveToId) {
-    if(movePiece(_pieceToMoveId, _tileToMoveToId)){
-        //if not playing robot, send move to opponent, else get robot move
-        if(ch_isPlayingRobot.getState()) {
-            //send the board state to the aiworker for it to calculate its move
-            let depth = 3; 
-                    
-            //set the message to be sent
-            const message = {
-                _board: ch_board.getBoard(),
-                _depth: depth,
-                _colourToMove: ch_myColour.oppColour(),
-                _castles: ch_castles.get(),
-                _epTargetSq: ch_epTargetSq.get(),
-                _halfmoveClock: ch_halfmoveClock.get(),
-                _fullmoveNo: ch_fullmoveNo.get()
+    if(_pieceToMoveId !== undefined && _pieceToMoveId !== null) {
+        if(_pieceToMoveId.includes(ch_myColour.get()) && movePiece(_pieceToMoveId, _tileToMoveToId)){
+            //if not playing robot, send move to opponent, else get robot move
+            if(ch_isPlayingRobot.getState()) {
+                //send the board state to the aiworker for it to calculate its move
+                let depth = 3; 
+                        
+                //set the message to be sent
+                const message = {
+                    _board: ch_board.getBoard(),
+                    _depth: depth,
+                    _colourToMove: ch_myColour.oppColour(),
+                    _castles: ch_castles.get(),
+                    _epTargetSq: ch_epTargetSq.get(),
+                    _halfmoveClock: ch_halfmoveClock.get(),
+                    _fullmoveNo: ch_fullmoveNo.get()
+                }
+    
+                //add minimum time limit to send the move
+                let minTime = 450;
+                setTimeout(function() { 
+                    ch_aiWorker.postMessage(message);
+                }, minTime);
             }
-
-            //add minimum time limit to send the move
-            let minTime = 450;
-            setTimeout(function() { 
-                ch_aiWorker.postMessage(message);
-            }, minTime);
-        }
-        else {
-            //-----SOCKET-----
-            socketSendChessMove(_pieceToMoveId, _tileToMoveToId);
-            //----------------
+            else {
+                //-----SOCKET-----
+                socketSendChessMove(_pieceToMoveId, _tileToMoveToId);
+                //----------------
+            }
         }
     }
 }
