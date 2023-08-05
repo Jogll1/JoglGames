@@ -1861,7 +1861,7 @@ const pawnPST = [
     50, 50, 50, 50, 50, 50, 50, 50,
     10, 10, 20, 30, 30, 20, 10, 10,
     5,  5, 10, 25, 25, 10,  5,  5,
-    0,  0,  0, 20, 20,  0,  0,  0,
+    0,  0,  0, 300, 300,  0,  0,  0,
     5, -5,-10,  0,  0,-10, -5,  5,
     5, 10, 10,-20,-20, 10, 10,  5,
     0,  0,  0,  0,  0,  0,  0,  0
@@ -2023,28 +2023,43 @@ function getPieceValue(_pieceId) {
     }
 }
 
+//function to get a piece's value based on it's piece-square table value
 function getPieceAndTableValue(_pieceId, _square, _isWhite) {
     if(_pieceId == 'p') {
-        return 100 + readTable(pawnPST, _square, _isWhite);
+        return getPieceValue(_pieceId) + readTable(pawnPST, _square, _isWhite);
     }
     else if(_pieceId == 'n') {
-        return 320 + readTable(knightPST, _square, _isWhite);
+        return getPieceValue(_pieceId) + readTable(knightPST, _square, _isWhite);
     }
     else if(_pieceId == 'b') {
-        return 330 + readTable(bishopPST, _square, _isWhite);
+        return getPieceValue(_pieceId) + readTable(bishopPST, _square, _isWhite);
     }
     else if(_pieceId == 'r') {
-        return 500 + readTable(rookPST, _square, _isWhite);
+        return getPieceValue(_pieceId) + readTable(rookPST, _square, _isWhite);
     }
     else if(_pieceId == 'q') {
-        return 900 + readTable(queenPST, _square, _isWhite);
+        return getPieceValue(_pieceId) + readTable(queenPST, _square, _isWhite);
     }
     else if(_pieceId == 'k') {
-        return 9000 + readTable(kingMiddlePST, _square, _isWhite);
+        return getPieceValue(_pieceId) + readTable(kingMiddlePST, _square, _isWhite);
     }
     else {
         return 0;
     }
+}
+
+//check if piece is under threat by a piece of lower value
+function isAttackedByPieceOfLowerValue(_chess, _movePieceType, _to) {
+    const attackedByPawn = false;
+    const enemyMoves = _chess.moves({ verbose: true });
+
+    for (let i = 0; i < enemyMoves.length; i++) {
+        if((enemyMoves[i].piece === 'p' || getPieceValue(enemyMoves[i].piece) < getPieceValue(_movePieceType)) && enemyMoves[i].to === _to) {
+            return true;
+        }
+    }
+
+    return attackedByPawn;
 }
 //#endregion
 
@@ -2173,20 +2188,6 @@ function evaluateBoardSimple(_board) {
 // }
 // //#endregion
 
-// //check if piece is under threat by a piece of lower value
-// function isAttackedByPieceOfLowerValue(_chess, _movePieceType, _to) {
-//     const attackedByPawn = false;
-//     const enemyMoves = _chess.moves({ verbose: true });
-
-//     for (let i = 0; i < enemyMoves.length; i++) {
-//         if((enemyMoves[i].piece === 'p' || getPieceValue(enemyMoves[i].piece) < getPieceValue(_movePieceType)) && enemyMoves[i].to === _to) {
-//             return true;
-//         }
-//     }
-
-//     return attackedByPawn;
-// }
-
 // //function to evaluate piece square tables
 // function evaluatePieceSquareTables(_board, _colour, _endgamePhaseWeight) {
 //     let value = 0;
@@ -2245,10 +2246,64 @@ function evaluateBoardSimple(_board) {
 //#endregion
 //#endregion
 
+//#region Move ordering - currently slows it down
+//function to order moves to make alpha beta pruning more efficient
+function orderMoves(_chess, _moves) {
+    //using an array of verbose moves (dictionaries)
+    let orderedMoves = _moves;
+    let orderedMoveValues = Array(_moves.length);
+
+    for (let i = 0; i < _moves.length; i++) {
+        let moveScore = 0;
+        const movePieceType = _moves[i].piece;
+        const capturePieceType = _chess.get(_moves[i].to).type;
+
+        //prioritise capturing more valuable pieces with less valuable pieces
+        if(capturePieceType != null) {
+            //if capturing a piece on this move
+            moveScore = 10 * getPieceValue(capturePieceType) - getPieceValue(movePieceType);
+        }
+
+        //promoting a pawn is usually a good bet
+        if(_moves[i].promotion) {
+            moveScore += getPieceValue(_moves[i].promotion); //we can only promote to queens right now
+        }
+
+        //penalise moving to squares being attacked by a pawn
+        _chess.move(_moves[i].san);
+        if(isAttackedByPieceOfLowerValue(_chess, movePieceType, _moves[i].to)) {
+            moveScore -= getPieceValue(movePieceType);
+        }
+        _chess.undo();
+
+        orderedMoveValues[i] == moveScore;
+    }
+
+    //sort the ordered moves
+    return sortMovesByScore(orderedMoves, orderedMoveValues);
+}
+
+//function to sort moves by score
+function sortMovesByScore(_moves, _moveScores) {
+    for (let i = 0; i < _moves.length; i++) {
+        for (let j = i + 1; j > 0; j--) {
+            const swapIndex = j - 1;
+            if(_moveScores[swapIndex] < _moveScores[j]) {
+                [_moves[j], _moves[swapIndex]] = [_moves[swapIndex], _moves[j]];
+                [_moveScores[j], _moveScores[swapIndex]] = [_moveScores[swapIndex], _moveScores[j]];
+            }
+        }
+    }
+
+    return _moves;
+}
+//#endregion
+
 //#region Getting the best move
 //minimax functions to get ai's best move
 function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
     const moves = _chess.moves({ verbose: true });
+
     let bestEval = Number.NEGATIVE_INFINITY;
     let bestMove = {};
 
@@ -2307,7 +2362,6 @@ function getBestMove(_fenString, _board, _depth, _colourToMove) {
 
     if(bestMove != null) {
         //convert best move into valid parameters for movePiece()
-
         const originalCoords = [RANKS.indexOf(parseInt(bestMove.from[1])), FILES.indexOf(bestMove.from[0])];
         const pieceToMove = _board[originalCoords[0]][originalCoords[1]];
 

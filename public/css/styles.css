@@ -106,7 +106,7 @@ img.noHighlightOrDrag {
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    height: 675px;
+    height: 674px;
     position: relative;
     gap: 120px;
     /* background-color: #202020; */
@@ -408,7 +408,6 @@ transform: translate(0, -11px) rotate(45deg);
 
 /*#region Rematch menu */
 .rematchMenu {
-    opacity: 100%;
     /* width: 20vw;
     height: 24.5vh; */
     width: 350px;
