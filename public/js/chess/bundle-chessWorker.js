@@ -2025,7 +2025,7 @@ function hashBoard(_chess) {
     return Math.abs(hash);
 }
 
-function updateHash(_oldHash, _chess, _move) {
+function updateHash(_oldHash, _move) {
     //to update the hash, xor out the square that the piece moved from
     //then xor in the square the piece moved to
     //if a capture occurs, xor out the piece that was captured
@@ -2235,168 +2235,6 @@ function evaluateBoardSimple(_board) {
     }
     return eval;
 }
-
-//#region other eval stuff needs rework
-//function to get the value of the board
-// function evaluateBoard(_board, _colourToMove) {
-//     //using chess.board() which is a 2d array with 8 arrays, each array has 8 values, each value is a dictionary containing piece data
-//     let whiteEval = 0;
-//     let blackEval = 0;
-
-//     let whiteMaterial = 0;
-//     let blackMaterial = 0;
-
-//     let whiteMaterialWithoutPawns = 0;
-//     let blackMaterialWithoutPawns = 0;
-
-//     for (let i = 0; i < _board.length; i++) {
-//         for (let j = 0; j < _board[i].length; j++) {
-//             const piece = _board[i][j];
-//             if(piece !== null) {
-//                 if(piece !== 'p') {
-//                     piece.color == 'w' ? whiteMaterialWithoutPawns += getPieceValue(piece.type) : blackMaterialWithoutPawns += getPieceValue(piece.type);
-//                 }
-//                 //check the dict
-//                 piece.color == 'w' ? whiteMaterial += getPieceValue(piece.type) : blackMaterial += getPieceValue(piece.type);
-//             }
-//         }
-//     }
-
-//     let whiteEndgamePhaseWeight = endgamePhaseWeight(whiteMaterialWithoutPawns);
-//     let blackEndgamePhaseWeight = endgamePhaseWeight(blackMaterialWithoutPawns);
-
-//     whiteEval += whiteMaterial;
-//     blackEval += blackMaterial;
-//     whiteEval += mopUpEval('w', 'b', whiteMaterial, blackMaterial, blackEndgamePhaseWeight);
-//     blackEval += mopUpEval('b', 'w', blackMaterial, whiteMaterial, whiteEndgamePhaseWeight);
-
-//     whiteEval += evaluatePieceSquareTables(_board, 'w', blackEndgamePhaseWeight);
-//     blackEval += evaluatePieceSquareTables(_board, 'b', whiteEndgamePhaseWeight);
-
-//     let finalEval = (whiteEval - blackEval) * parseInt(_colourToMove == "White" ? 1 : -1);
-
-//     return finalEval;
-// }
-
-// //function to get endgame phase weight
-// function endgamePhaseWeight(_materialWithoutPawns) {
-//     const multiplier = 1 / 1620
-//     return 1 - Math.min(1, _materialWithoutPawns * multiplier);
-// }
-
-// //mop up eval function - decides which side has the winning advantage in endgame positions when their is no pawns
-// function mopUpEval(_chess, _friendlyColour, _opponentColour, _myMaterial, _opponentMaterial, _endgameWeight) {
-//     let mopUpScore = 0;
-//     if(_myMaterial > _opponentMaterial + 100 * 2 && _endgameWeight > 0) {
-//         let friendlyKingSquare = '';
-//         let opponentKingSquare = '';
-//         for (let i = 0; i < _chess.board().length; i++) {
-//             for (let j = 0; j < _chess.board()[i].length; j++) {
-//                 if(_chess.board[i][j] !== null) {
-//                     if(_chess.board()[i][j].type === 'k') {
-//                         if(_chess.board()[i][j].color === _friendlyColour) {
-//                             friendlyKingSquare = _chess.board()[i][j].square;
-//                         }
-//                         else if (_chess.board()[i][j].color === _opponentColour){
-//                             opponentKingSquare = _chess.board()[i][j].square;
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//         mopUpScore +=  calculateManhattanCenterDistance(opponentKingSquare) * 10;
-//         mopUpScore += (14 - calculateManhattanDistance(friendlyKingSquare, opponentKingSquare)) * 4;
-
-//         return parseInt(mopUpScore * _endgameWeight);
-//     }
-//     return 0;
-// }
-
-// //#region manhatten distance
-// //function to calculate manhatten distance
-// function calculateManhattanDistance(square1, square2) {
-//     const file1 = square1.charCodeAt(0) - 97; // Convert file to index (a=0, b=1, ..., h=7)
-//     const rank1 = parseInt(square1[1]) - 1;   // Convert rank to index (1=0, 2=1, ..., 8=7)
-
-//     const file2 = square2.charCodeAt(0) - 97;
-//     const rank2 = parseInt(square2[1]) - 1;
-
-//     const distance = Math.abs(file1 - file2) + Math.abs(rank1 - rank2);
-//     return distance;
-// }
-
-// //function to calculate centre manhatten distance
-// function calculateManhattanCenterDistance(square) {
-//     const centerSquares = ['d4', 'e4', 'd5', 'e5']; // Center squares of a chessboard
-//     let minDistance = Infinity;
-
-//     for (const centerSquare of centerSquares) {
-//         const distance = calculateManhattanDistance(square, centerSquare);
-//         if (distance < minDistance) {
-//             minDistance = distance;
-//         }
-//     }
-
-//     return minDistance;
-// }
-// //#endregion
-
-// //function to evaluate piece square tables
-// function evaluatePieceSquareTables(_board, _colour, _endgamePhaseWeight) {
-//     let value = 0;
-//     const isWhite = _colour === 'w';
-//     let pawns = [];
-//     let knights = [];
-//     let bishops = [];
-//     let rooks = [];
-//     let queens = [];
-//     let friendlyKing = {};
-
-//     //get piece lists
-//     for (let i = 0; i < _board.length; i++) {
-//         for (let j = 0; j < _board[i].length; j++) {
-//             if(_board[i][j] !== null) {
-//                 if(_board[i][j].type == 'p'){
-//                     pawns.push(_board[i][j]);
-//                 }
-//                 else if(_board[i][j].type == 'n'){
-//                     knights.push(_board[i][j]);
-//                 }
-//                 else if(_board[i][j].type == 'b'){
-//                     bishops.push(_board[i][j]);
-//                 }
-//                 else if(_board[i][j].type == 'r'){
-//                     rooks.push(_board[i][j]);
-//                 }
-//                 else if(_board[i][j].type == 'q'){
-//                     queens.push(_board[i][j]);
-//                 }
-//                 else if(_board[i][j].type == 'k' && _board[i][j].color == _colour){
-//                     friendlyKing = _board[i][j];
-//                 }
-//             }
-//         }
-//     }
-
-//     value += evaluatePieceSquareTable(pawnPST, pawns, isWhite);
-//     value += evaluatePieceSquareTable(knightPST, knights, isWhite);
-//     value += evaluatePieceSquareTable(bishopPST, bishops, isWhite);
-//     value += evaluatePieceSquareTable(rookPST, rooks, isWhite);
-//     value += evaluatePieceSquareTable(queenPST, queens, isWhite);
-//     let kingEarlyPhase = readTable(kingMiddlePST, friendlyKing.square, isWhite);
-//     value += parseInt(kingEarlyPhase * (1 - _endgamePhaseWeight));
-
-//     return value;
-// }
-
-// function evaluatePieceSquareTable(_table, _pieceList, _isWhite) {
-//     let value = 0;
-//     for (let i = 0; i < _pieceList.length; i++) {
-//         value += readTable(_table, _pieceList[i].square, _isWhite);
-//     }
-//     return value;
-// }
-//#endregion
 //#endregion
 
 //#region Move ordering
@@ -2451,8 +2289,8 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
     let moves = _chess.moves({ verbose: true });
     moves = orderMoves(_chess, moves);
 
-    const oldHash = currentHash;
-    const newHash = updateHash(oldHash, _chess, moves[0]);
+    const oldHash = currentHash; //
+    const newHash = updateHash(oldHash, moves[0]); //
     console.log(`old hash: ${oldHash}, hash after move: ${newHash}`); //
 
     let bestEval = Number.NEGATIVE_INFINITY;
@@ -2510,7 +2348,7 @@ function getBestMove(_fenString, _board, _depth, _colourToMove) {
     const chess = new Chess(_fenString);
 
     //get hash of board sent by player
-    currentHash = hashBoard(chess);
+    currentHash = hashBoard(chess); //
 
     const bestMove = minimaxRoot(chess, _colourToMove, _depth, true);
 
