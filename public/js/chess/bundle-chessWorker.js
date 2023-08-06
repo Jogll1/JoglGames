@@ -1848,7 +1848,7 @@ function readTable(_table, _square, _isWhite) {
     //convert square to indices
     const rank = RANKS.indexOf(parseInt(_square[1]));
     const file = FILES.indexOf(_square[0]);
-    // let index = (_isWhite) ? rank * 8 + file : (7 - rank) * 8 + file;
+
     let index = rank * 8 + file;
     const returnArray = (_isWhite) ? _table : _table.slice().reverse();
 
@@ -1856,18 +1856,18 @@ function readTable(_table, _square, _isWhite) {
 }
 
 //#region tables
-const pawnPST = [
+const PAWN_PST = [
     0,  0,  0,  0,  0,  0,  0,  0,
     50, 50, 50, 50, 50, 50, 50, 50,
     10, 10, 20, 30, 30, 20, 10, 10,
     5,  5, 10, 25, 25, 10,  5,  5,
-    0,  0,  0, 300, 300,  0,  0,  0,
+    0,  0,  0, 20, 20,  0,  0,  0,
     5, -5,-10,  0,  0,-10, -5,  5,
     5, 10, 10,-20,-20, 10, 10,  5,
     0,  0,  0,  0,  0,  0,  0,  0
 ];
 
-const knightPST = [
+const KNIGHT_PST = [
     -50,-40,-30,-30,-30,-30,-40,-50,
     -40,-20,  0,  0,  0,  0,-20,-40,
     -30,  0, 10, 15, 15, 10,  0,-30,
@@ -1878,7 +1878,7 @@ const knightPST = [
     -50,-40,-30,-30,-30,-30,-40,-50,
 ];
 
-const bishopPST = [
+const BISHOP_PST = [
     -20,-10,-10,-10,-10,-10,-10,-20,
     -10,  0,  0,  0,  0,  0,  0,-10,
     -10,  0,  5, 10, 10,  5,  0,-10,
@@ -1889,7 +1889,7 @@ const bishopPST = [
     -20,-10,-10,-10,-10,-10,-10,-20,
 ];
 
-const rookPST = [
+const ROOK_PST = [
     0,  0,  0,  0,  0,  0,  0,  0,
     5, 10, 10, 10, 10, 10, 10,  5,
     -5,  0,  0,  0,  0,  0,  0, -5,
@@ -1900,7 +1900,7 @@ const rookPST = [
     0,  0,  0,  5,  5,  0,  0,  0
 ];
 
-const queenPST = [
+const QUEEN_PST = [
     -20,-10,-10, -5, -5, -10,-10,-20,
     -10,  0,  0,  0,  0,  0,  0,-10,
     -10,  0,  5,  5,  5,  5,  0,-10,
@@ -1911,7 +1911,7 @@ const queenPST = [
     -20,-10,-10, -5, -5,-10,-10,-20
 ];
 
-const kingMiddlePST = [
+const KING_MIDDLE_PST = [
     -30,-40,-40,-50,-50,-40,-40,-30,
     -30,-40,-40,-50,-50,-40,-40,-30,
     -30,-40,-40,-50,-50,-40,-40,-30,
@@ -1922,7 +1922,7 @@ const kingMiddlePST = [
     20, 30, 10,  0,  0, 10, 30, 20
 ];
 
-const kingEndPST = [
+const KING_END_PST = [
     -50,-40,-30,-20,-20,-30,-40,-50,
     -30,-20,-10,  0,  0,-10,-20,-30,
     -30,-10, 20, 30, 30, 20,-10,-30,
@@ -2026,22 +2026,22 @@ function getPieceValue(_pieceId) {
 //function to get a piece's value based on it's piece-square table value
 function getPieceAndTableValue(_pieceId, _square, _isWhite) {
     if(_pieceId == 'p') {
-        return getPieceValue(_pieceId) + readTable(pawnPST, _square, _isWhite);
+        return getPieceValue(_pieceId) + readTable(PAWN_PST, _square, _isWhite);
     }
     else if(_pieceId == 'n') {
-        return getPieceValue(_pieceId) + readTable(knightPST, _square, _isWhite);
+        return getPieceValue(_pieceId) + readTable(KNIGHT_PST, _square, _isWhite);
     }
     else if(_pieceId == 'b') {
-        return getPieceValue(_pieceId) + readTable(bishopPST, _square, _isWhite);
+        return getPieceValue(_pieceId) + readTable(BISHOP_PST, _square, _isWhite);
     }
     else if(_pieceId == 'r') {
-        return getPieceValue(_pieceId) + readTable(rookPST, _square, _isWhite);
+        return getPieceValue(_pieceId) + readTable(ROOK_PST, _square, _isWhite);
     }
     else if(_pieceId == 'q') {
-        return getPieceValue(_pieceId) + readTable(queenPST, _square, _isWhite);
+        return getPieceValue(_pieceId) + readTable(QUEEN_PST, _square, _isWhite);
     }
     else if(_pieceId == 'k') {
-        return getPieceValue(_pieceId) + readTable(kingMiddlePST, _square, _isWhite);
+        return getPieceValue(_pieceId) + readTable(KING_MIDDLE_PST, _square, _isWhite);
     }
     else {
         return 0;
@@ -2270,11 +2270,11 @@ function orderMoves(_chess, _moves) {
         }
 
         //penalise moving to squares being attacked by a pawn
-        _chess.move(_moves[i].san);
-        if(isAttackedByPieceOfLowerValue(_chess, movePieceType, _moves[i].to)) {
-            moveScore -= getPieceValue(movePieceType);
-        }
-        _chess.undo();
+        // _chess.move(_moves[i].san);
+        // if(isAttackedByPieceOfLowerValue(_chess, movePieceType, _moves[i].to)) {
+        //     moveScore -= getPieceValue(movePieceType);
+        // }
+        // _chess.undo();
 
         orderedMoveValues[i] == moveScore;
     }
@@ -2302,7 +2302,8 @@ function sortMovesByScore(_moves, _moveScores) {
 //#region Getting the best move
 //minimax functions to get ai's best move
 function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
-    const moves = _chess.moves({ verbose: true });
+    let moves = _chess.moves({ verbose: true });
+    moves = orderMoves(_chess, moves);
 
     let bestEval = Number.NEGATIVE_INFINITY;
     let bestMove = {};
@@ -2332,7 +2333,8 @@ function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlaye
     // if(_depth === 0) return -evaluateBoard(_chess.board(), _colourToMove);
     if(_depth === 0) return -evaluateBoardSimple(_chess.board());
 
-    const moves = _chess.moves({ verbose: true });
+    let moves = _chess.moves({ verbose: true });
+    moves = orderMoves(_chess, moves);
 
     let bestEval = _maximisingPlayer ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY;
 
