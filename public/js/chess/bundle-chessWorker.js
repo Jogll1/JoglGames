@@ -1989,7 +1989,7 @@ function initZobrist() {
     sideToMove[0] = Math.floor(Math.random() * 2**64);
 }
 
-function hashBoard(_chess, _epFile) {
+function hashBoard(_chess) {
     let hash = 0;
 
     //side to move
@@ -2017,9 +2017,11 @@ function hashBoard(_chess, _epFile) {
     if(bC['q']) hash ^= castlingRights[3];
 
     //ep file
-    if(_epFile != '-') {
-        hash ^= enPassantFiles(_epFile);
+    const epFile = _chess.fen().split(' ')[3];
+    if(epFile != '-') {
+        hash ^= enPassantFiles(epFile);
     }
+
     return Math.abs(hash);
 }
 
@@ -2033,30 +2035,71 @@ function updateHash(_oldHash, _chess, _move) {
     const flags = _move.flags;
 
     //xor out value of the piece that just moved in its old square
-    const p = pieceInts[_move.color == 'w' ? _move.piece.topUpper() : _move.piece];
-    const oldPieceToMoveValue = piecesKeys[RANKS.indexOf(_move.from[1]) * 8 + FILES.indexOf(_move.from[0])][p]
+    const p = pieceInts[_move.color == 'w' ? _move.piece.toUpper() : _move.piece];
+    const oldPieceToMoveValue = piecesKeys[RANKS.indexOf(parseInt(_move.from[1])) * 8 + FILES.indexOf(_move.from[0])][p];
     let newHash = oldPieceToMoveValue ^ _oldHash;
 
     //xor in value of the piece that just moved in its new square
-    const newPieceToMoveValue = piecesKeys[RANKS.indexOf(_move.to[1]) * 8 + FILES.indexOf(_move.to[0])][p]
+    const newPieceToMoveValue = piecesKeys[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])][p];
     newHash ^= newPieceToMoveValue;
 
     //if we captured a piece, xor out the value of that piece
     if(flags.includes('c')) {
-        
+        const capturedPiece = pieceInts[_move.color == 'w' ? _move.captured : _move.captured.toUpper()];
+        const capturedPieceValue = piecesKeys[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])][capturedPiece];
+        let newHash = capturedPieceValue ^ newHash;
     }
 
-    //get move type
-    if(!flags.includes('k') && !flags.includes('q') && !false.includes('e')) {
-        //normal move/capture
+    //if en passant capture
+    if(flags.includes('e')) {
+        const capturedPiece = pieceInts[_move.color == 'w' ? 'p' : 'P'];
+        const epRow = parseInt(_move.to[0]) + parseInt(_move.color == 'w' ? -1 : 1);
+        const capturedPieceValue = piecesKeys[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(epRow)][capturedPiece];
+        let newHash = capturedPieceValue ^ newHash;
     }
 
-    return newHash;
+    //castling
+    if(flags.includes('k')) {
+        //xor out old rook position
+        const r = pieceInts[_move.color === 'w' ? 'R' : 'r'];
+        const oldRookValue = (_move.color === 'w') ? piecesKeys[63][r] : piecesKeys[7][r];
+        let newHash = oldRookValue ^ newHash;
+
+        //xor in new rook position value
+        const newRookValue = (_move.color === 'w') ? piecesKeys[61][r] : piecesKeys[5][r];
+        newHash ^= newRookValue;
+    }
+
+    if(flags.includes('q')) {
+        //xor out old rook position
+        const r = pieceInts[_move.color === 'w' ? 'R' : 'r'];
+        const oldRookValue = (_move.color === 'w') ? piecesKeys[56][r] : piecesKeys[0][r];
+        let newHash = oldRookValue ^ newHash;
+
+        //xor in new rook position value
+        const newRookValue = (_move.color === 'w') ? piecesKeys[59][r] : piecesKeys[3][r];
+        newHash ^= newRookValue;
+    }
+
+    //promotion
+    if(flags.includes('p')) {
+        //xor out old pawn position
+        const p = pieceInts[_move.color === 'w' ? 'P' : 'p'];
+        const oldPawnValue = piecesKeys[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])][p];
+        let newHash = oldPawnValue ^ newHash;
+
+        //xor in new rook position value
+        const promPiece = pieceInts[_move.color === 'w' ? _move.promotion.toUpper() : _move.promotion];
+        const newRookValue = piecesKeys[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])][promPiece];
+        newHash ^= newRookValue;
+    }
+
+    return Math.abs(newHash);
 }
 
 initZobrist();
 
-const currentHash = 0;
+let currentHash = 0;
 //#endregion
 
 //#region Chess utilities
@@ -2408,6 +2451,10 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
     let moves = _chess.moves({ verbose: true });
     moves = orderMoves(_chess, moves);
 
+    const oldHash = currentHash;
+    const newHash = updateHash(oldHash, _chess, moves[0]);
+    console.log(`old hash: ${oldHash}, hash after move: ${newHash}`); //
+
     let bestEval = Number.NEGATIVE_INFINITY;
     let bestMove = {};
 
@@ -2462,7 +2509,9 @@ function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlaye
 function getBestMove(_fenString, _board, _depth, _colourToMove) {
     const chess = new Chess(_fenString);
 
-    // const bestMove = minimax1(chess, _depth, _colourToMove, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).bestMove;
+    //get hash of board sent by player
+    currentHash = hashBoard(chess);
+
     const bestMove = minimaxRoot(chess, _colourToMove, _depth, true);
 
     if(bestMove != null) {
