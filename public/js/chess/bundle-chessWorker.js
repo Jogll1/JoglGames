@@ -1935,6 +1935,92 @@ const KING_END_PST = [
 //#endregion
 //#endregion
 
+//#region Zobrist hashing
+//zobrist hashing generates an array of pseudorandom numbers:
+//1 for each piece in each square
+//1 to indicate black to move
+//4 for castling rights or 16 for speed
+//9 for the en passant file, if any
+//this gives us 64 * 12 + 1 + 4 + 9 (782) numbers
+//the final hash is computed by xor-ing each square with a piece on it
+const pieceInts = {
+    P: 0,
+    N: 1,
+    B: 2,
+    R: 3,
+    Q: 4,
+    K: 5,
+    p: 6,
+    n: 7,
+    b: 8,
+    r: 9,
+    q: 10,
+    k: 11
+};
+
+const piecesKeys = init2dArray(64, 12, 0);
+const castlingRights = new Array(4);
+const enPassantFiles = new Array(8);
+const sideToMove = new Array(1);
+
+function initZobrist() {
+    //piece
+    for (let i = 0; i < piecesKeys.length; i++) {
+        for (let j = 0; j < piecesKeys[i].length; j++) {
+            piecesKeys[i][j] = Math.floor(Math.random() * 2**64);
+        }
+    }
+
+    //castling rights
+    for (let i = 0; i < castlingRights.length; i++) {
+        castlingRights[i] = Math.floor(Math.random() * 2**64);
+    }
+
+    //en passant files
+    for (let i = 0; i < enPassantFiles.length; i++) {
+        enPassantFiles[i] = Math.floor(Math.random() * 2**64);
+    }
+
+    sideToMove[0] = Math.floor(Math.random() * 2**64);
+}
+
+function hashBoard(_chess, _epFile) {
+    let hash = 0;
+
+    //side to move
+    if (_chess.turn() == 'b') hash ^= sideToMove;
+
+    //pieces
+    const board = _chess.board();
+    for (let i = 0; i < board.length; i++) {
+        for (let j = 0; j < board[i].length; j++) {
+            if (board[i][j] !== null) {
+                //get the piece in the board
+                const type = board[i].color == 'w' ? board[i][j].type.topUpper() : board[i][j].type;
+                const p = pieceInts[type];
+                hash ^= piecesKeys[i * 8 + j][p];
+            }
+        }
+    }
+
+    //castling rights
+    const wC = _chess.getCastlingRights('w');
+    if(wC['k']) hash ^= castlingRights[0];
+    if(wC['q']) hash ^= castlingRights[1];
+    const bC = _chess.getCastlingRights('b');
+    if(bC['k']) hash ^= castlingRights[2];
+    if(bC['q']) hash ^= castlingRights[3];
+
+    //ep file
+    if(_epFile != '-') {
+        hash ^= enPassantFiles(_epFile);
+    }
+    return Math.abs(hash);
+}
+
+initZobrist();
+//#endregion
+
 //#region Chess utilities
 //function to convert my way of storing chess moves to a fen string
 function convertMyChessArrayToFEN(_board, _toMove, _castles, _epTargetSq, _halfmoveClock, _fullmoveNo) {
@@ -2046,20 +2132,6 @@ function getPieceAndTableValue(_pieceId, _square, _isWhite) {
     else {
         return 0;
     }
-}
-
-//check if piece is under threat by a piece of lower value
-function isAttackedByPieceOfLowerValue(_chess, _movePieceType, _to) {
-    const attackedByPawn = false;
-    const enemyMoves = _chess.moves({ verbose: true });
-
-    for (let i = 0; i < enemyMoves.length; i++) {
-        if((enemyMoves[i].piece === 'p' || getPieceValue(enemyMoves[i].piece) < getPieceValue(_movePieceType)) && enemyMoves[i].to === _to) {
-            return true;
-        }
-    }
-
-    return attackedByPawn;
 }
 //#endregion
 
@@ -2246,7 +2318,7 @@ function evaluateBoardSimple(_board) {
 //#endregion
 //#endregion
 
-//#region Move ordering - currently slows it down
+//#region Move ordering
 //function to order moves to make alpha beta pruning more efficient
 function orderMoves(_chess, _moves) {
     //using an array of verbose moves (dictionaries)
@@ -2268,13 +2340,6 @@ function orderMoves(_chess, _moves) {
         if(_moves[i].promotion) {
             moveScore += getPieceValue(_moves[i].promotion); //we can only promote to queens right now
         }
-
-        //penalise moving to squares being attacked by a pawn
-        // _chess.move(_moves[i].san);
-        // if(isAttackedByPieceOfLowerValue(_chess, movePieceType, _moves[i].to)) {
-        //     moveScore -= getPieceValue(movePieceType);
-        // }
-        // _chess.undo();
 
         orderedMoveValues[i] == moveScore;
     }
@@ -2358,6 +2423,7 @@ function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlaye
 //function to generate the best move from minimax
 function getBestMove(_fenString, _board, _depth, _colourToMove) {
     const chess = new Chess(_fenString);
+    console.log(hashBoard(chess, chess.fen().split(' ')[3]));
 
     // const bestMove = minimax1(chess, _depth, _colourToMove, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).bestMove;
     const bestMove = minimaxRoot(chess, _colourToMove, _depth, true);
@@ -2400,6 +2466,18 @@ function copy2DArray(originalArray) {
   
     return copiedArray;
 }
+
+function init2dArray(rows, columns, initialValue) {
+    const array = new Array(rows);
+    for (let i = 0; i < rows; i++) {
+        array[i] = new Array(columns);
+        for (let j = 0; j < columns; j++) {
+            array[i][j] = initialValue;
+        }
+    }
+    return array;
+}
+
 //#endregion
 
 //#region -----------Web Worker stuff-----------
