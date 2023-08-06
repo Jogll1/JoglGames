@@ -1936,13 +1936,18 @@ const KING_END_PST = [
 //#endregion
 
 //#region Zobrist hashing
-//zobrist hashing generates an array of pseudorandom numbers:
+//zobrist hashing generates an array of pseudorandom numbers
 //1 for each piece in each square
 //1 to indicate black to move
-//4 for castling rights or 16 for speed
+//4 for castling rights
 //9 for the en passant file, if any
 //this gives us 64 * 12 + 1 + 4 + 9 (782) numbers
-//the final hash is computed by xor-ing each square with a piece on it
+//the final hash is computed by xor-ing each square with a piece on it and the other variables
+
+// a xor b = c
+// b xor c = a
+// a xor c = b
+
 const pieceInts = {
     P: 0,
     N: 1,
@@ -2018,7 +2023,40 @@ function hashBoard(_chess, _epFile) {
     return Math.abs(hash);
 }
 
+function updateHash(_oldHash, _chess, _move) {
+    //to update the hash, xor out the square that the piece moved from
+    //then xor in the square the piece moved to
+    //if a capture occurs, xor out the piece that was captured
+    //then recalculate castle rights and the en passant file
+    //and if its white's turn now, xor out sideToMove, otherwise xor it back in
+    //if a castling occured (k or q), promotion (p) or en passant capture (e), deal with those too
+    const flags = _move.flags;
+
+    //xor out value of the piece that just moved in its old square
+    const p = pieceInts[_move.color == 'w' ? _move.piece.topUpper() : _move.piece];
+    const oldPieceToMoveValue = piecesKeys[RANKS.indexOf(_move.from[1]) * 8 + FILES.indexOf(_move.from[0])][p]
+    let newHash = oldPieceToMoveValue ^ _oldHash;
+
+    //xor in value of the piece that just moved in its new square
+    const newPieceToMoveValue = piecesKeys[RANKS.indexOf(_move.to[1]) * 8 + FILES.indexOf(_move.to[0])][p]
+    newHash ^= newPieceToMoveValue;
+
+    //if we captured a piece, xor out the value of that piece
+    if(flags.includes('c')) {
+        
+    }
+
+    //get move type
+    if(!flags.includes('k') && !flags.includes('q') && !false.includes('e')) {
+        //normal move/capture
+    }
+
+    return newHash;
+}
+
 initZobrist();
+
+const currentHash = 0;
 //#endregion
 
 //#region Chess utilities
@@ -2423,7 +2461,6 @@ function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlaye
 //function to generate the best move from minimax
 function getBestMove(_fenString, _board, _depth, _colourToMove) {
     const chess = new Chess(_fenString);
-    console.log(hashBoard(chess, chess.fen().split(' ')[3]));
 
     // const bestMove = minimax1(chess, _depth, _colourToMove, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true).bestMove;
     const bestMove = minimaxRoot(chess, _colourToMove, _depth, true);
