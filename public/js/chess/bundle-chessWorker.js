@@ -2026,11 +2026,12 @@ function hashBoard(_chess) {
 
 function updateHash(_oldHash, _move) {
     const flags = _move.flags;
+    let newHash = _oldHash;
 
     //xor out value of the piece that just moved in its old square
     const p = pieceInts[_move.color == 'w' ? _move.piece.toUpperCase() : _move.piece];
     const oldPieceToMoveValue = piecesKeys[RANKS.indexOf(parseInt(_move.from[1])) * 8 + FILES.indexOf(_move.from[0])][p];
-    let newHash = oldPieceToMoveValue ^ _oldHash;
+    newHash ^= oldPieceToMoveValue;
     // console.log(`xor out value of piece that moved in its old square: ${newHash}`);
 
     //xor in value of the piece that just moved in its new square
@@ -2038,11 +2039,13 @@ function updateHash(_oldHash, _move) {
     newHash ^= newPieceToMoveValue;
     // console.log(`xor in value of the piece that just moved in its new square: ${newHash}`);
 
-    //if we captured a piece, xor out the value of that piece
+    //if we captured a piece, xor out the value of that piece - NOT WORKING
     if(flags.includes('c')) {
-        const capturedPiece = pieceInts[_move.color == 'w' ? _move.captured : _move.captured.toUpperCase()];
-        const capturedPieceValue = piecesKeys[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])][capturedPiece];
+        const capturedPieceIndex = pieceInts[_move.color == 'w' ? _move.captured : _move.captured.toUpperCase()];
+        const capturedPieceValue = piecesKeys[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])][capturedPieceIndex];
         newHash ^= capturedPieceValue;
+        // console.log(`xor out captured piece value: ${capturedPieceValue}`);
+        // maybe put some console.logs in hash board function to see where it goes different
     }
 
     //if en passant capture
@@ -2057,7 +2060,6 @@ function updateHash(_oldHash, _move) {
     //xor out or in en passant file
     const oldEPF = _move.before.split(' ')[3][0];
     const newEPF = _move.after.split(' ')[3][0];
-    console.log(`old: ${oldEPF}, new: ${newEPF}`);
 
     //xor out old value
     if(oldEPF != '-') newHash ^= enPassantFiles[FILES.indexOf(oldEPF)];
@@ -2136,6 +2138,7 @@ function updateHash(_oldHash, _move) {
 
     //alternate side to move
     newHash ^= sideToMove[0];
+    // console.log(`side to move ${newHash}`);
 
     return newHash;
 }
@@ -2344,7 +2347,7 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
         //perform move
         _chess.move(move.san);
         const postMoveHashFull = hashBoard(_chess); //
-        console.log(`hash before move: ${preMoveHash}\nmove hash using upateHash: ${postMoveHash}\nmove hash using hashBoard: ${postMoveHashFull}\n${move.flags}, ${postMoveHash === postMoveHashFull}`);
+        if(postMoveHash != postMoveHashFull) console.log(`hash before move: ${preMoveHash}\nmove hash using upateHash: ${postMoveHash}\nmove hash using hashBoard: ${postMoveHashFull}\n${move.flags}, ${postMoveHash === postMoveHashFull}`);
 
         //start minimax search
         const eval = minimax2(_chess, _colourToMove, _depth - 1, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, !_maximisingPlayer);
