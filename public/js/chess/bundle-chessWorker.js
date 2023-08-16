@@ -2045,7 +2045,7 @@ function updateHash(_oldHash, _move) {
         const capturedPieceValue = piecesKeys[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])][capturedPieceIndex];
         newHash ^= capturedPieceValue;
         // console.log(`xor out captured piece value: ${capturedPieceValue}`);
-        // maybe put some console.logs in hash board function to see where it goes different
+        // maybe put some console.logs in hash board function to see where it goes different?
     }
 
     //if en passant capture
