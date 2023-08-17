@@ -2041,7 +2041,9 @@ function updateHash(_oldHash, _move) {
 
     //if we captured a piece, xor out the value of that piece
     if(flags.includes('c')) {
-        const capturedPieceIndex = pieceInts[_move.color == 'w' ? _move.captured.toUpperCase() : _move.captured];
+        console.log(`${_move.color} and ${_move.captured}`);
+        const capturedPieceIndex = pieceInts[_move.color == 'w' ? _move.captured.toUpperCase() : _move.captured]; //why does this work?
+        console.log(capturedPieceIndex);
         const capturedPieceValue = piecesKeys[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])][capturedPieceIndex];
         newHash ^= capturedPieceValue;
     }
