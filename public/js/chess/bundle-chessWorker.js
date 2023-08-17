@@ -2039,14 +2039,11 @@ function updateHash(_oldHash, _move) {
     newHash ^= newPieceToMoveValue;
     // console.log(`xor in value of the piece that just moved in its new square: ${newHash}`);
 
-    //if we captured a piece, xor out the value of that piece - NOT WORKING
+    //if we captured a piece, xor out the value of that piece
     if(flags.includes('c')) {
-        const capturedPieceIndex = pieceInts[_move.color == 'w' ? _move.captured : _move.captured.toUpperCase()];
+        const capturedPieceIndex = pieceInts[_move.color == 'w' ? _move.captured.toUpperCase() : _move.captured];
         const capturedPieceValue = piecesKeys[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])][capturedPieceIndex];
         newHash ^= capturedPieceValue;
-        // console.log(`xor out captured piece value: ${capturedPieceValue}`);
-        //the problem is definitlely in here, some reason this isn't working ???
-        // maybe put some console.logs in hash board function to see where it goes different?
     }
 
     //if en passant capture
