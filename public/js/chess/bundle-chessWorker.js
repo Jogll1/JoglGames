@@ -2041,9 +2041,7 @@ function updateHash(_oldHash, _move) {
 
     //if we captured a piece, xor out the value of that piece
     if(flags.includes('c')) {
-        console.log(`${_move.color} and ${_move.captured}`);
         const capturedPieceIndex = pieceInts[_move.color == 'w' ? _move.captured.toUpperCase() : _move.captured]; //why does this work?
-        console.log(capturedPieceIndex);
         const capturedPieceValue = piecesKeys[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])][capturedPieceIndex];
         newHash ^= capturedPieceValue;
     }
@@ -2329,6 +2327,11 @@ function sortMovesByScore(_moves, _moveScores) {
 }
 //#endregion
 
+//#region Transposition table
+const tableSize = 838860;
+const ch_tt = new Map();
+//#endregion
+
 //#region Getting the best move
 //minimax functions to get ai's best move
 function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
@@ -2342,12 +2345,11 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
         const move = moves[i];
         
         //hash test
-        const preMoveHash = hashBoard(_chess); //
-        const postMoveHash = updateHash(preMoveHash, move); //
+        const preMoveHash = hashBoard(_chess);
+        const postMoveHash = updateHash(preMoveHash, move);
+
         //perform move
         _chess.move(move.san);
-        const postMoveHashFull = hashBoard(_chess); //
-        if(postMoveHash != postMoveHashFull) console.log(`hash before move: ${preMoveHash}\nmove hash using upateHash: ${postMoveHash}\nmove hash using hashBoard: ${postMoveHashFull}\n${move.flags}, ${postMoveHash === postMoveHashFull}`);
 
         //start minimax search
         const eval = minimax2(_chess, _colourToMove, _depth - 1, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, !_maximisingPlayer);
