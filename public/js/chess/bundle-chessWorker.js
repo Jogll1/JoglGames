@@ -1947,7 +1947,7 @@ const KING_END_PST = [
 // b xor c = a
 // a xor c = b
 
-const pieceInts = {
+const PIECE_INTS = {
     P: 0,
     N: 1,
     B: 2,
@@ -1962,37 +1962,37 @@ const pieceInts = {
     k: 11
 };
 
-const piecesKeys = init2dArray(64, 12, 0);
-const castlingRights = new Array(4);
-const enPassantFiles = new Array(8);
-const sideToMove = new Array(1);
+const PIECES_KEYS = init2dArray(64, 12, 0);
+const CASTLING_RIGHTS = new Array(4);
+const EN_PASSANT_FILES = new Array(8);
+const SIDE_TO_MOVE = new Array(1);
 
 function initZobrist() {
     //piece
-    for (let i = 0; i < piecesKeys.length; i++) {
-        for (let j = 0; j < piecesKeys[i].length; j++) {
-            piecesKeys[i][j] = Math.floor(Math.random() * 2**64);
+    for (let i = 0; i < PIECES_KEYS.length; i++) {
+        for (let j = 0; j < PIECES_KEYS[i].length; j++) {
+            PIECES_KEYS[i][j] = Math.floor(Math.random() * 2**64);
         }
     }
 
     //castling rights
-    for (let i = 0; i < castlingRights.length; i++) {
-        castlingRights[i] = Math.floor(Math.random() * 2**64);
+    for (let i = 0; i < CASTLING_RIGHTS.length; i++) {
+        CASTLING_RIGHTS[i] = Math.floor(Math.random() * 2**64);
     }
 
     //en passant files
-    for (let i = 0; i < enPassantFiles.length; i++) {
-        enPassantFiles[i] = Math.floor(Math.random() * 2**64);
+    for (let i = 0; i < EN_PASSANT_FILES.length; i++) {
+        EN_PASSANT_FILES[i] = Math.floor(Math.random() * 2**64);
     }
 
-    sideToMove[0] = Math.floor(Math.random() * 2**64);
+    SIDE_TO_MOVE[0] = Math.floor(Math.random() * 2**64);
 }
 
 function hashBoard(_chess) {
     let hash = 0;
 
     //side to move
-    if (_chess.turn() == 'b') hash ^= sideToMove;
+    if (_chess.turn() == 'b') hash ^= SIDE_TO_MOVE;
 
     //pieces
     const board = _chess.board();
@@ -2001,24 +2001,24 @@ function hashBoard(_chess) {
             if (board[i][j] !== null) {
                 //get the piece in the board
                 const type = board[i].color == 'w' ? board[i][j].type.toUpperCase() : board[i][j].type;
-                const p = pieceInts[type];
-                hash ^= piecesKeys[i * 8 + j][p];
+                const p = PIECE_INTS[type];
+                hash ^= PIECES_KEYS[i * 8 + j][p];
             }
         }
     }
 
     //castling rights
     const wC = _chess.getCastlingRights('w');
-    if(wC['k']) hash ^= castlingRights[0];
-    if(wC['q']) hash ^= castlingRights[1];
+    if(wC['k']) hash ^= CASTLING_RIGHTS[0];
+    if(wC['q']) hash ^= CASTLING_RIGHTS[1];
     const bC = _chess.getCastlingRights('b');
-    if(bC['k']) hash ^= castlingRights[2];
-    if(bC['q']) hash ^= castlingRights[3];
+    if(bC['k']) hash ^= CASTLING_RIGHTS[2];
+    if(bC['q']) hash ^= CASTLING_RIGHTS[3];
 
     //ep file
     const epFile = _chess.fen().split(' ')[3][0];
     if(epFile != '-') {
-        hash ^= enPassantFiles[FILES.indexOf(epFile)];
+        hash ^= EN_PASSANT_FILES[FILES.indexOf(epFile)];
     }
 
     return hash;
@@ -2029,28 +2029,28 @@ function updateHash(_oldHash, _move) {
     let newHash = _oldHash;
 
     //xor out value of the piece that just moved in its old square
-    const p = pieceInts[_move.color == 'w' ? _move.piece.toUpperCase() : _move.piece];
-    const oldPieceToMoveValue = piecesKeys[RANKS.indexOf(parseInt(_move.from[1])) * 8 + FILES.indexOf(_move.from[0])][p];
+    const p = PIECE_INTS[_move.color == 'w' ? _move.piece.toUpperCase() : _move.piece];
+    const oldPieceToMoveValue = PIECES_KEYS[RANKS.indexOf(parseInt(_move.from[1])) * 8 + FILES.indexOf(_move.from[0])][p];
     newHash ^= oldPieceToMoveValue;
     // console.log(`xor out value of piece that moved in its old square: ${newHash}`);
 
     //xor in value of the piece that just moved in its new square
-    const newPieceToMoveValue = piecesKeys[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])][p];
+    const newPieceToMoveValue = PIECES_KEYS[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])][p];
     newHash ^= newPieceToMoveValue;
     // console.log(`xor in value of the piece that just moved in its new square: ${newHash}`);
 
     //if we captured a piece, xor out the value of that piece
     if(flags.includes('c')) {
-        const capturedPieceIndex = pieceInts[_move.color == 'w' ? _move.captured.toUpperCase() : _move.captured]; //why does this work?
-        const capturedPieceValue = piecesKeys[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])][capturedPieceIndex];
+        const capturedPieceIndex = PIECE_INTS[_move.color == 'w' ? _move.captured.toUpperCase() : _move.captured]; //why does this work?
+        const capturedPieceValue = PIECES_KEYS[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])][capturedPieceIndex];
         newHash ^= capturedPieceValue;
     }
 
     //if en passant capture
     if(flags.includes('e')) {
-        const capturedPiece = pieceInts[_move.color == 'w' ? 'p' : 'P'];
+        const capturedPiece = PIECE_INTS[_move.color == 'w' ? 'p' : 'P'];
         const epRow = parseInt(_move.to[0]) + parseInt(_move.color == 'w' ? -1 : 1);
-        const capturedPieceValue = piecesKeys[parseInt(RANKS.indexOf(parseInt(_move.to[1]))) * 8 + parseInt(FILES.indexOf(epRow))][capturedPiece];
+        const capturedPieceValue = PIECES_KEYS[parseInt(RANKS.indexOf(parseInt(_move.to[1]))) * 8 + parseInt(FILES.indexOf(epRow))][capturedPiece];
         newHash ^= capturedPieceValue;
         // console.log(`en passant capture: ${newHash}`);
     }
@@ -2060,35 +2060,35 @@ function updateHash(_oldHash, _move) {
     const newEPF = _move.after.split(' ')[3][0];
 
     //xor out old value
-    if(oldEPF != '-') newHash ^= enPassantFiles[FILES.indexOf(oldEPF)];
+    if(oldEPF != '-') newHash ^= EN_PASSANT_FILES[FILES.indexOf(oldEPF)];
     // if(oldEPF != '-') console.log(`xor out old en passant file value: ${newHash}`);
     //xor in new value
-    if(newEPF != '-') newHash ^= enPassantFiles[FILES.indexOf(newEPF)];
+    if(newEPF != '-') newHash ^= EN_PASSANT_FILES[FILES.indexOf(newEPF)];
     // if(newEPF != '-') console.log(`xor in new en passant file value: ${newHash}`);
 
     //castling
     if(flags.includes('k')) {
         //xor out old rook position
-        const r = pieceInts[_move.color === 'w' ? 'R' : 'r'];
-        const oldRookValue = (_move.color === 'w') ? piecesKeys[63][r] : piecesKeys[7][r];
+        const r = PIECE_INTS[_move.color === 'w' ? 'R' : 'r'];
+        const oldRookValue = (_move.color === 'w') ? PIECES_KEYS[63][r] : PIECES_KEYS[7][r];
         newHash ^= oldRookValue;
         // console.log(`xor out old rook position K: ${newHash}`);
 
         //xor in new rook position value
-        const newRookValue = (_move.color === 'w') ? piecesKeys[61][r] : piecesKeys[5][r];
+        const newRookValue = (_move.color === 'w') ? PIECES_KEYS[61][r] : PIECES_KEYS[5][r];
         newHash ^= newRookValue;
         // console.log(`xor in new rook position K: ${newHash}`);
     }
 
     if(flags.includes('q')) {
         //xor out old rook position
-        const r = pieceInts[_move.color === 'w' ? 'R' : 'r'];
-        const oldRookValue = (_move.color === 'w') ? piecesKeys[56][r] : piecesKeys[0][r];
+        const r = PIECE_INTS[_move.color === 'w' ? 'R' : 'r'];
+        const oldRookValue = (_move.color === 'w') ? PIECES_KEYS[56][r] : PIECES_KEYS[0][r];
         newHash ^= oldRookValue;
         // console.log(`xor out old rook position Q: ${newHash}`);
 
         //xor in new rook position value
-        const newRookValue = (_move.color === 'w') ? piecesKeys[59][r] : piecesKeys[3][r];
+        const newRookValue = (_move.color === 'w') ? PIECES_KEYS[59][r] : PIECES_KEYS[3][r];
         newHash ^= newRookValue;
         // console.log(`xor in new rook position K: ${newHash}`);
     }
@@ -2102,16 +2102,16 @@ function updateHash(_oldHash, _move) {
     for (let i = 0; i < difference.length; i++) {
         switch(difference[i]) {
             case 'K':
-                newHash ^= castlingRights[0];
+                newHash ^= CASTLING_RIGHTS[0];
                 break;
             case 'Q':
-                newHash ^= castlingRights[1];
+                newHash ^= CASTLING_RIGHTS[1];
                 break;
             case 'k':
-                newHash ^= castlingRights[2];
+                newHash ^= CASTLING_RIGHTS[2];
                 break;
             case 'q':
-                newHash ^= castlingRights[3];
+                newHash ^= CASTLING_RIGHTS[3];
                 break;
             default:
                 break;
@@ -2122,20 +2122,20 @@ function updateHash(_oldHash, _move) {
     //promotion
     if(flags.includes('p')) {
         //xor out old pawn position
-        const p = pieceInts[_move.color === 'w' ? 'P' : 'p'];
-        const oldPawnValue = piecesKeys[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])][p];
+        const p = PIECE_INTS[_move.color === 'w' ? 'P' : 'p'];
+        const oldPawnValue = PIECES_KEYS[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])][p];
         newHash ^= oldPawnValue;
         // console.log(`xor out old pawn value: ${newHash}`);
 
         //xor in new rook position value
-        const promPiece = pieceInts[_move.color === 'w' ? _move.promotion.toUpperCase() : _move.promotion];
-        const newRookValue = piecesKeys[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])][promPiece];
+        const promPiece = PIECE_INTS[_move.color === 'w' ? _move.promotion.toUpperCase() : _move.promotion];
+        const newRookValue = PIECES_KEYS[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])][promPiece];
         newHash ^= newRookValue;
         // console.log(`xor in new promoted piece value: ${newHash}`);
     }
 
     //alternate side to move
-    newHash ^= sideToMove[0];
+    newHash ^= SIDE_TO_MOVE[0];
     // console.log(`side to move ${newHash}`);
 
     return newHash;
@@ -2143,7 +2143,7 @@ function updateHash(_oldHash, _move) {
 
 initZobrist();
 
-let currentHash = 0;
+let CURRENT_HASH = 0;
 //#endregion
 
 //#region Chess utilities
@@ -2328,8 +2328,14 @@ function sortMovesByScore(_moves, _moveScores) {
 //#endregion
 
 //#region Transposition table
-const tableSize = 838860;
-const ch_tt = new Map();
+const TABLE_SIZE = 838860;
+
+//flags
+const EXACT = 0;
+const UPPERBOUND = 1; //alpha
+const LOWERBOUND = 2; //beta
+
+const ch_TT = new Map();
 //#endregion
 
 //#region Getting the best move
@@ -2341,15 +2347,23 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
     let bestEval = Number.NEGATIVE_INFINITY;
     let bestMove = {};
 
+    //initial hash
+    CURRENT_HASH = hashBoard(_chess);
+
     for (let i = 0; i < moves.length; i++) {
         const move = moves[i];
         
-        //hash test
-        const preMoveHash = hashBoard(_chess);
-        const postMoveHash = updateHash(preMoveHash, move);
-
         //perform move
         _chess.move(move.san);
+
+        //update hash
+        CURRENT_HASH = updateHash(CURRENT_HASH, move); 
+        
+        //check if hash is in TT
+        if(ch_TT.has(CURRENT_HASH)) {
+            //return value
+            console.log(`already checked ${CURRENT_HASH}`);
+        }
 
         //start minimax search
         const eval = minimax2(_chess, _colourToMove, _depth - 1, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, !_maximisingPlayer);
@@ -2361,6 +2375,14 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
             bestEval = eval;
             bestMove = move;
         }
+
+        //add hash to TT
+        const hashData = {
+            depth: _depth,
+            move: bestMove.san,
+            // flag: (bestEval <= _alpha) ? UPPERBOUND : (bestEval >= _beta) ? LOWERBOUND : EXACT,
+        };
+        if(!ch_TT.has(CURRENT_HASH)) ch_TT.set(CURRENT_HASH, hashData);
     }
 
     return bestMove;
@@ -2397,6 +2419,7 @@ function getBestMove(_fenString, _board, _depth, _colourToMove) {
     const chess = new Chess(_fenString);
 
     const bestMove = minimaxRoot(chess, _colourToMove, _depth, true);
+    console.log(ch_TT);
 
     if(bestMove != null) {
         //convert best move into valid parameters for movePiece()
