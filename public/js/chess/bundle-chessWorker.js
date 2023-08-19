@@ -2336,6 +2336,17 @@ const UPPERBOUND = 1; //alpha
 const LOWERBOUND = 2; //beta
 
 const ch_TT = new Map();
+
+//function to add to the tt
+function addToTT(_hash, _data){
+    if (ch_TT.size >= TABLE_SIZE) {
+        //get the first key
+        const oldestKey = ch_TT.keys().next().value;
+        //remove the entry with the oldest key
+        ch_TT.delete(oldestKey); 
+    }
+    ch_TT.set(_hash, _data);
+}
 //#endregion
 
 //#region Getting the best move
@@ -2356,14 +2367,18 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
         //perform move
         _chess.move(move.san);
 
-        //update hash
-        CURRENT_HASH = updateHash(CURRENT_HASH, move); 
+        //#region transposition table
+        // //update hash
+        // CURRENT_HASH = updateHash(CURRENT_HASH, move); 
         
-        //check if hash is in TT
-        if(ch_TT.has(CURRENT_HASH)) {
-            //return value
-            console.log(`already checked ${CURRENT_HASH}`);
-        }
+        // //check if hash is in TT
+        // if(ch_TT.has(CURRENT_HASH)) {
+        //     console.log(`already checked ${CURRENT_HASH}`);
+        //     //return value
+        //     const cachedEntry = ch_TT.get(CURRENT_HASH);
+        //     return cachedEntry.move;
+        // }
+        //#endregion
 
         //start minimax search
         const eval = minimax2(_chess, _colourToMove, _depth - 1, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, !_maximisingPlayer);
@@ -2377,12 +2392,13 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
         }
 
         //add hash to TT
-        const hashData = {
-            depth: _depth,
-            move: bestMove.san,
-            // flag: (bestEval <= _alpha) ? UPPERBOUND : (bestEval >= _beta) ? LOWERBOUND : EXACT,
-        };
-        if(!ch_TT.has(CURRENT_HASH)) ch_TT.set(CURRENT_HASH, hashData);
+        // const hashData = {
+        //     depth: _depth,
+        //     value: bestEval,
+        //     move: bestMove.san,
+        //     flag: EXACT,
+        // };
+        // if(!ch_TT.has(CURRENT_HASH)) addToTT(CURRENT_HASH, hashData);
     }
 
     return bestMove;
@@ -2398,7 +2414,34 @@ function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlaye
     let bestEval = _maximisingPlayer ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY;
 
     for (let i = 0; i < moves.length; i++) {
-        _chess.move(moves[i].san);
+        const move = moves[i];
+        _chess.move(move.san);
+
+        //#region transposition table
+        // //update hash
+        // CURRENT_HASH = updateHash(CURRENT_HASH, move); 
+        
+        // //check if hash is in TT
+        // if(ch_TT.has(CURRENT_HASH)) {
+        //     console.log(`already checked ${CURRENT_HASH}`);
+        //     //return value
+        //     const cachedEntry = ch_TT.get(CURRENT_HASH);
+        //     if (cachedEntry.depth >= _depth) {
+        //         if (cachedEntry.flag === EXACT) {
+        //             return cachedEntry.value;
+        //         } else if (cachedEntry.flag === LOWERBOUND) {
+        //             _alpha = Math.max(_alpha, cachedEntry.value);
+        //         } else if (cachedEntry.flag === UPPERBOUND) {
+        //             _beta = Math.min(_beta, cachedEntry.value);
+        //         }
+
+        //         if (alpha >= beta) {
+        //             return cachedEntry.value;
+        //         }
+        //     }
+        // }
+        //#endregion
+
         const eval = minimax2(_chess, _colourToMove == "White" ? "Black" : "White", _depth - 1, _alpha, _beta, !_maximisingPlayer);
         bestEval = _maximisingPlayer ? Math.max(bestEval, eval) : Math.min(bestEval, eval);
         _chess.undo();
@@ -2409,6 +2452,15 @@ function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlaye
         if(_beta <= _alpha) {
             return bestEval;
         }
+
+        //add hash to TT
+        // const hashData = {
+        //     depth: _depth,
+        //     value: bestEval,
+        //     move: move.san,
+        //     flag: (bestEval <= _alpha) ? UPPERBOUND : (bestEval >= _beta) ? LOWERBOUND : EXACT,
+        // };
+        // if(!ch_TT.has(CURRENT_HASH)) addToTT(CURRENT_HASH, hashData);
     }
 
     return bestEval;
@@ -2419,7 +2471,7 @@ function getBestMove(_fenString, _board, _depth, _colourToMove) {
     const chess = new Chess(_fenString);
 
     const bestMove = minimaxRoot(chess, _colourToMove, _depth, true);
-    console.log(ch_TT);
+    console.log(bestMove);
 
     if(bestMove != null) {
         //convert best move into valid parameters for movePiece()
