@@ -108,7 +108,7 @@ img.noHighlightOrDrag {
     align-items: center;
     height: 674px;
     position: relative;
-    gap: 220px;
+    gap: 180px;
     /* background-color: #202020; */
     /* border: 5px solid green; */
 }
@@ -119,8 +119,8 @@ img.noHighlightOrDrag {
     border: 15px solid #333333;
     /* padding: 155px 175px; */
 
-    width: 200px;
-    height: 200px;
+    width: 250px;
+    height: 250px;
 
     color: white;
     font-size: 20px;
@@ -136,8 +136,8 @@ img.noHighlightOrDrag {
 .gameContainer:hover {
     margin: -25px;
     /* padding: 170px 190px; */
-    width: 250px;
-    height: 250px;
+    width: 300px;
+    height: 300px;
     /* width: 115%;
     height: 115%; */
     font-size: 23px;

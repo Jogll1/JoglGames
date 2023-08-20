@@ -2336,7 +2336,7 @@ const EXACT = 0;
 const UPPERBOUND = 1; //alpha
 const LOWERBOUND = 2; //beta
 
-const ch_TT = new Map(); //TODO - CHANGE TO QUEUE STRUCTURE
+const ch_TT = new Map(); //TODO - change to queue structure so addToTT is much faster
 
 let USING_TT = false;
 
