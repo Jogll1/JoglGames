@@ -2336,7 +2336,7 @@ const EXACT = 0;
 const UPPERBOUND = 1; //alpha
 const LOWERBOUND = 2; //beta
 
-const ch_TT = new Map();
+const ch_TT = new Map(); //TODO - CHANGE TO QUEUE STRUCTURE
 
 let USING_TT = false;
 
@@ -2362,7 +2362,7 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
     let bestMove = {};
 
     //initial hash
-    // CURRENT_HASH = hashBoard(_chess);
+    CURRENT_HASH = hashBoard(_chess);
 
     for (let i = 0; i < moves.length; i++) {
         const move = moves[i];
