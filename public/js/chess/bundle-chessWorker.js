@@ -2338,7 +2338,7 @@ const LOWERBOUND = 2; //beta
 
 const ch_TT = new Map();
 
-let moveCounter = 0;
+let USING_TT = false;
 
 //function to add to the tt
 function addToTT(_hash, _data){
@@ -2362,7 +2362,7 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
     let bestMove = {};
 
     //initial hash
-    CURRENT_HASH = hashBoard(_chess);
+    // CURRENT_HASH = hashBoard(_chess);
 
     for (let i = 0; i < moves.length; i++) {
         const move = moves[i];
@@ -2371,15 +2371,20 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
         _chess.move(move.san);
 
         //#region transposition table
-        //update hash
-        CURRENT_HASH = updateHash(CURRENT_HASH, move); 
+        // //update hash
+        // CURRENT_HASH = updateHash(CURRENT_HASH, move); 
         
         // //check if hash is in TT
-        if(ch_TT.has(CURRENT_HASH)) {
-            console.log(`already checked ${CURRENT_HASH}`);
-            //return value
-            const cachedEntry = ch_TT.get(CURRENT_HASH);
-        }
+        // if(USING_TT && ch_TT.has(CURRENT_HASH)) {
+        //     //return value
+        //     const cachedEntry = ch_TT.get(CURRENT_HASH);
+        //     if (cachedEntry.depth >= _depth) {
+        //         console.log(`already checked ${CURRENT_HASH}, ${move.san}`);
+        //         _chess.undo();
+        //         //return the value already defined
+        //         return cachedEntry.move;
+        //     }
+        // }
         //#endregion
 
         //start minimax search
@@ -2394,13 +2399,13 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
         }
 
         //add hash to TT
-        const hashData = {
-            depth: _depth,
-            value: bestEval,
-            move: move.san,
-            flag: EXACT,
-        };
-        if(!ch_TT.has(CURRENT_HASH)) addToTT(CURRENT_HASH, hashData);
+        // const hashData = {
+        //     depth: _depth,
+        //     value: bestEval,
+        //     move: move.san,
+        //     flag: EXACT,
+        // };
+        // if(USING_TT) addToTT(CURRENT_HASH, hashData);
     }
 
     return bestMove;
@@ -2416,37 +2421,35 @@ function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlaye
     let bestEval = _maximisingPlayer ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY;
 
     for (let i = 0; i < moves.length; i++) {
-        const move = moves[i];
-        _chess.move(move.san);
+        _chess.move(moves[i].san);
 
         //#region transposition table
-        //update hash
-        CURRENT_HASH = updateHash(CURRENT_HASH, move); 
+        // //update hash
+        // CURRENT_HASH = updateHash(CURRENT_HASH, moves[i]); 
         
         // //check if hash is in TT
-        // if(ch_TT.has(CURRENT_HASH)) {
-        //     console.log(`already checked ${CURRENT_HASH}`);
+        // if(USING_TT && ch_TT.has(CURRENT_HASH)) {
+        //     // console.log(`already checked ${CURRENT_HASH}`);
         //     //return value
         //     const cachedEntry = ch_TT.get(CURRENT_HASH);
         //     if (cachedEntry.depth >= _depth) {
         //         if (cachedEntry.flag === EXACT) {
+        //             _chess.undo();
         //             return cachedEntry.value;
-        //         } else if (cachedEntry.flag === LOWERBOUND) {
+        //         } 
+        //         else if (cachedEntry.flag === LOWERBOUND) {
         //             _alpha = Math.max(_alpha, cachedEntry.value);
-        //         } else if (cachedEntry.flag === UPPERBOUND) {
+        //         } 
+        //         else if (cachedEntry.flag === UPPERBOUND) {
         //             _beta = Math.min(_beta, cachedEntry.value);
         //         }
 
-        //         if (alpha >= beta) {
+        //         if(_beta <= _alpha) {
+        //             _chess.undo();
         //             return cachedEntry.value;
         //         }
         //     }
         // }
-        if(ch_TT.has(CURRENT_HASH)) {
-            console.log(`already checked ${CURRENT_HASH}`);
-            //return value
-            const cachedEntry = ch_TT.get(CURRENT_HASH);
-        }
         //#endregion
 
         const eval = minimax2(_chess, _colourToMove == "White" ? "Black" : "White", _depth - 1, _alpha, _beta, !_maximisingPlayer);
@@ -2461,13 +2464,13 @@ function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlaye
         }
 
         //add hash to TT
-        const hashData = {
-            depth: _depth,
-            value: bestEval,
-            move: move.san,
-            flag: (bestEval <= _alpha) ? UPPERBOUND : (bestEval >= _beta) ? LOWERBOUND : EXACT,
-        };
-        if(!ch_TT.has(CURRENT_HASH)) addToTT(CURRENT_HASH, hashData);
+        // const hashData = {
+        //     depth: _depth,
+        //     value: bestEval,
+        //     move: moves[i].san,
+        //     flag: (bestEval <= _alpha) ? UPPERBOUND : (bestEval >= _beta) ? LOWERBOUND : EXACT,
+        // };
+        // if(USING_TT) addToTT(CURRENT_HASH, hashData);
     }
 
     return bestEval;
