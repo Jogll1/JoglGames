@@ -108,7 +108,7 @@ img.noHighlightOrDrag {
     align-items: center;
     height: 674px;
     position: relative;
-    gap: 120px;
+    gap: 220px;
     /* background-color: #202020; */
     /* border: 5px solid green; */
 }
@@ -119,8 +119,8 @@ img.noHighlightOrDrag {
     border: 15px solid #333333;
     /* padding: 155px 175px; */
 
-    width: 340px;
-    height: 300px;
+    width: 200px;
+    height: 200px;
 
     color: white;
     font-size: 20px;
@@ -136,16 +136,16 @@ img.noHighlightOrDrag {
 .gameContainer:hover {
     margin: -25px;
     /* padding: 170px 190px; */
-    width: 390px;
-    height: 344.3px;
+    width: 250px;
+    height: 250px;
     /* width: 115%;
     height: 115%; */
     font-size: 23px;
 }
 
 .gameContainerImg {
-    width: 70%;
-    height: 70%;
+    width: 100%;
+    height: 100%;
 
     /* transform: translate(0, -17.5%); */
     /* centre div */
