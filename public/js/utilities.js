@@ -50,4 +50,9 @@ function copy2DArray(originalArray) {
   
     return copiedArray;
 }
+
+//random int in range
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 //#endregion
