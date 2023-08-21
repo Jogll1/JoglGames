@@ -9,13 +9,43 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="../css/styles.css" type="text/css">
+    <link rel="stylesheet" href="../css/battleships.css" type="text/css">
 
     <!-- JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="../js/battleships/battleships.js"></script>
 </head>
 
 <body>
+    <!-- Boards -->
+    <div id="mainContainer">
+        <div id="myBoardContainer">
+            <div id="myBoard" class="board"></div>
+        </div>
+
+        <div id="oppBoardContainer">
+            <div id="oppBoard" class="board"></div>
+        </div>
+    </div>
+
+    <!-- Player Icons and Text -->
+    <div class="scoreAndIconParent">
+        <!-- Player -->
+        <div class="iconDiv" id="playerIcon">
+            <img class="iconImg" id="playerImg" src="/images/NoIcon.png" alt="Icon">
+        </div>
+        <p class="nameText" id="playerNameText">Player1</p>
+        <p class="scoreText" id="playerScoreText">0</p>
+
+        <!-- Opponent -->
+        <div class="iconDiv" id="opponentIcon">
+            <img class="iconImg" id="oppImg" src="/images/NoIcon.png" alt="Icon">
+        </div>
+        <p class="nameText" id="opponentNameText">Player2</p>
+        <p class="scoreText" id="opponentScoreText">0</p>
+    </div>
+
     <!-- #region Header bar -->
     <!-- Home Icon -->
     <div class="homeIconContainer">

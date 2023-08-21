@@ -394,6 +394,7 @@ function setGame() {
 
             //#region Creating tiles
             let idNo = r.toString() + "-" + c.toString();
+            
             //creates <div id="0-0" class="tile"></div> in the board div
             //The square background has id SQ0-0
             let squareTile = document.createElement("div");
