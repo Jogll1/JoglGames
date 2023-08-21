@@ -7,16 +7,7 @@ $(document).ready(function() {
     setGame();
 
     $(document).on('mousedown', '.gridTile', function() {
-        // $(this).addClass('boatTile');
-        let coords = $(this).attr('id').substring(2).split('-');
-        let side = $(this).attr('id').substring(0, 2);
-        let checkCoords = coords[0]-(parseInt(coords[1]) - 1);
-        // || !$(`#op${checkCoords}`).hasClass("boatTile")
-        if(side === "my" && !$(`#my${checkCoords}`).hasClass("boatTile")) {
-            $(this).addClass("boatTopTile");
-        }
         $(this).addClass("boatTile");
-        console.log($(this).attr('class').includes('boatTile'));
     });
 });
 
@@ -61,4 +52,8 @@ function setGame() {
         myBoard.push(myRow);
         oppBoard.push(myBoard);
     }
+}
+
+function placeRandomBoat() {
+    
 }
