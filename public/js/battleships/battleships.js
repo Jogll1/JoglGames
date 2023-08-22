@@ -98,7 +98,7 @@ function setGame() {
 }
 
 //function to place a random boat on the grid
-function placeRandomBoat(length) {
+function placeRandomBoat(length, colour) {
     const vertOrHor = getRandomInt(0, 1); //0 = vertical, 1 = horizontal
 
     let ranX = getRandomInt(0, 9);
@@ -138,8 +138,8 @@ function placeRandomBoat(length) {
             //update array
             gridArray[ranX][ranY] = 'o';
 
-            $(`#my${ranX}-${ranY}`).addClass("boatTile");
-            $(`#my${ranX}-${ranY}`).addClass(vertOrHor === 0 ? "boatTopTile" : "boatRightTile");
+            $(`#my${ranX}-${ranY}`).addClass(`boatTile ${vertOrHor === 0 ? "boatTopTile" : "boatRightTile"}`);
+            $(`#my${ranX}-${ranY}`).css("background-color", colour);
         }
         else {
             if(vertOrHor === 0) {
@@ -147,16 +147,16 @@ function placeRandomBoat(length) {
                 gridArray[ranX + i][ranY] = 'o';
 
                 //horizontal
-                $(`#my${ranX + i}-${ranY}`).addClass("boatTile");
-                $(`#my${ranX + i}-${ranY}`).addClass(i < length - 1 ? "boatTile" : "boatBottomTile");
+                $(`#my${ranX + i}-${ranY}`).addClass(`boatTile ${i < length - 1 ? "boatTile" : "boatBottomTile"}`);
+                $(`#my${ranX + i}-${ranY}`).css("background-color", colour);
             }
             else {
                 //update array
                 gridArray[ranX][ranY - i] = 'o';
 
                 //vertical
-                $(`#my${ranX}-${ranY - i}`).addClass("boatTile");
-                $(`#my${ranX}-${ranY - i}`).addClass(i < length - 1 ? "boatTile" : "boatLeftTile");
+                $(`#my${ranX}-${ranY - i}`).addClass(`boatTile ${i < length - 1 ? "boatTile" : "boatLeftTile"}`);
+                $(`#my${ranX}-${ranY - i}`).css("background-color", colour);
             }
         }
     }
@@ -168,12 +168,13 @@ function placeRandomBoat(length) {
 
 //function to place all 5 boats
 function placeBoats() {
-    const boatsLengths = [5, 4, 3, 3, 2]
+    const boatLengths = [5, 4, 3, 3, 2]
+    const boatColours = ["limegreen", "#4ea9d0", "#f6ae2d", "#c91847", "purple"];
 
-    for (let i = 0; i < boatsLengths.length; i++) {
-        let canPlace = placeRandomBoat(boatsLengths[i]);
+    for (let i = 0; i < boatLengths.length; i++) {
+        let canPlace = placeRandomBoat(boatLengths[i], boatColours[i]);
         while(!canPlace) {
-            canPlace = placeRandomBoat(boatsLengths[i]);
+            canPlace = placeRandomBoat(boatLengths[i], boatColours[i]);
         }
     }
 }
