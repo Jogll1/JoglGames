@@ -41,9 +41,11 @@ $(document).ready(function() {
     // $(document).on('mousedown', '.gridTile', function() {
     //     $(this).addClass("boatTile");
     // });
-
-    pxToViewportUnit("myBoardContainer", true);
-    pxToViewportUnit("oppBoardContainer", true);
+    
+    // const initScale = 450 / 1920;
+    // $(window).resize(function() {
+    //     updateElementScale("myBoardContainer", initScale);
+    // });
 });
 
 //initialise the game by creating the boards and the tiles
@@ -96,26 +98,19 @@ function placeRandomBoat() {
     const length = getRandomInt(2, 5);
 }
 
-function pxToViewportUnit(id, keepAspect) {
-    const viewportWidth = $(window).width();
-    const viewportHeight = $(window).height();
+function updateElementScale(id, initScale) {
+    var windowWidth = $(window).width();
+    var windowHeight = $(window).height();
+    var newWidth = windowWidth * initScale;
+    var newHeight = newWidth;
 
-    const width = $(`#${id}`).width();
-    const height = $(`#${id}`).height();
-
-    const vw = 100 * width / viewportWidth;
-    const vh = 100 * height / viewportHeight;
-
-    if(keepAspect) { //TODO - make div keep its aspect when window is resized (using $(window).resize(function() {});?)
-        $(`#${id}`).css({
-            "width": vw + "vw",
-            "height": vh + "vh"
-        });
+    if (newHeight > windowHeight) {
+        newHeight = windowHeight;
+        newWidth = newHeight;
     }
-    else {
-        $(`#${id}`).css({
-            "width": vw + "vw",
-            "height": vh + "vh"
-        });
-    }
+
+    $(`#${id}`).css({
+        'width': newWidth + 'px',
+        'height': newHeight + 'px'
+    });
 }
