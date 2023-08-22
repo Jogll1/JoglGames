@@ -36,12 +36,15 @@ var ba_oppBoard = (function() {
 $(document).ready(function() {
     $('.scoreAndIconParent').show();
 
-    // setGame();
+    setGame();
     placeRandomBoat();
-    // $(document).on('mousedown', '.gridTile', function() {
-    //     $(this).addClass("boatTile");
-    // });
-    
+
+    $(document).on('mousedown', '.gridTile', function() {
+        // $(this).addClass("boatTile");
+        // $(this).addClass("boatRightTile");
+        // console.log($(this).attr("id"));
+    });
+
     // const initScale = 450 / 1920;
     // $(window).resize(function() {
     //     updateElementScale("myBoardContainer", initScale);
@@ -95,22 +98,47 @@ function setGame() {
 }
 
 function placeRandomBoat() {
-    const length = getRandomInt(2, 5);
-}
+    let length = getRandomInt(2, 5);
+    console.log(length);
+    const vertOrHor = getRandomInt(0, 1); //0 = vertical, 1 = horizontal
+    console.log(vertOrHor);
 
-function updateElementScale(id, initScale) {
-    var windowWidth = $(window).width();
-    var windowHeight = $(window).height();
-    var newWidth = windowWidth * initScale;
-    var newHeight = newWidth;
+    let ranX = getRandomInt(0, 9);
+    let ranY = getRandomInt(0, 9);
 
-    if (newHeight > windowHeight) {
-        newHeight = windowHeight;
-        newWidth = newHeight;
+    //make sure boat can fit in grid
+    if(vertOrHor === 0) {
+        if(9 - ranX < length) {
+            //if boat won't fit on grid, move it back
+            const extraDist = length - (9 - ranX);
+            ranX = ranX - extraDist;
+        }
     }
-
-    $(`#${id}`).css({
-        'width': newWidth + 'px',
-        'height': newHeight + 'px'
-    });
+    else {
+        if(ranY < length) {
+            //if boat won't fit on grid, move it down
+            const extraDist = length - ranY;
+            ranY = ranY + extraDist;
+        }
+    }
+    
+    //place tiles
+    for (let i = 0; i < length; i++) {
+        if(i === 0) {
+            $(`#my${ranX}-${ranY}`).addClass("boatTile");
+            $(`#my${ranX}-${ranY}`).addClass(vertOrHor === 0 ? "boatTopTile" : "boatRightTile");
+        }
+        else {
+            if(vertOrHor === 0) {
+                //horizontal
+                $(`#my${ranX + i}-${ranY}`).addClass("boatTile");
+                $(`#my${ranX + i}-${ranY}`).addClass(i < length - 1 ? "boatTile" : "boatBottomTile");
+            }
+            else {
+                //vertical
+                $(`#my${ranX}-${ranY - i}`).addClass("boatTile");
+                $(`#my${ranX}-${ranY - i}`).addClass(i < length - 1 ? "boatTile" : "boatLeftTile");
+            }
+        }
+    }
 }
