@@ -124,11 +124,29 @@ function placeRandomBoat(length, colour) {
 
     //check if boat will not overlap with anything
     for (let i = 0; i < length; i++) {
-        if(vertOrHor === 0) { 
-            if(gridArray[ranX + i][ranY] === 'o') return false
+        if(vertOrHor === 0) {
+            if(gridArray[ranX + i][ranY] === 'o') return false;
+
+            //check if adjacent tiles are empty too
+            if(ranY + 1 <= 9) {
+                if(gridArray[ranX + i][ranY + 1] === 'o') return false;
+            }
+
+            if(ranY - 1 >= 0) {
+                if(gridArray[ranX + i][ranY - 1] === 'o') return false;
+            }
         }
         else {
-            if(gridArray[ranX][ranY - i] === 'o') return false
+            if(gridArray[ranX][ranY - i] === 'o') return false;
+
+            //check if adjacent tiles are empty too
+            if(ranX + 1 <= 9) {
+                if(gridArray[ranX + 1][ranY - i] === 'o') return false;
+            }
+
+            if(ranX - 1 >= 0) {
+                if(gridArray[ranX - 1][ranY - i] === 'o') return false;
+            }
         }
     }
     
@@ -169,7 +187,7 @@ function placeRandomBoat(length, colour) {
 //function to place all 5 boats
 function placeBoats() {
     const boatLengths = [5, 4, 3, 3, 2]
-    const boatColours = ["limegreen", "#4ea9d0", "#f6ae2d", "#c91847", "purple"];
+    const boatColours = ["#c91847", "#4ea9d0", "limegreen", "#f6ae2d", "#ef2ac9"];
 
     for (let i = 0; i < boatLengths.length; i++) {
         let canPlace = placeRandomBoat(boatLengths[i], boatColours[i]);
