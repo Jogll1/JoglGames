@@ -37,7 +37,7 @@ $(document).ready(function() {
     $('.scoreAndIconParent').show();
 
     setGame();
-    placeRandomBoat();
+    placeBoats()
 
     $(document).on('mousedown', '.gridTile', function() {
         // $(this).addClass("boatTile");
@@ -97,11 +97,9 @@ function setGame() {
     ba_oppBoard.updateBoard(oppBoard);
 }
 
-function placeRandomBoat() {
-    let length = getRandomInt(2, 5);
-    console.log(length);
+//function to place a random boat on the grid
+function placeRandomBoat(length) {
     const vertOrHor = getRandomInt(0, 1); //0 = vertical, 1 = horizontal
-    console.log(vertOrHor);
 
     let ranX = getRandomInt(0, 9);
     let ranY = getRandomInt(0, 9);
@@ -121,24 +119,61 @@ function placeRandomBoat() {
             ranY = ranY + extraDist;
         }
     }
+
+    const gridArray = copy2DArray(ba_myBoard.getBoard());
+
+    //check if boat will not overlap with anything
+    for (let i = 0; i < length; i++) {
+        if(vertOrHor === 0) { 
+            if(gridArray[ranX + i][ranY] === 'o') return false
+        }
+        else {
+            if(gridArray[ranX][ranY - i] === 'o') return false
+        }
+    }
     
     //place tiles
     for (let i = 0; i < length; i++) {
         if(i === 0) {
+            //update array
+            gridArray[ranX][ranY] = 'o';
+
             $(`#my${ranX}-${ranY}`).addClass("boatTile");
             $(`#my${ranX}-${ranY}`).addClass(vertOrHor === 0 ? "boatTopTile" : "boatRightTile");
         }
         else {
             if(vertOrHor === 0) {
+                //update array
+                gridArray[ranX + i][ranY] = 'o';
+
                 //horizontal
                 $(`#my${ranX + i}-${ranY}`).addClass("boatTile");
                 $(`#my${ranX + i}-${ranY}`).addClass(i < length - 1 ? "boatTile" : "boatBottomTile");
             }
             else {
+                //update array
+                gridArray[ranX][ranY - i] = 'o';
+
                 //vertical
                 $(`#my${ranX}-${ranY - i}`).addClass("boatTile");
                 $(`#my${ranX}-${ranY - i}`).addClass(i < length - 1 ? "boatTile" : "boatLeftTile");
             }
+        }
+    }
+
+    ba_myBoard.updateBoard(gridArray);
+
+    return true;
+}
+
+//function to place all 5 boats
+function placeBoats() {
+    const boatsLengths = [5, 4, 3, 3, 2]
+
+    for (let i = 0; i < boatsLengths.length; i++) {
+        let canPlace = placeRandomBoat(boatsLengths[i]);
+        while(!canPlace) {
+            canPlace = placeRandomBoat(boatsLengths[i]);
         }
     }
 }
