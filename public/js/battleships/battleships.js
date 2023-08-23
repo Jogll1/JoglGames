@@ -208,7 +208,5 @@ function spawnSplash(e, tile) {
         left: parseInt(e.pageX - tile.offset().left - 22.5) + "px"
     });
 
-    console.log(`${e.pageX}, ${e.pageY}`);
-
     splash.appendTo(tile);
 }
