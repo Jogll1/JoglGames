@@ -39,10 +39,12 @@ $(document).ready(function() {
     setGame();
     placeBoats()
 
-    $(document).on('mousedown', '.gridTile', function(e) {
-        if($(this).attr("id").includes("op")) {
-            spawnSplash(e, $(this), $(this).parent());
-        }
+    $(".gridTile").click(function(e) {
+        // if($(this).attr("id").includes("op")) {
+        //     spawnSplash(e, $(this), $(this).parent());
+        // }
+
+        spawnSplash(e, $(this));
     });
 
     logArray(ba_myBoard.getBoard());
@@ -194,16 +196,19 @@ function placeBoats() {
 }
 
 //function to spawn a splash effect
-function spawnSplash(e, tile, parent) {
+function spawnSplash(e, tile) {
+    const screenWidth = $(window).innerWidth();
+    const screenHeight = $(window).innerHeight();
+
     const splash = $('<div></div');
     splash.addClass("splashEffect");
 
     splash.css({
-        top: parseInt(e.pageY - 130) + "px",
-        left: parseInt(e.pageX - 640) + "px"
+        top: parseInt(e.pageY - tile.offset().top - 22.5) + "px",
+        left: parseInt(e.pageX - tile.offset().left - 22.5) + "px"
     });
 
     console.log(`${e.pageX}, ${e.pageY}`);
 
-    parent.append(splash);
+    splash.appendTo(tile);
 }

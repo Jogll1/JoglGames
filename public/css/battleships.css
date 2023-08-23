@@ -54,6 +54,8 @@
     padding: 0;
     margin: 0;
 
+    overflow: hidden;
+
     box-sizing: border-box; 
     border: solid 1px #222222;
     background-color: #333333;
@@ -96,8 +98,8 @@
 
     background-color: #444444;
     border-radius: 50%;
-    
-    position: absolute;
+
+    position: relative;
     opacity: 1;
     /* transform: scale(0); */
 }
