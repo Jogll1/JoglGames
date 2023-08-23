@@ -39,8 +39,10 @@ $(document).ready(function() {
     setGame();
     placeBoats()
 
-    $(document).on('mousedown', '.gridTile', function() {
-        
+    $(document).on('mousedown', '.gridTile', function(e) {
+        if($(this).attr("id").includes("op")) {
+            spawnSplash(e, $(this), $(this).parent());
+        }
     });
 
     logArray(ba_myBoard.getBoard());
@@ -168,30 +170,6 @@ function placeRandomBoat(_length, _i, _colour) {
 function isValidPlacement(_gridArray, _vertOrHor, _length, _ranX, _ranY) {
     for (let i = 0; i < _length; i++) {
         if(_vertOrHor === 0) {
-            if(i === 0 && _ranY - 1 >= 0) {
-                if(_gridArray[_ranX][_ranY - 1] !== ' ') return false;
-
-                if(_ranX + 1 <= 9) {
-                    if(_gridArray[_ranX + 1][_ranY - 1] !== ' ') return false;
-                }
-
-                if(_ranX - 1 >= 0) {
-                    if(_gridArray[_ranX - 1][_ranY - 1] !== ' ') return false;
-                }
-            }
-
-            if(i === length - 1 && _ranY + 1 <= 9) {
-                if(_gridArray[_ranX][_ranY + 1] !== ' ') return false;
-
-                if(_ranX + 1 <= 9) {
-                    if(_gridArray[_ranX + 1][_ranY + 1] !== ' ') return false;
-                }
-
-                if(_ranX - 1 >= 0) {
-                    if(_gridArray[_ranX - 1][_ranY + 1] !== ' ') return false;
-                }
-            }
-
             if(_gridArray[_ranX + i][_ranY] !== ' ') return false;
         }
         else {
@@ -213,4 +191,19 @@ function placeBoats() {
             canPlace = placeRandomBoat(boatLengths[i], i + 1, boatColours[i]);
         }
     }
+}
+
+//function to spawn a splash effect
+function spawnSplash(e, tile, parent) {
+    const splash = $('<div></div');
+    splash.addClass("splashEffect");
+
+    splash.css({
+        top: e.pageY + "px",
+        left: e.pageX + "px"
+    });
+
+    console.log(`${e.pageX}, ${e.pageY}`);
+
+    parent.append(splash);
 }
