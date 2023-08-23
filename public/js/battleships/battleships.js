@@ -199,8 +199,8 @@ function spawnSplash(e, tile, parent) {
     splash.addClass("splashEffect");
 
     splash.css({
-        top: e.pageY + "px",
-        left: e.pageX + "px"
+        top: parseInt(e.pageY - 130) + "px",
+        left: parseInt(e.pageX - 640) + "px"
     });
 
     console.log(`${e.pageX}, ${e.pageY}`);
