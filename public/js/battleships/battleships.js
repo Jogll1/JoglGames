@@ -40,11 +40,12 @@ $(document).ready(function() {
     placeBoats()
 
     $(".gridTile").click(function(e) {
-        // if($(this).attr("id").includes("op")) {
-        //     spawnSplash(e, $(this), $(this).parent());
-        // }
+        if($(this).attr("id").includes("op")) {
+            spawnSplash(e, $(this));
+            spawnMark($(this), "hitMark");
 
-        spawnSplash(e, $(this));
+            $(this).addClass("checkedTile");
+        }
     });
 
     logArray(ba_myBoard.getBoard());
@@ -80,6 +81,7 @@ function setGame() {
             let tile1 = document.createElement("div");
             tile1.id = `my${idNo}`;
             tile1.classList.add("gridTile");
+            tile1.classList.add("checkedTile");
 
             let tile2 = document.createElement("div");
             tile2.id = `op${idNo}`;
@@ -197,16 +199,33 @@ function placeBoats() {
 
 //function to spawn a splash effect
 function spawnSplash(e, tile) {
-    const screenWidth = $(window).innerWidth();
-    const screenHeight = $(window).innerHeight();
-
     const splash = $('<div></div');
     splash.addClass("splashEffect");
 
     splash.css({
-        top: parseInt(e.pageY - tile.offset().top - 22.5) + "px",
-        left: parseInt(e.pageX - tile.offset().left - 22.5) + "px"
+        top: parseInt(e.pageY - tile.offset().top - 12.5) + "px",
+        left: parseInt(e.pageX - tile.offset().left - 12.5) + "px"
     });
 
     splash.appendTo(tile);
+
+    setTimeout(function() {
+        splash.css({
+          transform: "scale(3)",
+          opacity: 0,
+          transition: "transform 0.6s ease-out, opacity 0.6s ease-out"
+        });
+        
+        setTimeout(function() {
+          splash.remove(); // Remove the splash element from the DOM
+        }, 500);
+    }, 0);
+}
+
+//function to spawn a hit mark
+function spawnMark(tile, type) {
+    const mark = $('<div></div');
+    mark.addClass(type);
+
+    mark.appendTo(tile);
 }
