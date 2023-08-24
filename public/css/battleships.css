@@ -123,10 +123,22 @@
 .hitMark:after {
     transform: rotate(-45deg);
 }
-/*#ndregion*/
+/*#endregion*/
 
-/* Miss */
+/*#region Miss */
+.missMark {
+    width: 10px;
+    height: 10px;
 
+    border-radius: 50%;
+    background: #444444;
+
+    /* centre div */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 /*#endregion*/
 
 /*#endregion*/

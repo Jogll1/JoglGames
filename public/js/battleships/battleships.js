@@ -42,7 +42,7 @@ $(document).ready(function() {
     $(".gridTile").click(function(e) {
         if($(this).attr("id").includes("op")) {
             spawnSplash(e, $(this));
-            spawnMark($(this), "hitMark");
+            spawnMark($(this), "missMark");
 
             $(this).addClass("checkedTile");
         }
