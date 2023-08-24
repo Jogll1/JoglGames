@@ -42,7 +42,7 @@ $(document).ready(function() {
     $(".gridTile").click(function(e) {
         if($(this).attr("id").includes("op")) {
             spawnSplash(e, $(this));
-            spawnMark($(this), "missMark");
+            spawnMark($(this), getRandomInt(0, 1) === 0 ? "missMark" : "hitMark");
 
             $(this).addClass("checkedTile");
         }
@@ -187,7 +187,7 @@ function isValidPlacement(_gridArray, _vertOrHor, _length, _ranX, _ranY) {
 //function to place all 5 boats
 function placeBoats() {
     const boatLengths = [5, 4, 3, 3, 2]
-    const boatColours = ["#c91847", "#4ea9d0", "limegreen", "#f6ae2d", "#ef2ac9"];
+    const boatColours = ["#c91847", "#4ea9d0", "limegreen", "#f6ae2d", "#ef2ac9"]; //#3d72e3
 
     for (let i = 0; i < boatLengths.length; i++) {
         let canPlace = placeRandomBoat(boatLengths[i], i + 1, boatColours[i]);
