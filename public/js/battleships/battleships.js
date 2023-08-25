@@ -142,6 +142,7 @@ $(document).ready(function() {
     // });
     //#endregion
 
+    //#region Tile functions
     $(".gridTile").click(function(e) {
         if(!ba_isMyTurn.getState()) return;
 
@@ -149,6 +150,17 @@ $(document).ready(function() {
             playAttack($(this));
         }
     });
+
+    $(".gridTile").mouseenter(function() {
+        if($(this).attr("id").includes("op") && !$(this).hasClass("checkedTile")) {
+            $(this).addClass("gridTileHover");
+        }
+    });
+
+    $(".gridTile").mouseleave(function() {
+        $(this).removeClass("gridTileHover");
+    });
+    //#endregion
 });
 
 //initialise the game by creating the boards and the tiles

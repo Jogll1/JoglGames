@@ -85,6 +85,10 @@
     background-color: #333333;
 }
 
+.gridTileHover {
+    background-color: #444444;
+}
+
 .checkedTile {
     background-color: #1a1a1a; 
 }

@@ -1,5 +1,10 @@
 let aiAttackedSquares = [];
 
+//TODO - make bot remember if it was attacking a ship last turn
+//also detect if defeated ship
+//also fix bot attacking same spots after a hit
+//also fix splash not showing sometimes
+
 //function to get a random move with ship destroying
 async function aiRandomMove(_playerGrid) {
     const deltas = [[-1, 0], [1, 0], [0, 1], [0, -1]]; //deltas to check when attacking a ship
