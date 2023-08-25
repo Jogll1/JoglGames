@@ -82,7 +82,7 @@ var ba_isPlayingRobot = (function() {
 //when document loads up
 $(document).ready(function() {
     setGame();
-    placeBoats("my");
+    placeBoats("my", true);
 
     //#region Menu functions
     $('#playRobotButton').click(function() {
@@ -191,7 +191,7 @@ function setGame() {
             //#endregion
         }
         myBoard.push(myRow);
-        oppBoard.push(myBoard);
+        oppBoard.push(oppRow);
     }
 
     ba_myBoard.updateBoard(myBoard);
@@ -225,7 +225,7 @@ function setUpGame(_isPlayingRobot, _playerName) {
 }
 
 //function to place a random boat on the grid
-function placeRandomBoat(_player, _length, _i, _colour) {
+function placeRandomBoat(_player, _length, _i, _colour, _placeOnBoard) {
     const vertOrHor = getRandomInt(0, 1); //0 = vertical, 1 = horizontal
 
     let ranX = getRandomInt(0, 9);
@@ -257,8 +257,10 @@ function placeRandomBoat(_player, _length, _i, _colour) {
                 gridArray[ranX][ranY] = _i;
                 // logArray(gridArray);
 
-                $(`#${_player}${ranX}-${ranY}`).addClass(`boatTile ${vertOrHor === 0 ? "boatTopTile" : "boatRightTile"}`);
-                $(`#${_player}${ranX}-${ranY}`).css("background-color", _colour);
+                if(_placeOnBoard) {
+                    $(`#${_player}${ranX}-${ranY}`).addClass(`boatTile ${vertOrHor === 0 ? "boatTopTile" : "boatRightTile"}`);
+                    $(`#${_player}${ranX}-${ranY}`).css("background-color", _colour);
+                }
             }
             else {
                 if(vertOrHor === 0) {
@@ -266,18 +268,22 @@ function placeRandomBoat(_player, _length, _i, _colour) {
                     gridArray[ranX + i][ranY] = _i;
                     // logArray(gridArray);
 
-                    //horizontal
-                    $(`#${_player}${ranX + i}-${ranY}`).addClass(`boatTile ${i < _length - 1 ? "boatTile" : "boatBottomTile"}`);
-                    $(`#${_player}${ranX + i}-${ranY}`).css("background-color", _colour);
+                    if(_placeOnBoard) {
+                        //horizontal
+                        $(`#${_player}${ranX + i}-${ranY}`).addClass(`boatTile ${i < _length - 1 ? "boatTile" : "boatBottomTile"}`);
+                        $(`#${_player}${ranX + i}-${ranY}`).css("background-color", _colour);
+                    }
                 }
                 else {
                     //update array
                     gridArray[ranX][ranY - i] = _i;
                     // logArray(gridArray);
 
-                    //vertical
-                    $(`#${_player}${ranX}-${ranY - i}`).addClass(`boatTile ${i < _length - 1 ? "boatTile" : "boatLeftTile"}`);
-                    $(`#${_player}${ranX}-${ranY - i}`).css("background-color", _colour);
+                    if(_placeOnBoard) {
+                        //vertical
+                        $(`#${_player}${ranX}-${ranY - i}`).addClass(`boatTile ${i < _length - 1 ? "boatTile" : "boatLeftTile"}`);
+                        $(`#${_player}${ranX}-${ranY - i}`).css("background-color", _colour);
+                    }
                 }
             }
         }
@@ -306,20 +312,20 @@ function isValidPlacement(_gridArray, _vertOrHor, _length, _ranX, _ranY) {
 }
 
 //function to place all 5 boats
-function placeBoats(_player) {
+function placeBoats(_player, _placeOnBoard) {
     //_player is either "my" or "op"
 
-    // const boatLengths = [5, 4, 3, 3, 2]
-    // const boatColours = ["#c91847", "#4ea9d0", "limegreen", "#f6ae2d", "#ef2ac9"]; //#3d72e3
+    const boatLengths = [5, 4, 3, 3, 2]
+    const boatColours = ["#c91847", "#4ea9d0", "limegreen", "#f6ae2d", "#ef2ac9"]; //#3d72e3
 
-    // for (let i = 0; i < boatLengths.length; i++) {
-    //     let canPlace = placeRandomBoat(_player, boatLengths[i], i + 1, boatColours[i]);
-    //     while(!canPlace) {
-    //         canPlace = placeRandomBoat(_player, boatLengths[i], i + 1, boatColours[i]);
-    //     }
-    // }
+    for (let i = 0; i < boatLengths.length; i++) {
+        let canPlace = placeRandomBoat(_player, boatLengths[i], i + 1, boatColours[i], _placeOnBoard);
+        while(!canPlace) {
+            canPlace = placeRandomBoat(_player, boatLengths[i], i + 1, boatColours[i], _placeOnBoard);
+        }
+    }
 
-    // logArray(_player === "my" ? ba_myBoard.getBoard() : ba_oppBoard.getBoard());
+    logArray(_player === "my" ? ba_myBoard.getBoard() : ba_oppBoard.getBoard());
 }
 
 //function to reset all the boars
