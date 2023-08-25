@@ -117,7 +117,6 @@ img.noHighlightOrDrag {
     background-color: #333333;
     border-radius: 40px;
     border: 15px solid #333333;
-    /* padding: 155px 175px; */
 
     width: 250px;
     height: 250px;
@@ -235,7 +234,7 @@ transform: translate(0, -11px) rotate(45deg);
 .playButton {
     background-color: #4ea9d0;
     border: none;
-    border-radius: 7.5px;
+    border-radius: 12.5px;
     padding: 12.5px 25px;
     /* width: 62.5%; */
 
@@ -253,6 +252,12 @@ transform: translate(0, -11px) rotate(45deg);
 
 .playButton:hover {
     background-color: #4090b2;
+}
+
+.playButton.disabled {
+    background-color: #326d86;
+    color: #b0b0b0;
+    cursor: not-allowed;
 }
 
 #playFriendButton {

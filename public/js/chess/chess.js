@@ -83,7 +83,7 @@ var ch_isMyTurn = (function(){
     }
 })();
 
-//keep list of peces that have moved
+//keep list of pieces that have moved
 var ch_movedPieces = (function() {
     var movedPieces = [];
 
@@ -219,7 +219,7 @@ $(document).ready(function() {
         $('.menuBackground').hide();
         $('.friendOrAIMenu').hide();
 
-        setUpGame(true, 'Player1');
+        setUpGame(true, "Player1");
     });
 
     //play friend
@@ -573,14 +573,14 @@ function createPiece(board, isWhite, type, notation, i, row, col) {
 }
 
 //function to set up the game
-function setUpGame(isPlayingRobot, playerName) {
+function setUpGame(_isPlayingRobot, _playerName) {
     $('.scoreAndIconParent').show();
 
     //set player name
-    $('#playerNameText').text(playerName);
+    $('#playerNameText').text(_playerName);
 
     //set icons and player names
-    if(isPlayingRobot) {  
+    if(_isPlayingRobot) {  
         //set player first
         $('#playerIcon').addClass('currentGo');
            

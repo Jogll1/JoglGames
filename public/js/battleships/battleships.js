@@ -30,14 +30,96 @@ var ba_oppBoard = (function() {
         }
     }
 })();
+
+var ba_isMyTurn = (function(){
+    var isMyTurn = false;
+
+    return {
+        setState : function(bToSet) {
+            return isMyTurn = bToSet;
+        },
+
+        getState : function() {
+            return isMyTurn;
+        },
+
+        swapState : function() {
+            return isMyTurn = !isMyTurn;
+        }
+    }
+})();
+
+var ba_isPlayingRobot = (function() { 
+    var isPlayingRobot = false; 
+
+    return { 
+        setState: function(bToSet) {
+            return isPlayingRobot = bToSet;
+        },
+
+        getState : function() {
+            return isPlayingRobot;
+        }
+    }
+})();
 //#endregion
 
 //when document loads up
 $(document).ready(function() {
-    $('.scoreAndIconParent').show();
-
     setGame();
     placeBoats();
+
+    //#region Menu functions
+    $('#playRobotButton').click(function() {
+        $('.menuBackground').hide();
+        $('.friendOrAIMenu').hide();
+
+        setUpGame(true, "Player1");
+    });
+
+    //play friend
+    $('#playFriendButton').click(function() {
+        $('.onlinePlayMenu').show();
+        $('.friendOrAIMenu').hide();
+    });
+
+    //play online menu
+    $('#onlinePlayMenuForm').submit(function(e) {
+        e.preventDefault(); //prevent form submission
+
+        let username = $('#usernameInput').val();
+        let roomName = $('#roomNameInput').val();
+
+        //if both input fields are empty, display an error
+        if (username.trim() === '' || roomName.trim() === '') {
+            e.preventDefault(); //prevent form submission
+            //display an error message
+            alert('Please fill in both input fields');
+        }
+        else {
+            //connect to socket - or at least attempt to
+            // connectToSocket(roomName, username);
+        }
+
+        //reset input fields
+        $('#usernameInput').val('');
+        $('#roomNameInput').val('');
+    });
+
+    $("#randomButton").click(function() {
+        if (!$(this).prop("disabled")) {
+            resetBoats();
+            placeBoats();
+        }
+    });
+
+    $("#setButton").click(function() {
+        console.log("set");
+        //disable the random button
+        $("#randomButton").prop("disabled", true);
+        $("#randomButton").addClass("disabled");
+    });
+    //#endregion
 
     $(".gridTile").click(function(e) {
         if($(this).attr("id").includes("op") && !$(this).hasClass("checkedTile")) {
@@ -46,11 +128,6 @@ $(document).ready(function() {
 
             $(this).addClass("checkedTile");
         }
-    });
-
-    $("#randomButton").click(function(e) {
-        resetBoats();
-        placeBoats();
     });
 
     // const initScale = 450 / 1920;
@@ -104,6 +181,25 @@ function setGame() {
 
     ba_myBoard.updateBoard(myBoard);
     ba_oppBoard.updateBoard(oppBoard);
+}
+
+//set up the game for play
+function setUpGame(_isPlayingRobot, _playerName) {
+    $('.scoreAndIconParent').show();
+
+    //set player name
+    $('#playerNameText').text(_playerName);
+
+    if(_isPlayingRobot) {
+        //set player first
+        $('#playerIcon').addClass('currentGo');
+
+        //set opponent name
+        $('#opponentNameText').text('Robot');
+
+        //change icon
+        $('#oppImg').attr('src', '/images/RobotIcon.png')
+    }
 }
 
 //function to place a random boat on the grid
