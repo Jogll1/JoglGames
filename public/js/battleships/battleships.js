@@ -215,7 +215,8 @@ function setUpGame(_isPlayingRobot, _playerName) {
         //change icon
         $('#oppImg').attr('src', '/images/RobotIcon.png');
 
-        //set ba_oppBoard
+        //set random ba_oppBoard
+        placeBoats("op", false);
 
         //start game against robot
         ba_gameStarted.setState(true);
@@ -390,10 +391,19 @@ function spawnMark(_tile, type) {
 function playAttack(_tile) {
     if(!ba_gameStarted.getState()) return;
 
+    const coords = _tile.attr("id").substring(2).split('-');
+
     spawnSplash(_tile);
 
     //attack logic
-    // spawnMark(_tile, getRandomInt(0, 1) === 0 ? "missMark" : "hitMark"); //make this work
+    if(ba_isPlayingRobot.getState()) {
+        if(ba_oppBoard.getBoard()[coords[0]][coords[1]] === ' ') {
+            spawnMark(_tile, "missMark");
+        }
+        else {
+            spawnMark(_tile, "hitMark");
+        }
+    }
 
     _tile.addClass("checkedTile");
 
