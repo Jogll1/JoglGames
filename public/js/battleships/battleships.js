@@ -203,8 +203,8 @@ function spawnSplash(e, tile) {
     splash.addClass("splashEffect");
 
     splash.css({
-        top: parseInt(e.pageY - tile.offset().top - 12.5) + "px",
-        left: parseInt(e.pageX - tile.offset().left - 12.5) + "px"
+        top: `calc(50% - ${12.5}px)`,
+        left: `calc(50% - ${12.5}px)`
     });
 
     splash.appendTo(tile);
@@ -216,8 +216,9 @@ function spawnSplash(e, tile) {
           transition: "transform 0.6s ease-out, opacity 0.6s ease-out"
         });
         
+        // Remove the splash element from the DOM after 500
         setTimeout(function() {
-          splash.remove(); // Remove the splash element from the DOM
+          splash.remove();  
         }, 500);
     }, 0);
 }

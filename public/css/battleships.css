@@ -55,6 +55,8 @@
     margin: 0;
 
     /* overflow: hidden; */
+    justify-content: center;
+    align-items: center;
 
     box-sizing: border-box; 
     border: solid 1px #1a1a1a;
@@ -151,10 +153,12 @@
     border-radius: 50%;
 
     z-index: 99;
-
-    position: absolute;
     pointer-events: none; /* this allows clicks to pass through */
     opacity: 1;
-    /* transform: scale(0); */
+
+    position: absolute;
+    /* top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); */
 }
 /*#endregion*/
