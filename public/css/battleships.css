@@ -12,26 +12,26 @@
 /*#region UI */
 #randomButton {
     border-radius: 5px;
-    padding: 7.5px 15px;
+    padding: 8.5px 13.5px;
 
-    font-size: 15px;
+    font-size: 17px;
 
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-115%, 750%);
+    transform: translate(-115%, 650%);
 }
 
 #setButton {
     border-radius: 5px;
-    padding: 7.5px 15px;
+    padding: 8.5px 13.5px;
 
-    font-size: 15px;
+    font-size: 17px;
 
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(15%, 750%);
+    transform: translate(15%, 650%);
 }
 /*#endregion*/
 

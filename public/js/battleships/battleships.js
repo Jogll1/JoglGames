@@ -106,18 +106,24 @@ $(document).ready(function() {
         $('#roomNameInput').val('');
     });
 
+    //board buttons
     $("#randomButton").click(function() {
         if (!$(this).prop("disabled")) {
             resetBoats();
             placeBoats();
         }
     });
-
+    
     $("#setButton").click(function() {
-        console.log("set");
-        //disable the random button
-        $("#randomButton").prop("disabled", true);
-        $("#randomButton").addClass("disabled");
+        if (!$(this).prop("disabled")) {
+            //disable the random button
+            $("#randomButton").prop("disabled", true);
+            $("#randomButton").addClass("disabled");
+
+            //disable the set button
+            $("#setButton").prop("disabled", true);
+            $("#setButton").addClass("disabled");
+        }
     });
     //#endregion
 
@@ -191,9 +197,6 @@ function setUpGame(_isPlayingRobot, _playerName) {
     $('#playerNameText').text(_playerName);
 
     if(_isPlayingRobot) {
-        //set player first
-        $('#playerIcon').addClass('currentGo');
-
         //set opponent name
         $('#opponentNameText').text('Robot');
 
