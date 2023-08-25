@@ -30,7 +30,7 @@ img.noHighlightOrDrag {
 }
 /* #endregion */
 
-/*#region TopNav */
+/*#region TopNav (header bar) */
 .topnav {
     background-color: #333333;
     overflow: hidden;

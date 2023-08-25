@@ -13,6 +13,20 @@
     transform: translate(-50%, -50%);
 }
 
+/*#region UI */
+#randomButton {
+    border-radius: 5px;
+    padding: 7.5px 15px;
+
+    font-size: 15px;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 750%);
+}
+/*#endregion*/
+
 /*#region Board */
 .boardContainer {
     width: 450px; 

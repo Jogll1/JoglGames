@@ -37,10 +37,10 @@ $(document).ready(function() {
     $('.scoreAndIconParent').show();
 
     setGame();
-    placeBoats()
+    placeBoats();
 
     $(".gridTile").click(function(e) {
-        if($(this).attr("id").includes("op")) {
+        if($(this).attr("id").includes("op") && !$(this).hasClass("checkedTile")) {
             spawnSplash(e, $(this));
             spawnMark($(this), getRandomInt(0, 1) === 0 ? "missMark" : "hitMark");
 
@@ -48,7 +48,10 @@ $(document).ready(function() {
         }
     });
 
-    logArray(ba_myBoard.getBoard());
+    $("#randomButton").click(function(e) {
+        resetBoats();
+        placeBoats();
+    });
 
     // const initScale = 450 / 1920;
     // $(window).resize(function() {
@@ -195,6 +198,30 @@ function placeBoats() {
             canPlace = placeRandomBoat(boatLengths[i], i + 1, boatColours[i]);
         }
     }
+
+    logArray(ba_myBoard.getBoard());
+}
+
+//function to reset all the boars
+function resetBoats() {
+    myBoard = [];
+    for (let r = 0; r < ba_SIZE; r++) {
+        let myRow = [];
+        for (let c = 0; c < ba_SIZE; c++) {
+            myRow.push(' '); 
+        }
+        myBoard.push(myRow);
+    }
+    ba_myBoard.updateBoard(myBoard);
+
+    const children = $("#myBoard").children();
+    for (let i = 0; i < children.length; i++) {
+        const child = $(children[i]);
+        if(child.attr("class") !== "gridTile checkedTile") {
+            child.css("background-color", "#1a1a1a");
+            child.attr("class", "gridTile checkedTile");
+        }
+    }
 }
 
 //function to spawn a splash effect
@@ -211,9 +238,9 @@ function spawnSplash(e, tile) {
 
     setTimeout(function() {
         splash.css({
-          transform: "scale(3)",
+          transform: "scale(2.5)",
           opacity: 0,
-          transition: "transform 0.6s ease-out, opacity 0.6s ease-out"
+          transition: "transform 0.5s ease-out, opacity 0.5s ease-out"
         });
         
         // Remove the splash element from the DOM after 500
