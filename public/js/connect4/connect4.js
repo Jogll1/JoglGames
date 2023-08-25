@@ -362,7 +362,7 @@ function setUpGame(isPlayingRobot, playerName, botDif) {
         $('#opponentNameText').text('Robot');
 
         //change icon
-        $('#oppImg').attr('src', '/images/RobotIcon.png')
+        $('#oppImg').attr('src', '/images/RobotIcon.png');
 
         //start game against robot
         c4_gameStarted.setState(true);

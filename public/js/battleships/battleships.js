@@ -1,6 +1,21 @@
 const ba_SIZE = 10; //10x10 grid
 
 //#region globals
+var ba_gameStarted = (function(){ 
+    var gameStarted = false; 
+
+    return { 
+        setState : function(bToSet) {
+            // console.log(bToSet);
+            return gameStarted = bToSet;
+        },
+
+        getState : function() {
+            return gameStarted;
+        }
+    }
+})();
+
 var ba_myBoard = (function() {
     var board = [];
 
@@ -67,7 +82,7 @@ var ba_isPlayingRobot = (function() {
 //when document loads up
 $(document).ready(function() {
     setGame();
-    placeBoats();
+    placeBoats("my");
 
     //#region Menu functions
     $('#playRobotButton').click(function() {
@@ -107,39 +122,33 @@ $(document).ready(function() {
     });
 
     //board buttons
-    $("#randomButton").click(function() {
-        if (!$(this).prop("disabled")) {
-            resetBoats();
-            placeBoats();
-        }
-    });
+    // $("#randomButton").click(function() {
+    //     if (!$(this).prop("disabled")) {
+    //         resetBoats();
+    //         placeBoats();
+    //     }
+    // });
     
-    $("#setButton").click(function() {
-        if (!$(this).prop("disabled")) {
-            //disable the random button
-            $("#randomButton").prop("disabled", true);
-            $("#randomButton").addClass("disabled");
+    // $("#setButton").click(function() {
+    //     if (!$(this).prop("disabled")) {
+    //         //disable the random button
+    //         $("#randomButton").prop("disabled", true);
+    //         $("#randomButton").addClass("disabled");
 
-            //disable the set button
-            $("#setButton").prop("disabled", true);
-            $("#setButton").addClass("disabled");
-        }
-    });
+    //         //disable the set button
+    //         $("#setButton").prop("disabled", true);
+    //         $("#setButton").addClass("disabled");
+    //     }
+    // });
     //#endregion
 
     $(".gridTile").click(function(e) {
-        if($(this).attr("id").includes("op") && !$(this).hasClass("checkedTile")) {
-            spawnSplash(e, $(this));
-            spawnMark($(this), getRandomInt(0, 1) === 0 ? "missMark" : "hitMark");
+        if(!ba_isMyTurn.getState()) return;
 
-            $(this).addClass("checkedTile");
+        if($(this).attr("id").includes("op") && !$(this).hasClass("checkedTile")) {
+            playAttack($(this));
         }
     });
-
-    // const initScale = 450 / 1920;
-    // $(window).resize(function() {
-    //     updateElementScale("myBoardContainer", initScale);
-    // });
 });
 
 //initialise the game by creating the boards and the tiles
@@ -197,16 +206,26 @@ function setUpGame(_isPlayingRobot, _playerName) {
     $('#playerNameText').text(_playerName);
 
     if(_isPlayingRobot) {
+        //set player first
+        $('#playerIcon').addClass('currentGo');
+
         //set opponent name
         $('#opponentNameText').text('Robot');
 
         //change icon
-        $('#oppImg').attr('src', '/images/RobotIcon.png')
+        $('#oppImg').attr('src', '/images/RobotIcon.png');
+
+        //set ba_oppBoard
+
+        //start game against robot
+        ba_gameStarted.setState(true);
+        ba_isMyTurn.setState(true);
+        ba_isPlayingRobot.setState(true);
     }
 }
 
 //function to place a random boat on the grid
-function placeRandomBoat(_length, _i, _colour) {
+function placeRandomBoat(_player, _length, _i, _colour) {
     const vertOrHor = getRandomInt(0, 1); //0 = vertical, 1 = horizontal
 
     let ranX = getRandomInt(0, 9);
@@ -228,7 +247,7 @@ function placeRandomBoat(_length, _i, _colour) {
         }
     }
 
-    const gridArray = copy2DArray(ba_myBoard.getBoard());
+    const gridArray = (_player === "my") ? copy2DArray(ba_myBoard.getBoard()) : copy2DArray(ba_oppBoard.getBoard());
 
     if(isValidPlacement(gridArray, vertOrHor, _length, ranX, ranY)) {
         //place tiles (down and left)
@@ -238,8 +257,8 @@ function placeRandomBoat(_length, _i, _colour) {
                 gridArray[ranX][ranY] = _i;
                 // logArray(gridArray);
 
-                $(`#my${ranX}-${ranY}`).addClass(`boatTile ${vertOrHor === 0 ? "boatTopTile" : "boatRightTile"}`);
-                $(`#my${ranX}-${ranY}`).css("background-color", _colour);
+                $(`#${_player}${ranX}-${ranY}`).addClass(`boatTile ${vertOrHor === 0 ? "boatTopTile" : "boatRightTile"}`);
+                $(`#${_player}${ranX}-${ranY}`).css("background-color", _colour);
             }
             else {
                 if(vertOrHor === 0) {
@@ -248,8 +267,8 @@ function placeRandomBoat(_length, _i, _colour) {
                     // logArray(gridArray);
 
                     //horizontal
-                    $(`#my${ranX + i}-${ranY}`).addClass(`boatTile ${i < _length - 1 ? "boatTile" : "boatBottomTile"}`);
-                    $(`#my${ranX + i}-${ranY}`).css("background-color", _colour);
+                    $(`#${_player}${ranX + i}-${ranY}`).addClass(`boatTile ${i < _length - 1 ? "boatTile" : "boatBottomTile"}`);
+                    $(`#${_player}${ranX + i}-${ranY}`).css("background-color", _colour);
                 }
                 else {
                     //update array
@@ -257,13 +276,13 @@ function placeRandomBoat(_length, _i, _colour) {
                     // logArray(gridArray);
 
                     //vertical
-                    $(`#my${ranX}-${ranY - i}`).addClass(`boatTile ${i < _length - 1 ? "boatTile" : "boatLeftTile"}`);
-                    $(`#my${ranX}-${ranY - i}`).css("background-color", _colour);
+                    $(`#${_player}${ranX}-${ranY - i}`).addClass(`boatTile ${i < _length - 1 ? "boatTile" : "boatLeftTile"}`);
+                    $(`#${_player}${ranX}-${ranY - i}`).css("background-color", _colour);
                 }
             }
         }
 
-        ba_myBoard.updateBoard(gridArray);
+        (_player == "my") ? ba_myBoard.updateBoard(gridArray) : ba_oppBoard.updateBoard(gridArray);
 
         return true;
     }
@@ -287,23 +306,26 @@ function isValidPlacement(_gridArray, _vertOrHor, _length, _ranX, _ranY) {
 }
 
 //function to place all 5 boats
-function placeBoats() {
-    const boatLengths = [5, 4, 3, 3, 2]
-    const boatColours = ["#c91847", "#4ea9d0", "limegreen", "#f6ae2d", "#ef2ac9"]; //#3d72e3
+function placeBoats(_player) {
+    //_player is either "my" or "op"
 
-    for (let i = 0; i < boatLengths.length; i++) {
-        let canPlace = placeRandomBoat(boatLengths[i], i + 1, boatColours[i]);
-        while(!canPlace) {
-            canPlace = placeRandomBoat(boatLengths[i], i + 1, boatColours[i]);
-        }
-    }
+    // const boatLengths = [5, 4, 3, 3, 2]
+    // const boatColours = ["#c91847", "#4ea9d0", "limegreen", "#f6ae2d", "#ef2ac9"]; //#3d72e3
 
-    logArray(ba_myBoard.getBoard());
+    // for (let i = 0; i < boatLengths.length; i++) {
+    //     let canPlace = placeRandomBoat(_player, boatLengths[i], i + 1, boatColours[i]);
+    //     while(!canPlace) {
+    //         canPlace = placeRandomBoat(_player, boatLengths[i], i + 1, boatColours[i]);
+    //     }
+    // }
+
+    // logArray(_player === "my" ? ba_myBoard.getBoard() : ba_oppBoard.getBoard());
 }
 
 //function to reset all the boars
-function resetBoats() {
+function clearBoats() {
     myBoard = [];
+    //reset array
     for (let r = 0; r < ba_SIZE; r++) {
         let myRow = [];
         for (let c = 0; c < ba_SIZE; c++) {
@@ -313,6 +335,7 @@ function resetBoats() {
     }
     ba_myBoard.updateBoard(myBoard);
 
+    //remove boat classes
     const children = $("#myBoard").children();
     for (let i = 0; i < children.length; i++) {
         const child = $(children[i]);
@@ -324,7 +347,7 @@ function resetBoats() {
 }
 
 //function to spawn a splash effect
-function spawnSplash(e, tile) {
+function spawnSplash(_tile) {
     const splash = $('<div></div');
     splash.addClass("splashEffect");
 
@@ -333,7 +356,7 @@ function spawnSplash(e, tile) {
         left: `calc(50% - ${12.5}px)`
     });
 
-    splash.appendTo(tile);
+    splash.appendTo(_tile);
 
     setTimeout(function() {
         splash.css({
@@ -350,9 +373,35 @@ function spawnSplash(e, tile) {
 }
 
 //function to spawn a hit mark
-function spawnMark(tile, type) {
+function spawnMark(_tile, type) {
     const mark = $('<div></div');
     mark.addClass(type);
 
-    mark.appendTo(tile);
+    mark.appendTo(_tile);
+}
+
+//function to let the player have a move
+function playAttack(_tile) {
+    if(!ba_gameStarted.getState()) return;
+
+    spawnSplash(_tile);
+
+    //attack logic
+    // spawnMark(_tile, getRandomInt(0, 1) === 0 ? "missMark" : "hitMark"); //make this work
+
+    _tile.addClass("checkedTile");
+
+    //alternate player
+    ba_isMyTurn.setState(!ba_isMyTurn.getState());
+
+    //alternate who has the border around their icon
+    if($('#playerIcon').hasClass('currentGo')) {
+        $('#playerIcon').removeClass('currentGo');
+        $('#opponentIcon').addClass('currentGo');
+    }
+    else if ($('#opponentIcon').hasClass('currentGo')) {
+        $('#opponentIcon').removeClass('currentGo');
+        $('#playerIcon').addClass('currentGo');
+    }
+
 }
