@@ -317,7 +317,7 @@ function placeBoats(_player, _placeOnBoard) {
     //_player is either "my" or "op"
 
     const boatLengths = [5, 4, 3, 3, 2]
-    const boatColours = ["#c91847", "#4ea9d0", "limegreen", "#f6ae2d", "#ef2ac9"]; //#3d72e3
+    const boatColours = ["#ec5124", "#4ea9d0", "limegreen", "#f6ae2d", "#ef2ac9"]; //#ec5124 c91847
 
     for (let i = 0; i < boatLengths.length; i++) {
         let canPlace = placeRandomBoat(_player, boatLengths[i], i + 1, boatColours[i], _placeOnBoard);
@@ -399,13 +399,14 @@ function playAttack(_tile) {
     if(ba_isPlayingRobot.getState()) {
         if(ba_oppBoard.getBoard()[coords[0]][coords[1]] === ' ') {
             spawnMark(_tile, "missMark");
+            _tile.addClass("checkedTile");
         }
         else {
             spawnMark(_tile, "hitMark");
+            _tile.addClass("checkedTile");
+            return true;
         }
     }
-
-    _tile.addClass("checkedTile");
 
     //alternate player
     ba_isMyTurn.setState(!ba_isMyTurn.getState());
@@ -420,4 +421,14 @@ function playAttack(_tile) {
         $('#playerIcon').addClass('currentGo');
     }
 
+    if(ba_isPlayingRobot.getState() && !ba_isMyTurn.getState()) {
+        // setTimeout(function() {
+        //     //ai turn if not my turn
+        //     aiRandomMove(ba_myBoard.getBoard());
+        // }, 450);
+        //ai turn if not my turn
+        aiRandomMove(ba_myBoard.getBoard());
+    }
+
+    return false;
 }
