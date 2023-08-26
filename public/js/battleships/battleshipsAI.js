@@ -99,42 +99,39 @@ async function aiRandomMove2(_playerGrid) {
     const deltas = [[-1, 0], [1, 0], [0, 1], [0, -1]]; //deltas to check when attacking a ship
     let attackGrid = copy2DArray(_playerGrid);
 
-    let ranX = getRandomInt(0, 9);
-    let ranY = getRandomInt(0, 9);
+    let ranCoords = getRanCoords();
 
     let plays = 1;
 
     for (let i = 0; i < plays; i++) {
-        const attackTile = $(`#my${ranX}-${ranY}`);
+        const attackTile = $(`#my${ranCoords[0]}-${ranCoords[1]}`);
 
         await sleep(1000);
 
-        if(attackGrid[ranX][ranY] !== ' ') {
+        if(attackGrid[ranCoords[0]][ranCoords[1]] !== ' ') {
             spawnMark(attackTile, "hitMark");
-            aiAttackedSquares.push(`${ranX}-${ranY}`);
+            aiAttackedSquares.push(`${ranCoords[0]}-${ranCoords[1]}`);
 
             //update array to show segment has been hit
-            attackGrid[ranX][ranY] = `${attackGrid[ranX][ranY]}h`;
+            attackGrid[ranCoords[0]][ranCoords[1]] = `${attackGrid[ranCoords[0]][ranCoords[1]]}h`;
 
             //update array
             ba_myBoard.updateBoard(attackGrid);
 
             //check if boat sunk
-            isBoatSunk(ba_myBoard.getBoard(), "my", attackGrid[ranX][ranY][0]);
+            isBoatSunk(ba_myBoard.getBoard(), "my", attackGrid[ranCoords[0]][ranCoords[1]][0]);
 
             //reset attack
-            ranX = getRandomInt(0, 9);
-            ranY = getRandomInt(0, 9);
+            ranCoords = getRanCoords();
 
             plays++;
         }
         else {
             spawnMark(attackTile, "missMark");
-            aiAttackedSquares.push(`${ranX}-${ranY}`);
+            aiAttackedSquares.push(`${ranCoords[0]}-${ranCoords[1]}`);
 
             //reset attack
-            ranX = getRandomInt(0, 9);
-            ranY = getRandomInt(0, 9);
+            ranCoords = getRanCoords();
         }
     }
 
@@ -149,6 +146,23 @@ async function aiRandomMove2(_playerGrid) {
     else if ($('#opponentIcon').hasClass('currentGo')) {
         $('#opponentIcon').removeClass('currentGo');
         $('#playerIcon').addClass('currentGo');
+    }
+}
+
+//function to generate ranX and ranY
+function getRanCoords() {
+    if(aiAttackedSquares.length < 100) {
+        let ranX = getRandomInt(0, 9);
+        let ranY = getRandomInt(0, 9);
+        while(aiAttackedSquares.includes(`${ranX}-${ranY}`)) { //make sure don't already attack squares
+            ranX = getRandomInt(0, 9);
+            ranY = getRandomInt(0, 9);
+        }
+
+        return [ranX, ranY];
+    }
+    else {
+        return "all moves used up";
     }
 }
 
