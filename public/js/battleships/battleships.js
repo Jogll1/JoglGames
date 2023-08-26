@@ -147,7 +147,7 @@ $(document).ready(function() {
         if(!ba_isMyTurn.getState()) return;
 
         if($(this).attr("id").includes("op") && !$(this).hasClass("checkedTile")) {
-            playAttack($(this));
+            playerAttack($(this));
         }
     });
 
@@ -393,29 +393,45 @@ function spawnSplash(_tile) {
 
 //function to spawn a hit mark
 function spawnMark(_tile, _type) {
-    const mark = $('<div></div');
+    const mark = _type === "sunkMark" ? $('<img>') : $('<div>'); //create image if its a sunkmark
     mark.addClass(_type);
 
     mark.appendTo(_tile);
 
+    if(_type === "sunkMark") {
+        mark.attr("src", "/images/SkullIcon.png");
+        mark.attr("alt", "Description of the image");
+    }
+    
     spawnSplash(_tile);
 }
 
 //function to let the player have a move
-function playAttack(_tile) {
+function playerAttack(_tile) {
     if(!ba_gameStarted.getState()) return;
 
+    const oppBoardCopy = copy2DArray(ba_oppBoard.getBoard());
     const coords = _tile.attr("id").substring(2).split('-');
 
     //attack logic
     if(ba_isPlayingRobot.getState()) {
-        if(ba_oppBoard.getBoard()[coords[0]][coords[1]] === ' ') {
+        if(oppBoardCopy[coords[0]][coords[1]] === ' ') {
             spawnMark(_tile, "missMark");
             _tile.addClass("checkedTile");
         }
         else {
             spawnMark(_tile, "hitMark");
             _tile.addClass("checkedTile");
+
+            //update array to show segment has been hit
+            oppBoardCopy[coords[0]][coords[1]] = `${oppBoardCopy[coords[0]][coords[1]]}h`;
+
+            //update array
+            ba_oppBoard.updateBoard(oppBoardCopy);
+
+            //check if boat sunk
+            isBoatSunk(ba_oppBoard.getBoard(), "op", oppBoardCopy[coords[0]][coords[1]][0]);
+
             return true;
         }
     }
@@ -434,13 +450,34 @@ function playAttack(_tile) {
     }
 
     if(ba_isPlayingRobot.getState() && !ba_isMyTurn.getState()) {
-        // setTimeout(function() {
-        //     //ai turn if not my turn
-        //     aiRandomMove(ba_myBoard.getBoard());
-        // }, 450);
-        //ai turn if not my turn
-        aiRandomMove(ba_myBoard.getBoard());
+        aiRandomMove2(ba_myBoard.getBoard());
     }
 
     return false;
+}
+
+//function to show when a boat has sunk
+function isBoatSunk(_gridArray, _player, _index) {
+    //_player is either 'op' or 'my' and is to show which side to update the sunk boat on
+    let boatCoords = [];
+
+    //check if any part of the boat has not been hit
+    for (let r = 0; r < ba_SIZE; r++) {
+        for (let c = 0; c < ba_SIZE; c++) {
+            if(`${_gridArray[r][c]}`.includes(`${_index}`)) {
+                if(_gridArray[r][c] == _index) {
+                    return false;
+                }
+                boatCoords.push(`${r}-${c}`);
+            }
+        }
+    }
+
+    //sink the boat
+    for (let i = 0; i < boatCoords.length; i++) {
+        const tile = $(`#${_player}${boatCoords[i][0]}-${boatCoords[i][2]}`);
+        console.log(`#${_player}${boatCoords[i][0]}-${boatCoords[i][2]}`);
+        tile.empty();
+        spawnMark(tile, "sunkMark");
+    }
 }

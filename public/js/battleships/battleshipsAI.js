@@ -95,6 +95,10 @@ async function aiRandomMove(_playerGrid) {
     }
 }
 
+function aiRandomMove2(_playerGrid) {
+    
+}
+
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }

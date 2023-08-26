@@ -125,7 +125,7 @@
 }
 /*#endregion*/
 
-/*#region Hit and miss symbol */
+/*#region Hit symbols */
 /*#region Hit */
 .hitMark {
     width: 70%;
@@ -162,6 +162,19 @@
 
     border-radius: 50%;
     background: #444444;
+
+    /* centre div */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+/*#endregion*/
+
+/*#region Sunk */
+.sunkMark {
+    width: 75%;
+    height: 75%;
 
     /* centre div */
     position: absolute;
