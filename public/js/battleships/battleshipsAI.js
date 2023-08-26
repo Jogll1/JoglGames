@@ -111,15 +111,44 @@ async function aiRandomMove2(_playerGrid) {
 
         if(attackGrid[ranX][ranY] !== ' ') {
             spawnMark(attackTile, "hitMark");
+            aiAttackedSquares.push(`${ranX}-${ranY}`);
+
+            //update array to show segment has been hit
+            attackGrid[ranX][ranY] = `${attackGrid[ranX][ranY]}h`;
+
+            //update array
+            ba_myBoard.updateBoard(attackGrid);
+
+            //check if boat sunk
+            isBoatSunk(ba_myBoard.getBoard(), "my", attackGrid[ranX][ranY][0]);
+
+            //reset attack
+            ranX = getRandomInt(0, 9);
+            ranY = getRandomInt(0, 9);
+
             plays++;
         }
         else {
             spawnMark(attackTile, "missMark");
+            aiAttackedSquares.push(`${ranX}-${ranY}`);
 
             //reset attack
             ranX = getRandomInt(0, 9);
             ranY = getRandomInt(0, 9);
         }
+    }
+
+    //alternate player
+    ba_isMyTurn.setState(!ba_isMyTurn.getState());
+
+    //alternate who has the border around their icon
+    if($('#playerIcon').hasClass('currentGo')) {
+        $('#playerIcon').removeClass('currentGo');
+        $('#opponentIcon').addClass('currentGo');
+    }
+    else if ($('#opponentIcon').hasClass('currentGo')) {
+        $('#opponentIcon').removeClass('currentGo');
+        $('#playerIcon').addClass('currentGo');
     }
 }
 

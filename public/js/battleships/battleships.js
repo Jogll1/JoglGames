@@ -377,18 +377,18 @@ function spawnSplash(_tile) {
 
     splash.appendTo(_tile);
 
-    setTimeout(function() {
-        splash.css({
-          transform: "scale(2.5)",
-          opacity: 0,
-          transition: "transform 0.5s ease-out, opacity 0.5s ease-out"
-        });
+    // setTimeout(function() {
+    //     splash.css({
+    //       transform: "scale(2.5)",
+    //       opacity: 0,
+    //       transition: "transform 0.5s ease-out, opacity 0.5s ease-out"
+    //     });
         
-        // Remove the splash element from the DOM after 500
-        setTimeout(function() {
-          splash.remove();  
-        }, 500);
-    }, 0);
+    //     // Remove the splash element from the DOM after 500
+    //     setTimeout(function() {
+    //       splash.remove();  
+    //     }, 500);
+    // }, 0);
 }
 
 //function to spawn a hit mark
@@ -450,7 +450,7 @@ function playerAttack(_tile) {
     }
 
     if(ba_isPlayingRobot.getState() && !ba_isMyTurn.getState()) {
-        aiRandomMove(ba_myBoard.getBoard());
+        aiRandomMove2(ba_myBoard.getBoard());
     }
 
     return false;
