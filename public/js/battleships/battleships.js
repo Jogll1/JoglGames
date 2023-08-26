@@ -152,7 +152,7 @@ $(document).ready(function() {
     });
 
     $(".gridTile").mouseenter(function() {
-        if($(this).attr("id").includes("op") && !$(this).hasClass("checkedTile")) {
+        if($(this).attr("id").includes("op") && !$(this).hasClass("checkedTile") && ba_isMyTurn.getState()) {
             $(this).addClass("gridTileHover");
         }
     });
@@ -392,11 +392,13 @@ function spawnSplash(_tile) {
 }
 
 //function to spawn a hit mark
-function spawnMark(_tile, type) {
+function spawnMark(_tile, _type) {
     const mark = $('<div></div');
-    mark.addClass(type);
+    mark.addClass(_type);
 
     mark.appendTo(_tile);
+
+    spawnSplash(_tile);
 }
 
 //function to let the player have a move
@@ -404,8 +406,6 @@ function playAttack(_tile) {
     if(!ba_gameStarted.getState()) return;
 
     const coords = _tile.attr("id").substring(2).split('-');
-
-    spawnSplash(_tile);
 
     //attack logic
     if(ba_isPlayingRobot.getState()) {

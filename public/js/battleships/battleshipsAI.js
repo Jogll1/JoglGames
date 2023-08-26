@@ -29,7 +29,6 @@ async function aiRandomMove(_playerGrid) {
         await sleep(1000);
 
         if(attackGrid[ranX][ranY] !== ' ') {
-            spawnSplash(attackTile);
             spawnMark(attackTile, "hitMark");
             aiAttackedSquares.push(`${ranX}-${ranY}`);
 
@@ -65,7 +64,6 @@ async function aiRandomMove(_playerGrid) {
             plays++;
         }
         else {
-            spawnSplash(attackTile);
             spawnMark(attackTile, "missMark");
             aiAttackedSquares.push(`${ranX}-${ranY}`);
 
