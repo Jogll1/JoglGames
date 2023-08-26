@@ -95,8 +95,32 @@ async function aiRandomMove(_playerGrid) {
     }
 }
 
-function aiRandomMove2(_playerGrid) {
-    
+async function aiRandomMove2(_playerGrid) {
+    const deltas = [[-1, 0], [1, 0], [0, 1], [0, -1]]; //deltas to check when attacking a ship
+    let attackGrid = copy2DArray(_playerGrid);
+
+    let ranX = getRandomInt(0, 9);
+    let ranY = getRandomInt(0, 9);
+
+    let plays = 1;
+
+    for (let i = 0; i < plays; i++) {
+        const attackTile = $(`#my${ranX}-${ranY}`);
+
+        await sleep(1000);
+
+        if(attackGrid[ranX][ranY] !== ' ') {
+            spawnMark(attackTile, "hitMark");
+            plays++;
+        }
+        else {
+            spawnMark(attackTile, "missMark");
+
+            //reset attack
+            ranX = getRandomInt(0, 9);
+            ranY = getRandomInt(0, 9);
+        }
+    }
 }
 
 function sleep(ms) {

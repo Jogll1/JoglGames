@@ -450,7 +450,7 @@ function playerAttack(_tile) {
     }
 
     if(ba_isPlayingRobot.getState() && !ba_isMyTurn.getState()) {
-        aiRandomMove2(ba_myBoard.getBoard());
+        aiRandomMove(ba_myBoard.getBoard());
     }
 
     return false;
@@ -476,7 +476,6 @@ function isBoatSunk(_gridArray, _player, _index) {
     //sink the boat
     for (let i = 0; i < boatCoords.length; i++) {
         const tile = $(`#${_player}${boatCoords[i][0]}-${boatCoords[i][2]}`);
-        console.log(`#${_player}${boatCoords[i][0]}-${boatCoords[i][2]}`);
         tile.empty();
         spawnMark(tile, "sunkMark");
     }
