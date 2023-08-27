@@ -140,10 +140,35 @@ $(document).ready(function() {
     //         $("#setButton").addClass("disabled");
     //     }
     // });
+    
+    //rematch menu
+    $('#rematchButton').click(function() {
+        //close the menu
+        $('.menuBackground').hide();
+        $('.rematchMenu').hide();
+
+        //reset the board
+        resetGame();
+
+        if(ba_isPlayingRobot.getState()) {
+            ba_isMyTurn.setState(true);
+        }
+        else {
+            //-----SOCKET-----
+            //if not playing robot, send rematch to the server
+            // socketSendChessRematch();
+            //----------------
+        }
+    });
+
+    //home button
+    $('#homeButton').click(function() {
+        window.location.href = './index.html';
+    });
     //#endregion
 
     //#region Tile functions
-    $(".gridTile").click(function(e) {
+    $(document).on('mousedown', '.gridTile', function() {
         if(!ba_isMyTurn.getState()) return;
 
         if($(this).attr("id").includes("op") && !$(this).hasClass("checkedTile")) {
@@ -151,13 +176,13 @@ $(document).ready(function() {
         }
     });
 
-    $(".gridTile").mouseenter(function() {
+    $(document).on('mouseenter', '.gridTile', function() {
         if($(this).attr("id").includes("op") && !$(this).hasClass("checkedTile") && ba_isMyTurn.getState()) {
             $(this).addClass("gridTileHover");
         }
     });
 
-    $(".gridTile").mouseleave(function() {
+    $(document).on('mouseleave', '.gridTile', function() {
         $(this).removeClass("gridTileHover");
     });
     //#endregion
@@ -469,5 +494,98 @@ function isBoatSunk(_gridArray, _player, _index) {
         spawnMark(tile, "sunkMark");
     }
 
+    checkGameOver(_gridArray, _player);
+
     return {status: true, boatCoords: boatCoords};
+}
+
+//function to check if game over
+function checkGameOver(_gridArray, _player) {
+    for (let r = 0; r < ba_SIZE; r++) {
+        for (let c = 0; c < ba_SIZE; c++) {
+            for (let i = 1; i < 6; i++) {
+                if(_gridArray[r][c] === i) {
+                    return false;
+                }
+            }
+        }
+    }
+
+    //set the winner
+    setWinner(_player);
+}
+
+//function to set the winner
+function setWinner(_player) {
+    //initialise winner string
+    let winnerString = " ";
+    ba_gameStarted.setState(false);
+
+    //increment score counters based on who won
+    if(_player === "my") { //opponent
+        let score = parseInt($("#opponentScoreText").text());
+        $("#opponentScoreText").text(score + 1);
+
+        if(ba_isPlayingRobot.getState()) {
+            //if playing ai, say robot won
+            winnerString = "Robot wins!"; 
+        }
+        else {
+            //if playing online, say other player won
+            winnerString = `Opponent wins!`;
+        }
+    }
+    else if (_player === "op") { //player
+        let score = parseInt($("#playerScoreText").text());
+        $("#playerScoreText").text(score + 1);
+
+        winnerString = "You win!";
+    }
+
+    endGame(winnerString);
+}
+
+//function to end the game and allow for another game
+function endGame(winnerString) {
+    //remove blue circle from icons
+    $('#playerIcon').removeClass('currentGo');
+    $('#opponentIcon').removeClass('currentGo');
+
+    //load rematch menu after a bit
+    setTimeout(function() { 
+        $('.menuBackground').show();
+        $('.rematchMenu').show();
+    }, 700);
+
+    //set rematch menu title
+    $('#rematchMenuTitle').text(winnerString);
+}
+
+//function to reset the game
+function resetGame() {
+    //reset the board
+    $("#myBoard").empty();
+    $("#oppBoard").empty();
+    setGame();
+    placeBoats("my", true);
+
+    //set game started
+    ba_gameStarted.setState(true);
+
+    //set blue circle
+    //remove blue circle from icons
+    if(ba_isPlayingRobot.getState()) 
+    {
+        //if you're playing robot, set player first
+        $('#playerIcon').addClass('currentGo');
+    } 
+    else { 
+        //if you're playing online, alternate blue circle
+        if(ba_isMyTurn.getState()) {
+            $('#playerIcon').addClass('currentGo');
+        }
+        else {
+            $('#opponentIcon').addClass('currentGo');
+        }
+    }  
 }
