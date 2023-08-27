@@ -1,8 +1,7 @@
 let aiAttackedSquares = [];
 let aiHitSquares = [];
 let LAST_DIR = '';
-
-//TODO - make bot remember if it was attacking a ship last turn
+let LAST_CONSECUTIVE_HITS = 0;
 
 //function to get a random move with ship destroying
 async function aiRandomMove(_playerGrid) {
@@ -13,7 +12,6 @@ async function aiRandomMove(_playerGrid) {
 
     let plays = 1;
     let consecutiveHits = 0;
-    let lastConsecutiveHits = 0;
 
     let attackCoords = ranCoords;
 
@@ -28,38 +26,31 @@ async function aiRandomMove(_playerGrid) {
 
             iLoop: for (let i = aiHitSquares.length - 1; i >= 0; i--) {
                 for (let j = 0; j < dirsToTry.length; j++) {
-                    // console.log(`check square: ${aiHitSquares[i]}`);
                     const lastHitSquare = aiHitSquares[i].split('-');
                     if(parseInt(lastHitSquare[0]) + dirsToTry[j][0] <= 9 && parseInt(lastHitSquare[0]) + dirsToTry[j][0] >= 0 && parseInt(lastHitSquare[1]) + dirsToTry[j][1] <= 9 && parseInt(lastHitSquare[1]) + dirsToTry[j][1] >= 0) {
                         attackCoords = [parseInt(lastHitSquare[0]) + dirsToTry[j][0], parseInt(lastHitSquare[1]) + dirsToTry[j][1]];
                         
-                        //#region attacking end of line once line finished
-                        // //if this attack is in lastHitSquares, keep going this direction
-                        // if(aiHitSquares.includes(`${attackCoords[0]}-${attackCoords[1]}`)) {
-                        //     let testCoords = attackCoords;
-                        //     kLoop: for (let k = 0; k < 5; k++) {
-                        //         const a = testCoords[0] + dirsToTry[j][0];
-                        //         const b = testCoords[1] + dirsToTry[j][1];
-                        //         if(a <= 9 && a <= 0 &&  b <= 9 && b >= 0) {
-                        //             testCoords = [a, b];
+                        //#region to make sure ai attacks boats after finishing a line
+                        if(j === 1 && aiHitSquares.includes(`${attackCoords[0]}-${attackCoords[1]}`)) {
+                            const testCoords = attackCoords;
+                            kLoop: for (let k = 1; k < 6; k++) {
+                                const a = testCoords[0] + dirsToTry[j][0] * i;
+                                const b = testCoords[1] + dirsToTry[j][1] * i;
+                                const newTestCoords = [a, b];
 
-                        //             if(aiHitSquares.includes(`${testCoords[0]}-${testCoords[1]}`)) {
-                        //                 console.log("he");
-                        //                 continue kLoop;
-                        //             }
-                        //             else {
-                        //                 if(!aiAttackedSquares.includes(`${testCoords[0]}-${testCoords[1]}`)) {
-                        //                     console.log("he");
-                        //                     attackCoords = testCoords;
-                        //                 }
-                        //                 break kLoop;
-                        //             }
-                        //         }
-                        //         else {
-                        //             break kLoop;
-                        //         }
-                        //     }
-                        // }
+                                if(a <= 9 && a >= 0 && b <= 9 && b >= 0) {
+                                    if(aiHitSquares.includes(`${newTestCoords[0]}-${newTestCoords[1]}`)) {
+                                        continue;
+                                    }
+                                    else {
+                                        if(!aiAttackedSquares.includes(`${newTestCoords[0]}-${newTestCoords[1]}`)) {
+                                            attackCoords = newTestCoords;
+                                        }
+                                        break kLoop;
+                                    }
+                                }
+                            }
+                        }
                         //#endregion
 
                         if (validateAttackCoord(attackCoords)) {
@@ -74,7 +65,7 @@ async function aiRandomMove(_playerGrid) {
         }
 
         const attackTile = $(`#my${attackCoords[0]}-${attackCoords[1]}`);
-        console.log(`atk coords: ${attackCoords}`);
+        // console.log(`atk coords: ${attackCoords}`);
         if(attackGrid[attackCoords[0]][attackCoords[1]] !== ' ') {
             //hit
             aiAttack(attackCoords, attackTile, "hitMark");
@@ -120,9 +111,7 @@ async function aiRandomMove(_playerGrid) {
                 }
 
                 //reset attack if boat sunk and ai hit squares empty
-                // if(aiHitSquares.length <= 0) attackCoords = getRanCoords();
-                attackCoords = getRanCoords();
-                console.log(attackCoords);
+                if(aiHitSquares.length <= 0) attackCoords = getRanCoords();
             }
 
             consecutiveHits++;
@@ -135,7 +124,9 @@ async function aiRandomMove(_playerGrid) {
             //reset attack
             attackCoords = getRanCoords();
 
-            if(consecutiveHits > 0) lastConsecutiveHits = consecutiveHits;
+            if(consecutiveHits > 0) {
+                LAST_CONSECUTIVE_HITS = consecutiveHits;
+            }
             consecutiveHits = 0;
         }
     }
