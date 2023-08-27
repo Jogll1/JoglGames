@@ -12,6 +12,8 @@ async function aiRandomMove(_playerGrid) {
     let ranCoords = getRanCoords(); //[a, b]
 
     let plays = 1;
+    let consecutiveHits = 0;
+    let lastConsecutiveHits = 0;
 
     for (let i = 0; i < plays; i++) {
         let attackCoords = ranCoords;
@@ -23,6 +25,19 @@ async function aiRandomMove(_playerGrid) {
             const dir = LAST_DIR;
 
             const dirsToTry = [dir, [-dir[0], -dir[1]], [dir[1], dir[0]], [-dir[1], -dir[0]]];
+
+            //if last attack was a miss
+            if(consecutiveHits === 0 && lastConsecutiveHits > 0) {
+                const lastHitSquare = aiHitSquares[0].split('-');
+                const reverseDir = [dirsToTry[0] * lastConsecutiveHits, dirsToTry[1] * lastConsecutiveHits];
+                const testCoords = [parseInt(lHS[0]) + reverseDir[0], parseInt(lHS[1]) + reverseDir[1]];
+
+                if(testCoords[0] <= 9 && testCoords[0] >= 0 && testCoords[1] <= 9 && testCoords[1] >= 0) {
+                    if (validateAttackCoord(testCoords)) {
+                        //skip next section
+                    }
+                }
+            }
 
             outerLoop: for (let i = aiHitSquares.length - 1; i >= 0; i--) {
                 for (let j = 0; j < dirsToTry.length; j++) {
@@ -43,7 +58,7 @@ async function aiRandomMove(_playerGrid) {
         }
 
         const attackTile = $(`#my${attackCoords[0]}-${attackCoords[1]}`);
-
+        console.log(`atk coords: ${attackCoords}`);
         if(attackGrid[attackCoords[0]][attackCoords[1]] !== ' ') {
             //hit
             aiAttack(attackCoords, attackTile, "hitMark");
@@ -92,6 +107,7 @@ async function aiRandomMove(_playerGrid) {
                 }
             }
 
+            consecutiveHits++;
             plays++;
         }
         else {
@@ -100,6 +116,9 @@ async function aiRandomMove(_playerGrid) {
 
             //reset attack
             attackCoords = getRanCoords();
+
+            if(consecutiveHits > 0) lastConsecutiveHits = consecutiveHits;
+            consecutiveHits = 0;
         }
     }
 
