@@ -9,83 +9,97 @@ async function aiRandomMove(_playerGrid) {
     const deltas = [[-1, 0], [1, 0], [0, 1], [0, -1]]; //deltas to check when attacking a ship
     let attackGrid = copy2DArray(_playerGrid);
 
-    let ranCoords = getRanCoords();
+    let ranCoords = getRanCoords(); //[a, b]
 
     let plays = 1;
-    let consecutiveHits = 0;
 
     for (let i = 0; i < plays; i++) {
-        console.log(ranCoords);
-
-        const attackTile = $(`#my${ranCoords[0]}-${ranCoords[1]}`);
+        let attackCoords = ranCoords;
 
         await sleep(1000);
 
         if(aiHitSquares.length > 0) {
             //if we are currently attacking squares
-            console.log("heeb");
+            const dir = LAST_DIR;
+
+            const dirsToTry = [dir, [-dir[0], -dir[1]], [dir[1], dir[0]], [-dir[1], -dir[0]]];
+
+            outerLoop: for (let i = aiHitSquares.length - 1; i >= 0; i--) {
+                for (let j = 0; j < dirsToTry.length; j++) {
+                    // console.log(`check square: ${aiHitSquares[i]}`);
+                    const lastHitSquare = aiHitSquares[i].split('-');
+                    if(parseInt(lastHitSquare[0]) + dirsToTry[j][0] <= 9 && parseInt(lastHitSquare[1]) + dirsToTry[j][1] >= 0) {
+                        attackCoords = [parseInt(lastHitSquare[0]) + dirsToTry[j][0], parseInt(lastHitSquare[1]) + dirsToTry[j][1]];
+    
+                        if (validateAttackCoord(attackCoords)) {
+                            LAST_DIR = dirsToTry[j];
+                            break outerLoop;
+                        }
+                    }
+
+                    attackCoords = ranCoords;
+                }
+            }
+        }
+
+        const attackTile = $(`#my${attackCoords[0]}-${attackCoords[1]}`);
+
+        if(attackGrid[attackCoords[0]][attackCoords[1]] !== ' ') {
+            //hit
+            aiAttack(attackCoords, attackTile, "hitMark");
+
+            //update array to show segment has been hit
+            attackGrid[attackCoords[0]][attackCoords[1]] = `${attackGrid[attackCoords[0]][attackCoords[1]]}h`;
+
+            //update array
+            ba_myBoard.updateBoard(attackGrid);
+
+            //if this is our first hit on a boat, pick a random direction
+            if(aiHitSquares.length <= 0) {
+                const dir = deltas[getRandomInt(0, 3)];
+                const oldAtkCoords = attackCoords;
+                
+                //start attacking ship in this direction
+                const directionsToTry = [dir, [-dir[0], -dir[1]], [dir[1], dir[0]], [-dir[1], -dir[0]]];
+
+                //go through directions to make sure you can do them
+                for (const _dir of directionsToTry) {
+                    testCoords = [oldAtkCoords[0] + _dir[0], oldAtkCoords[1] + _dir[1]];
+
+                    if (validateAttackCoord(testCoords)) {
+                        break;
+                    }
+                }
+
+                LAST_DIR = dir;
+            }
+
+            //push to ai hit squares
+            aiHitSquares.push(`${attackCoords[0]}-${attackCoords[1]}`);
+
+            //check if boat sunk
+            const boatSunk = isBoatSunk(ba_myBoard.getBoard(), "my", attackGrid[attackCoords[0]][attackCoords[1]][0]);
+
+            //update attack coords
+            if(boatSunk.status) {
+                //reset attack if boat sunk and ai hit squares empty
+                if(aiHitSquares.length <= 0) attackCoords = getRanCoords();
+                
+                //remove squares sunk from aiHitSquares
+                for (let i = 0; i < boatSunk.boatCoords.length; i++) {
+                    const coords = `${boatSunk.boatCoords[i][0]}-${boatSunk.boatCoords[i][1]}`;
+                    aiHitSquares.pop(coords);
+                }
+            }
+
+            plays++;
         }
         else {
-            if(attackGrid[ranCoords[0]][ranCoords[1]] !== ' ') {
-                //hit
-                aiAttack(ranCoords, attackTile, "hitMark");
+            //miss
+            aiAttack(attackCoords, attackTile, "missMark");
 
-                //update array to show segment has been hit
-                attackGrid[ranCoords[0]][ranCoords[1]] = `${attackGrid[ranCoords[0]][ranCoords[1]]}h`;
-
-                //update array
-                ba_myBoard.updateBoard(attackGrid);
-
-                //check if boat sunk
-                const boatSunk = isBoatSunk(ba_myBoard.getBoard(), "my", attackGrid[ranCoords[0]][ranCoords[1]][0]);
-
-                //update attack coords
-                if(boatSunk.status) {
-                    console.log("boat sunk");
-                    //reset attack if boat sunk
-                    ranCoords = getRanCoords();
-                    
-                    //remove squares sunk from aiHitSquares
-                    for (let i = 0; i < boatSunk.boatCoords.length; i++) {
-                        const coords = `${boatSunk.boatCoords[i][0]}-${boatSunk.boatCoords[i][1]}`;
-                        aiHitSquares.pop(coords);
-                    }
-                }
-                else {
-                    if(aiHitSquares.length <= 0) { //this should always pass
-                        //if this is our first hit on a boat, pick a random direction
-                        const dir = deltas[getRandomInt(0, 3)];
-                        const oldRanCoords = ranCoords;
-                        
-                        //start attacking ship in this direction
-                        const directionsToTry = [dir, [-dir[0], -dir[1]], [dir[1], dir[0]], [-dir[1], -dir[0]]];
-
-                        //go through directions to make sure you can do them
-                        for (const dir of directionsToTry) {
-                            ranCoords = [oldRanCoords[0] + dir[0], oldRanCoords[1] + dir[1]];
-
-                            if (validateAttackCoord(ranCoords)) {
-                                break;
-                            }
-                        }
-
-                        LAST_DIR = dir;
-                    }
-                }
-
-                aiHitSquares.push(`${ranCoords[0]}-${ranCoords[1]}`);
-                consecutiveHits++;
-                plays++;
-            }
-            else {
-                //miss
-                aiAttack(ranCoords, attackTile, "missMark");
-
-                //reset attack
-                ranCoords = getRanCoords();
-
-                consecutiveHits = 0;
-            }
+            //reset attack
+            attackCoords = getRanCoords();
         }
     }
 
