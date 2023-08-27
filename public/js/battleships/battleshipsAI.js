@@ -114,6 +114,8 @@ async function aiRandomMove(_playerGrid) {
                 if(aiHitSquares.length <= 0) attackCoords = getRanCoords();
             }
 
+            if(boatSunk.gameOver) return;
+
             consecutiveHits++;
             plays++;
         }
@@ -178,4 +180,11 @@ function aiAttack(_coords, _attackTile, _markType) {
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function resetAIData() {
+    aiAttackedSquares = [];
+    aiHitSquares = [];
+    LAST_DIR = '';
+    LAST_CONSECUTIVE_HITS = 0;
 }

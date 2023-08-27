@@ -363,7 +363,7 @@ function placeBoats(_player, _placeOnBoard) {
         }
     }
 
-    // logArray(_player === "my" ? ba_myBoard.getBoard() : ba_oppBoard.getBoard());
+    logArray(_player === "my" ? ba_myBoard.getBoard() : ba_oppBoard.getBoard());
 }
 
 //function to reset all the boars
@@ -480,7 +480,7 @@ function isBoatSunk(_gridArray, _player, _index) {
         for (let c = 0; c < ba_SIZE; c++) {
             if(`${_gridArray[r][c]}`.includes(`${_index}`)) {
                 if(_gridArray[r][c] == _index) {
-                    return {status: false, boatCoords: []};
+                    return {status: false, boatCoords: [], gameOver: false};
                 }
                 boatCoords.push(`${r}-${c}`);
             }
@@ -494,9 +494,9 @@ function isBoatSunk(_gridArray, _player, _index) {
         spawnMark(tile, "sunkMark");
     }
 
-    checkGameOver(_gridArray, _player);
+    const gameOver = checkGameOver(_gridArray, _player);
 
-    return {status: true, boatCoords: boatCoords};
+    return {status: true, boatCoords: boatCoords, gameOver: gameOver};
 }
 
 //function to check if game over
@@ -513,6 +513,7 @@ function checkGameOver(_gridArray, _player) {
 
     //set the winner
     setWinner(_player);
+    return true;
 }
 
 //function to set the winner
@@ -572,12 +573,17 @@ function resetGame() {
     //set game started
     ba_gameStarted.setState(true);
 
+    //reset ai data
+    resetAIData();
+
     //set blue circle
     //remove blue circle from icons
     if(ba_isPlayingRobot.getState()) 
     {
         //if you're playing robot, set player first
         $('#playerIcon').addClass('currentGo');
+
+        placeBoats("op", false);
     } 
     else { 
         //if you're playing online, alternate blue circle
