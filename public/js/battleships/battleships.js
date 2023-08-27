@@ -382,6 +382,7 @@ function spawnSplash(_tile) {
 function spawnMark(_tile, _type) {
     const mark = _type === "sunkMark" ? $('<img>') : $('<div>'); //create image if its a sunkmark
     mark.addClass(_type);
+    mark.addClass("noHighlightOrDrag");
 
     mark.appendTo(_tile);
 
@@ -437,7 +438,8 @@ function playerAttack(_tile) {
     }
 
     if(ba_isPlayingRobot.getState() && !ba_isMyTurn.getState()) {
-        aiRandomMove2(ba_myBoard.getBoard());
+        //ai turn
+        aiRandomMove(ba_myBoard.getBoard());
     }
 
     return false;
@@ -453,7 +455,7 @@ function isBoatSunk(_gridArray, _player, _index) {
         for (let c = 0; c < ba_SIZE; c++) {
             if(`${_gridArray[r][c]}`.includes(`${_index}`)) {
                 if(_gridArray[r][c] == _index) {
-                    return false;
+                    return {status: false, boatCoords: []};
                 }
                 boatCoords.push(`${r}-${c}`);
             }
@@ -466,4 +468,6 @@ function isBoatSunk(_gridArray, _player, _index) {
         tile.empty();
         spawnMark(tile, "sunkMark");
     }
+
+    return {status: true, boatCoords: boatCoords};
 }
