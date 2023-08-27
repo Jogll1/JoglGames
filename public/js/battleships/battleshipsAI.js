@@ -26,33 +26,38 @@ async function aiRandomMove(_playerGrid) {
 
             const dirsToTry = [dir, [-dir[0], -dir[1]], [dir[1], dir[0]], [-dir[1], -dir[0]]];
 
-            //if last attack was a miss
-            if(consecutiveHits === 0 && lastConsecutiveHits > 0) {
-                const lastHitSquare = aiHitSquares[0].split('-');
-                const reverseDir = [dirsToTry[0] * lastConsecutiveHits, dirsToTry[1] * lastConsecutiveHits];
-                const testCoords = [parseInt(lHS[0]) + reverseDir[0], parseInt(lHS[1]) + reverseDir[1]];
+            //check if last attack was a miss, and apply consecutive hit logic
+            const lHS = aiHitSquares[0].split('-');
+            const reverseDir = [dirsToTry[0] * lastConsecutiveHits, dirsToTry[1] * lastConsecutiveHits];
+            const testCoords = [parseInt(lHS[0]) + reverseDir[0], parseInt(lHS[1]) + reverseDir[1]];
 
-                if(testCoords[0] <= 9 && testCoords[0] >= 0 && testCoords[1] <= 9 && testCoords[1] >= 0) {
-                    if (validateAttackCoord(testCoords)) {
-                        //skip next section
-                    }
-                }
+            const statement1 = (consecutiveHits === 0 && lastConsecutiveHits > 1);
+            console.log(`ch: ${consecutiveHits}, lch: ${lastConsecutiveHits}`)
+            const statement2 = (testCoords[0] <= 9 && testCoords[0] >= 0 && testCoords[1] <= 9 && testCoords[1] >= 0);
+            const statement3 = (validateAttackCoord(testCoords));
+
+            if(statement1 && statement2 && statement3) {
+                console.log("yup");
+                attackCoords = testCoords;
             }
-
-            outerLoop: for (let i = aiHitSquares.length - 1; i >= 0; i--) {
-                for (let j = 0; j < dirsToTry.length; j++) {
-                    // console.log(`check square: ${aiHitSquares[i]}`);
-                    const lastHitSquare = aiHitSquares[i].split('-');
-                    if(parseInt(lastHitSquare[0]) + dirsToTry[j][0] <= 9 && parseInt(lastHitSquare[1]) + dirsToTry[j][1] >= 0) {
-                        attackCoords = [parseInt(lastHitSquare[0]) + dirsToTry[j][0], parseInt(lastHitSquare[1]) + dirsToTry[j][1]];
-    
-                        if (validateAttackCoord(attackCoords)) {
-                            LAST_DIR = dirsToTry[j];
-                            break outerLoop;
+            else {
+                outerLoop: for (let i = aiHitSquares.length - 1; i >= 0; i--) {
+                    for (let j = 0; j < dirsToTry.length; j++) {
+                        // console.log(`check square: ${aiHitSquares[i]}`);
+                        const lastHitSquare = aiHitSquares[i].split('-');
+                        if(parseInt(lastHitSquare[0]) + dirsToTry[j][0] <= 9 && parseInt(lastHitSquare[1]) + dirsToTry[j][1] >= 0) {
+                            attackCoords = [parseInt(lastHitSquare[0]) + dirsToTry[j][0], parseInt(lastHitSquare[1]) + dirsToTry[j][1]];
+        
+                            if (validateAttackCoord(attackCoords)) {
+                                LAST_DIR = dirsToTry[j];
+                                break outerLoop;
+                            }
+                            
+                            //if this attack is in lastHitSquares, keep going this direction
                         }
-                    }
 
-                    attackCoords = ranCoords;
+                        attackCoords = ranCoords;
+                    }
                 }
             }
         }
