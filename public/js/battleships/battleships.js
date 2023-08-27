@@ -338,7 +338,7 @@ function placeBoats(_player, _placeOnBoard) {
         }
     }
 
-    logArray(_player === "my" ? ba_myBoard.getBoard() : ba_oppBoard.getBoard());
+    // logArray(_player === "my" ? ba_myBoard.getBoard() : ba_oppBoard.getBoard());
 }
 
 //function to reset all the boars

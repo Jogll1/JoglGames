@@ -15,9 +15,9 @@ async function aiRandomMove(_playerGrid) {
     let consecutiveHits = 0;
     let lastConsecutiveHits = 0;
 
-    for (let i = 0; i < plays; i++) {
-        let attackCoords = ranCoords;
+    let attackCoords = ranCoords;
 
+    for (let i = 0; i < plays; i++) {
         await sleep(1000);
 
         if(aiHitSquares.length > 0) {
@@ -26,38 +26,49 @@ async function aiRandomMove(_playerGrid) {
 
             const dirsToTry = [dir, [-dir[0], -dir[1]], [dir[1], dir[0]], [-dir[1], -dir[0]]];
 
-            //check if last attack was a miss, and apply consecutive hit logic
-            const lHS = aiHitSquares[0].split('-');
-            const reverseDir = [dirsToTry[0] * lastConsecutiveHits, dirsToTry[1] * lastConsecutiveHits];
-            const testCoords = [parseInt(lHS[0]) + reverseDir[0], parseInt(lHS[1]) + reverseDir[1]];
+            iLoop: for (let i = aiHitSquares.length - 1; i >= 0; i--) {
+                for (let j = 0; j < dirsToTry.length; j++) {
+                    // console.log(`check square: ${aiHitSquares[i]}`);
+                    const lastHitSquare = aiHitSquares[i].split('-');
+                    if(parseInt(lastHitSquare[0]) + dirsToTry[j][0] <= 9 && parseInt(lastHitSquare[0]) + dirsToTry[j][0] >= 0 && parseInt(lastHitSquare[1]) + dirsToTry[j][1] <= 9 && parseInt(lastHitSquare[1]) + dirsToTry[j][1] >= 0) {
+                        attackCoords = [parseInt(lastHitSquare[0]) + dirsToTry[j][0], parseInt(lastHitSquare[1]) + dirsToTry[j][1]];
+                        
+                        //#region attacking end of line once line finished
+                        // //if this attack is in lastHitSquares, keep going this direction
+                        // if(aiHitSquares.includes(`${attackCoords[0]}-${attackCoords[1]}`)) {
+                        //     let testCoords = attackCoords;
+                        //     kLoop: for (let k = 0; k < 5; k++) {
+                        //         const a = testCoords[0] + dirsToTry[j][0];
+                        //         const b = testCoords[1] + dirsToTry[j][1];
+                        //         if(a <= 9 && a <= 0 &&  b <= 9 && b >= 0) {
+                        //             testCoords = [a, b];
 
-            const statement1 = (consecutiveHits === 0 && lastConsecutiveHits > 1);
-            console.log(`ch: ${consecutiveHits}, lch: ${lastConsecutiveHits}`)
-            const statement2 = (testCoords[0] <= 9 && testCoords[0] >= 0 && testCoords[1] <= 9 && testCoords[1] >= 0);
-            const statement3 = (validateAttackCoord(testCoords));
+                        //             if(aiHitSquares.includes(`${testCoords[0]}-${testCoords[1]}`)) {
+                        //                 console.log("he");
+                        //                 continue kLoop;
+                        //             }
+                        //             else {
+                        //                 if(!aiAttackedSquares.includes(`${testCoords[0]}-${testCoords[1]}`)) {
+                        //                     console.log("he");
+                        //                     attackCoords = testCoords;
+                        //                 }
+                        //                 break kLoop;
+                        //             }
+                        //         }
+                        //         else {
+                        //             break kLoop;
+                        //         }
+                        //     }
+                        // }
+                        //#endregion
 
-            if(statement1 && statement2 && statement3) {
-                console.log("yup");
-                attackCoords = testCoords;
-            }
-            else {
-                outerLoop: for (let i = aiHitSquares.length - 1; i >= 0; i--) {
-                    for (let j = 0; j < dirsToTry.length; j++) {
-                        // console.log(`check square: ${aiHitSquares[i]}`);
-                        const lastHitSquare = aiHitSquares[i].split('-');
-                        if(parseInt(lastHitSquare[0]) + dirsToTry[j][0] <= 9 && parseInt(lastHitSquare[1]) + dirsToTry[j][1] >= 0) {
-                            attackCoords = [parseInt(lastHitSquare[0]) + dirsToTry[j][0], parseInt(lastHitSquare[1]) + dirsToTry[j][1]];
-        
-                            if (validateAttackCoord(attackCoords)) {
-                                LAST_DIR = dirsToTry[j];
-                                break outerLoop;
-                            }
-                            
-                            //if this attack is in lastHitSquares, keep going this direction
+                        if (validateAttackCoord(attackCoords)) {
+                            LAST_DIR = dirsToTry[j];
+                            break iLoop;
                         }
-
-                        attackCoords = ranCoords;
                     }
+
+                    attackCoords = ranCoords;
                 }
             }
         }
@@ -102,14 +113,16 @@ async function aiRandomMove(_playerGrid) {
 
             //update attack coords
             if(boatSunk.status) {
-                //reset attack if boat sunk and ai hit squares empty
-                if(aiHitSquares.length <= 0) attackCoords = getRanCoords();
-                
                 //remove squares sunk from aiHitSquares
                 for (let i = 0; i < boatSunk.boatCoords.length; i++) {
                     const coords = `${boatSunk.boatCoords[i][0]}-${boatSunk.boatCoords[i][1]}`;
                     aiHitSquares.pop(coords);
                 }
+
+                //reset attack if boat sunk and ai hit squares empty
+                // if(aiHitSquares.length <= 0) attackCoords = getRanCoords();
+                attackCoords = getRanCoords();
+                console.log(attackCoords);
             }
 
             consecutiveHits++;
