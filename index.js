@@ -128,7 +128,6 @@ io.on('connection', function(socket) {
 
     //#region Chess
     socket.on('chessSendMove', function(pieceToMoveId, tileToMoveToId, roomName) {
-        // const msg = `${playerPiece} played in column ${columnNo} in room ${roomName}`;
         //sends to all sockets in a room, excluding the sender
         socket.to(roomName).emit('chessMoveResponse', pieceToMoveId, tileToMoveToId);
         // console.log(`${pieceToMoveId} => ${tileToMoveToId} : from ${roomName}`);
@@ -138,6 +137,19 @@ io.on('connection', function(socket) {
     socket.on('chessSendRematch', function(roomName) {
         //sends to all sockets in a room, excluding the sender as sender has already reset
         socket.to(roomName).emit('chessRematchResponse');
+    });
+    //#endregion
+
+    //#region Battleships
+    socket.on('battleshipsSendMove', function(tileCoords, roomName) {
+        //sends to all sockets in a room, excluding the sender
+        socket.to(roomName).emit('battleshipsMoveResponse', tileCoords);
+    });
+
+    //receiving a call to rematch
+    socket.on('battleshipsSendRematch', function(roomName) {
+        //sends to all sockets in a room, excluding the sender as sender has already reset
+        socket.to(roomName).emit('battleshipsRematchResponse');
     });
     //#endregion
 });

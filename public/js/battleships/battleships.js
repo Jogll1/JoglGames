@@ -113,33 +113,13 @@ $(document).ready(function() {
         }
         else {
             //connect to socket - or at least attempt to
-            // connectToSocket(roomName, username);
+            connectToSocket(roomName, username);
         }
 
         //reset input fields
         $('#usernameInput').val('');
         $('#roomNameInput').val('');
     });
-
-    //board buttons
-    // $("#randomButton").click(function() {
-    //     if (!$(this).prop("disabled")) {
-    //         resetBoats();
-    //         placeBoats();
-    //     }
-    // });
-    
-    // $("#setButton").click(function() {
-    //     if (!$(this).prop("disabled")) {
-    //         //disable the random button
-    //         $("#randomButton").prop("disabled", true);
-    //         $("#randomButton").addClass("disabled");
-
-    //         //disable the set button
-    //         $("#setButton").prop("disabled", true);
-    //         $("#setButton").addClass("disabled");
-    //     }
-    // });
     
     //rematch menu
     $('#rematchButton').click(function() {
@@ -154,10 +134,10 @@ $(document).ready(function() {
             ba_isMyTurn.setState(true);
         }
         else {
-            //-----SOCKET-----
-            //if not playing robot, send rematch to the server
-            // socketSendChessRematch();
-            //----------------
+            // -----SOCKET-----
+            // if not playing robot, send rematch to the server
+            socketSendBattleshipsRematch();
+            // ----------------
         }
     });
 
@@ -173,6 +153,13 @@ $(document).ready(function() {
 
         if($(this).attr("id").includes("op") && !$(this).hasClass("checkedTile")) {
             playerAttack($(this));
+
+            if(!ba_isPlayingRobot.getState()) {
+                //-----SOCKET-----
+                //if not playing robot, send move to the server
+                socketSendBattleshipsMove($(this).attr("id").substring(2));
+                //----------------
+            }
         }
     });
 
@@ -259,6 +246,10 @@ function setUpGame(_isPlayingRobot, _playerName) {
         ba_gameStarted.setState(true);
         ba_isMyTurn.setState(true);
         ba_isPlayingRobot.setState(true);
+    }
+    else {
+        //set opponent name
+        $('#opponentNameText').text('...');
     }
 }
 
@@ -363,7 +354,7 @@ function placeBoats(_player, _placeOnBoard) {
         }
     }
 
-    logArray(_player === "my" ? ba_myBoard.getBoard() : ba_oppBoard.getBoard());
+    // logArray(_player === "my" ? ba_myBoard.getBoard() : ba_oppBoard.getBoard());
 }
 
 //function to reset all the boars
@@ -427,26 +418,26 @@ function playerAttack(_tile) {
     const coords = _tile.attr("id").substring(2).split('-');
 
     //attack logic
-    if(ba_isPlayingRobot.getState()) {
-        if(oppBoardCopy[coords[0]][coords[1]] === ' ') {
-            spawnMark(_tile, "missMark");
-            _tile.addClass("checkedTile");
-        }
-        else {
-            spawnMark(_tile, "hitMark");
-            _tile.addClass("checkedTile");
+    if(oppBoardCopy[coords[0]][coords[1]] === ' ') {
+        //miss
+        spawnMark(_tile, "missMark");
+        _tile.addClass("checkedTile");
+    }
+    else {
+        //hit
+        spawnMark(_tile, "hitMark");
+        _tile.addClass("checkedTile");
 
-            //update array to show segment has been hit
-            oppBoardCopy[coords[0]][coords[1]] = `${oppBoardCopy[coords[0]][coords[1]]}h`;
+        //update array to show segment has been hit
+        oppBoardCopy[coords[0]][coords[1]] = `${oppBoardCopy[coords[0]][coords[1]]}h`;
 
-            //update array
-            ba_oppBoard.updateBoard(oppBoardCopy);
+        //update array
+        ba_oppBoard.updateBoard(oppBoardCopy);
 
-            //check if boat sunk
-            isBoatSunk(ba_oppBoard.getBoard(), "op", oppBoardCopy[coords[0]][coords[1]][0]);
+        //check if boat sunk
+        isBoatSunk(ba_oppBoard.getBoard(), "op", oppBoardCopy[coords[0]][coords[1]][0]);
 
-            return true;
-        }
+        return true;
     }
 
     //alternate player
@@ -468,6 +459,12 @@ function playerAttack(_tile) {
     }
 
     return false;
+}
+
+//function to play opponent move
+function opponentAttack(_tileCoords) {
+    //_tileCoords in format a-b
+
 }
 
 //function to show when a boat has sunk

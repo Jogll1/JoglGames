@@ -145,9 +145,9 @@ function connectToSocket(roomName, username) {
 
 //function to send a move to the server
 //can only be called when c4_socket is set
-function socketSendConn4Move(columnNo, playerPiece) {
+function socketSendConn4Move(_columnNo, _playerPiece) {
     var socket = c4_socket.getState();
-    socket.emit('conn4SendMove', columnNo, playerPiece, c4_roomName.getState());
+    socket.emit('conn4SendMove', _columnNo, _playerPiece, c4_roomName.getState());
 }
 
 //function to call a rematch for both players

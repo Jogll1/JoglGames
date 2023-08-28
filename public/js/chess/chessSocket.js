@@ -30,24 +30,24 @@ var ch_roomName = (function () {
 })();
 //#endregion
 
-function connectToSocket(roomName, username) {
+function connectToSocket(_roomName, _username) {
     var socket = ch_socket.setState(io()); //possibly needs a url?
-    ch_roomName.setState(roomName); //store roomname locally
+    ch_roomName.setState(_roomName); //store roomname locally
 
     //check if room exists
-    socket.emit('checkRoom', roomName);
+    socket.emit('checkRoom', _roomName);
 
     //room check response
     socket.on('checkRoomResponse', function (roomExists) {
         if (roomExists) {
             //join room
             console.log('joining room');
-            socket.emit('joinRoom', roomName, username, 'Chess');
+            socket.emit('joinRoom', _roomName, _username, 'Chess');
         }
         else {
             //create room
             console.log("creating room");
-            socket.emit('createRoom', roomName, username, 'Chess');
+            socket.emit('createRoom', _roomName, _username, 'Chess');
         }
     });
 
@@ -61,7 +61,7 @@ function connectToSocket(roomName, username) {
             $('.onlinePlayMenu').hide();
 
             //setup chess game
-            setUpGame(false, username);
+            setUpGame(false, _username);
         }
         else {
             alert(`failed to join room: ${roomName}\nReason: ${errorReason}`);
@@ -154,9 +154,9 @@ function connectToSocket(roomName, username) {
 
 //function to send a move to the server
 //can only be called when ch_socket is set
-function socketSendChessMove(pieceToMoveId, tileToMoveToId) {
+function socketSendChessMove(_pieceToMoveId, _tileToMoveToId) {
     var socket = ch_socket.getState();
-    socket.emit('chessSendMove', pieceToMoveId, tileToMoveToId, ch_roomName.getState());
+    socket.emit('chessSendMove', _pieceToMoveId, _tileToMoveToId, ch_roomName.getState());
 }
 
 //function to call a rematch for both players
