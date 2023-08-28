@@ -89,6 +89,9 @@ function connectToSocket(_roomName, _username) {
             $('#opponentIcon').addClass('currentGo');
         }
 
+        //send my grid to opponent
+        sendGridToOpp();
+
         //start the game against the other player
         ba_gameStarted.setState(true);
         ba_isMyTurn.setState(myData.isHost);
@@ -125,9 +128,10 @@ function connectToSocket(_roomName, _username) {
     });
 
     //recieving a move that was sent to the server
-    socket.on('battleshipsMoveResponse', function(tileCoords) {
-        //play attack on our board
-        opponentAttack(tileCoords);
+    socket.on('battleshipsMoveResponse', function(tileCoords, endGo) {
+        //when we recieve an attack
+        //simulate opponent's attack on our board
+        opponentAttack(tileCoords, endGo);
     });
 
     //recieving a remtach that was sent by the other player to the server
@@ -140,13 +144,24 @@ function connectToSocket(_roomName, _username) {
         //reset the board
         resetGame();
     });
+
+    //recieving grid from opponent
+    socket.on('battleshipsSendGridResponse', function(oppGrid) {
+        ba_oppBoard.updateBoard(oppGrid);
+    });
+}
+
+//function get opponent's grid
+function sendGridToOpp() {
+    var socket = ba_socket.getState();
+    socket.emit('battleshipsSendGrid', ba_myBoard.getBoard(), ba_roomName.getState());
 }
 
 //function to send a move to the server
 //can only be called when ba_socket is set
-function socketSendBattleshipsMove(_tileCoords) {
+function socketSendBattleshipsMove(_tileCoords, _endGo) {
     var socket = ba_socket.getState();
-    socket.emit('battleshipsSendMove', _tileCoords, ba_roomName.getState());
+    socket.emit('battleshipsSendMove', _tileCoords, _endGo, ba_roomName.getState());
 }
 
 //function to call a rematch for both players

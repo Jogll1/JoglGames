@@ -152,12 +152,12 @@ $(document).ready(function() {
         if(!ba_isMyTurn.getState()) return;
 
         if($(this).attr("id").includes("op") && !$(this).hasClass("checkedTile")) {
-            playerAttack($(this));
+            const playerAtk = playerAttack($(this));
 
             if(!ba_isPlayingRobot.getState()) {
                 //-----SOCKET-----
                 //if not playing robot, send move to the server
-                socketSendBattleshipsMove($(this).attr("id").substring(2));
+                socketSendBattleshipsMove($(this).attr("id").substring(2), !playerAtk);
                 //----------------
             }
         }
@@ -462,9 +462,44 @@ function playerAttack(_tile) {
 }
 
 //function to play opponent move
-function opponentAttack(_tileCoords) {
+function opponentAttack(_tileCoords, _endGo) {
     //_tileCoords in format a-b
+    const attackCoords = _tileCoords.split('-');
+    const attackTile = $(`#my${attackCoords[0]}-${attackCoords[1]}`);
+    const attackGrid = copy2DArray(ba_myBoard.getBoard());
 
+    if(attackGrid[attackCoords[0]][attackCoords[1]] !== ' ') {
+        //if hit
+        spawnMark(attackTile, "hitMark");
+
+        //update array to show segment has been hit
+        attackGrid[attackCoords[0]][attackCoords[1]] = `${attackGrid[attackCoords[0]][attackCoords[1]]}h`;
+
+        //update array
+        ba_myBoard.updateBoard(attackGrid);
+
+        //check if boat sunk
+        isBoatSunk(ba_myBoard.getBoard(), "my", attackGrid[attackCoords[0]][attackCoords[1]][0]);
+    }
+    else {
+        //if miss
+        spawnMark(attackTile, "missMark");
+    }
+
+    if(_endGo) {
+        //alternate player
+        ba_isMyTurn.setState(!ba_isMyTurn.getState());
+
+        //alternate who has the border around their icon
+        if($('#playerIcon').hasClass('currentGo')) {
+            $('#playerIcon').removeClass('currentGo');
+            $('#opponentIcon').addClass('currentGo');
+        }
+        else if ($('#opponentIcon').hasClass('currentGo')) {
+            $('#opponentIcon').removeClass('currentGo');
+            $('#playerIcon').addClass('currentGo');
+        }
+    }
 }
 
 //function to show when a boat has sunk

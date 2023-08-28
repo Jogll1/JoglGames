@@ -141,15 +141,21 @@ io.on('connection', function(socket) {
     //#endregion
 
     //#region Battleships
-    socket.on('battleshipsSendMove', function(tileCoords, roomName) {
+    socket.on('battleshipsSendMove', function(tileCoords, endGo, roomName) {
         //sends to all sockets in a room, excluding the sender
-        socket.to(roomName).emit('battleshipsMoveResponse', tileCoords);
+        socket.to(roomName).emit('battleshipsMoveResponse', tileCoords, endGo);
     });
 
     //receiving a call to rematch
     socket.on('battleshipsSendRematch', function(roomName) {
         //sends to all sockets in a room, excluding the sender as sender has already reset
         socket.to(roomName).emit('battleshipsRematchResponse');
+    });
+
+    //getting grid of opponent
+    socket.on('battleshipsSendGrid', function(oppGrid, roomName) {
+        //sends to all sockets in a room, excluding the sender as sender has already reset
+        socket.to(roomName).emit('battleshipsSendGridResponse', oppGrid);
     });
     //#endregion
 });
