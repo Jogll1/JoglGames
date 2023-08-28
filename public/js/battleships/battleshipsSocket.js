@@ -90,7 +90,7 @@ function connectToSocket(_roomName, _username) {
         }
 
         //send my grid to opponent
-        sendGridToOpp();
+        sendGridToOpponent();
 
         //start the game against the other player
         ba_gameStarted.setState(true);
@@ -152,7 +152,7 @@ function connectToSocket(_roomName, _username) {
 }
 
 //function get opponent's grid
-function sendGridToOpp() {
+function sendGridToOpponent() {
     var socket = ba_socket.getState();
     socket.emit('battleshipsSendGrid', ba_myBoard.getBoard(), ba_roomName.getState());
 }

@@ -625,5 +625,8 @@ function resetGame() {
         else {
             $('#opponentIcon').addClass('currentGo');
         }
+
+        //send grid to opponent
+        sendGridToOpponent();
     }  
 }
