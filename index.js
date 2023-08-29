@@ -161,7 +161,12 @@ io.on('connection', function(socket) {
 });
 //#endregion
 
+let port = process.env.PORT;
+if (port == null || port == "") {
+    port = 3000;
+}
 //open port 3000
-server.listen(3000, () => {
+server.listen(port, () => {
+    console.log(port);
     console.log('App available on http://localhost:3000');
 });
