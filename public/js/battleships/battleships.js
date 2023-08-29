@@ -36,7 +36,7 @@ var ba_oppBoard = (function() {
 
     return {
         updateBoard : function(array) {
-            logArray(board);
+            // logArray(board);
             return board = array;
         },
 
@@ -127,9 +127,6 @@ $(document).ready(function() {
         $('.menuBackground').hide();
         $('.rematchMenu').hide();
 
-        //reset the board
-        resetGame();
-
         if(ba_isPlayingRobot.getState()) {
             ba_isMyTurn.setState(true);
         }
@@ -139,6 +136,9 @@ $(document).ready(function() {
             socketSendBattleshipsRematch();
             // ----------------
         }
+
+        //reset the board
+        resetGame();
     });
 
     //home button
