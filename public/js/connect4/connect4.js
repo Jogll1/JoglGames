@@ -317,7 +317,7 @@ function setGame() {
 
     setBoardHovers();
     c4_board.updateBoard(board);
-    logArray(c4_board.getBoard());
+    // logArray(c4_board.getBoard());
 }
 
 //function to create the column hover divs over the board

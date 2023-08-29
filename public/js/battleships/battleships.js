@@ -36,7 +36,7 @@ var ba_oppBoard = (function() {
 
     return {
         updateBoard : function(array) {
-            // logArray(board);
+            logArray(board);
             return board = array;
         },
 
