@@ -640,8 +640,6 @@ function resetGame() {
     //set game started
     c4_gameStarted.setState(true);
 
-    //set blue circle
-    //remove blue circle from icons
     if(c4_isPlayingRobot.getState()) 
     {
         //if you're playing robot, set player first

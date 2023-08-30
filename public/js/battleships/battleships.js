@@ -608,8 +608,6 @@ function resetGame() {
     //reset ai data
     resetAIData();
 
-    //set blue circle
-    //remove blue circle from icons
     if(ba_isPlayingRobot.getState()) 
     {
         //if you're playing robot, set player first

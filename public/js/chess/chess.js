@@ -1101,8 +1101,6 @@ function resetGame() {
     //set game started
     ch_gameStarted.setState(true);
 
-    //set blue circle
-    //remove blue circle from icons
     if(ch_isPlayingRobot.getState()) 
     {
         //if you're playing robot, set player first
@@ -1114,7 +1112,18 @@ function resetGame() {
             ch_isMyTurn.setState(true);
         }
     } 
-    else { 
+    else {
+        //alternate colour
+        ch_myColour.set(ch_myColour.get() === "White" ? "Black" : "White");
+
+        //reinorientate board
+        $('#board').removeClass('rotateBlack');
+        $('.pieceContainer').removeClass('rotatePiece');
+        if(ch_myColour.get() === "Black") {
+            $('#board').addClass('rotateBlack');
+            $('.pieceContainer').addClass('rotatePiece');
+        }
+
         //if you're playing online, set whites turn
         if(ch_myColour.get() == "White") {
             ch_isMyTurn.setState(true);
