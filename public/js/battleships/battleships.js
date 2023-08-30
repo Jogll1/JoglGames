@@ -617,7 +617,10 @@ function resetGame() {
 
         placeBoats("op", false);
     } 
-    else { 
+    else {
+        //alternate player go
+        ba_isMyTurn.swapState();
+
         //if you're playing online, alternate blue circle
         if(ba_isMyTurn.getState()) {
             $('#playerIcon').addClass('currentGo');
