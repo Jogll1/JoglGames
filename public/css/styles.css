@@ -56,7 +56,7 @@ img.noHighlightOrDrag {
 }
 /*#endregion*/
 
-/*#region Game option icons */
+/*#region Header option icons */
 /* home container */
 .homeIconContainer {
     position: absolute;
@@ -555,6 +555,19 @@ transform: translate(0, -11px) rotate(45deg);
 #opponentScoreText {
     /* transform: translate(-150%, 100%); */
     transform: translate(-77.5%, 100%);
+}
+
+.roomNameText {
+    display: none;
+    text-align: left;
+
+    color: white;
+    width: 250px;
+
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transform: translate(5%, -50%);
 }
 /*#endregion*/
 /*#endregion*/

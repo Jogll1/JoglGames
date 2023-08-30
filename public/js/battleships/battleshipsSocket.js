@@ -62,6 +62,10 @@ function connectToSocket(_roomName, _username) {
 
             //setup chess game
             setUpGame(false, _username);
+
+            //set room name next to show
+            $(".roomNameText").show();
+            $(".roomNameText").html(`${ba_roomName.getState()}`);
         }
         else {
             alert(`failed to join room: ${roomName}\nReason: ${errorReason}`);

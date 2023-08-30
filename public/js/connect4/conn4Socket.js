@@ -62,6 +62,10 @@ function connectToSocket(roomName, username) {
 
             //setup connect 4 game
             setUpGame(false, username);
+
+            //set room name next to show
+            $(".roomNameText").show();
+            $(".roomNameText").html(`${c4_roomName.getState()}`);
         }
         else {
             alert(`failed to join room: ${roomName}\nReason: ${errorReason}`);
