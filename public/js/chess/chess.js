@@ -569,6 +569,9 @@ function createPiece(board, isWhite, type, notation, i, row, col) {
     board[row][col] = `${notation}${i}`;
     ch_board.updateBoard(board);
 
+    //rotate piece if black
+    if(ch_myColour.get() === "Black") pieceContainer.addClass('rotatePiece');
+
     initDragDrop();
 }
 

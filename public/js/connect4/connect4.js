@@ -116,7 +116,7 @@ $(document).ready(function() {
         $('.menuBackground').hide();
         $('.robotDifficultyMenu').hide();
 
-        setUpGame(true, 'Player1', 4);
+        setUpGame(true, 'Player1', 3);
     });
 
     $('#mediumButton').click(function() {
