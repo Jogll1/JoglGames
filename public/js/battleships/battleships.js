@@ -237,7 +237,7 @@ function setUpGame(_isPlayingRobot, _playerName) {
         $('#opponentNameText').text('Robot');
 
         //change icon
-        $('#oppImg').attr('src', '/images/RobotIcon.png');
+        $('#oppImg').attr('src', '/images/webp/RobotIcon.webp');
 
         //set random ba_oppBoard
         placeBoats("op", false);
@@ -403,8 +403,7 @@ function spawnMark(_tile, _type) {
     mark.appendTo(_tile);
 
     if(_type === "sunkMark") {
-        mark.attr("src", "/images/SkullIcon.png");
-        mark.attr("alt", "Description of the image");
+        mark.attr("src", "/images/webp/SkullIcon.webp");
     }
     
     spawnSplash(_tile);

@@ -591,7 +591,7 @@ function setUpGame(_isPlayingRobot, _playerName) {
         $('#opponentNameText').text('Robot');
 
         //change icon
-        $('#oppImg').attr('src', '/images/RobotIcon.png');
+        $('#oppImg').attr('src', '/images/webp/RobotIcon.webp');
 
         //start game against robot
         ch_gameStarted.setState(true);
