@@ -109,7 +109,7 @@ img.noHighlightOrDrag {
     /* height: 674px; */
     height: calc(100vh - 65px);
     position: relative;
-    gap: 180px;
+    gap: 11.72vw;
     background-color: #202020;
     /* border: 5px solid green; */
 }
@@ -119,8 +119,10 @@ img.noHighlightOrDrag {
     border-radius: 40px;
     border: 15px solid #333333;
 
-    width: 250px;
-    height: 250px;
+    /* width: 250px;
+    height: 250px; */
+    width: 16.28vw;
+    height: 16.28vw;
 
     color: white;
     font-size: 20px;
@@ -135,11 +137,8 @@ img.noHighlightOrDrag {
 
 .gameContainer:hover {
     margin: -25px;
-    /* padding: 170px 190px; */
-    width: 300px;
-    height: 300px;
-    /* width: 115%;
-    height: 115%; */
+    width: 19.536vw;
+    height: 19.536vw;
     font-size: 23px;
 }
 

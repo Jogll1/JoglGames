@@ -4,6 +4,6 @@ function toggleMenu(x)
 }
 
 $(document).ready(function() {
-    console.log($(".topnav").outerHeight(true));
-    console.log(window.screen.height);
+    // console.log($(".topnav").outerHeight(true));
+    console.log(window.screen.width);
 });
