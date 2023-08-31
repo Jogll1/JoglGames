@@ -106,10 +106,11 @@ img.noHighlightOrDrag {
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    height: 674px;
+    /* height: 674px; */
+    height: calc(100vh - 65px);
     position: relative;
     gap: 180px;
-    /* background-color: #202020; */
+    background-color: #202020;
     /* border: 5px solid green; */
 }
 
@@ -166,11 +167,10 @@ img.noHighlightOrDrag {
 .mIconContainer {
     /* display: inline-block; */
     cursor: pointer;
-    position: absolute;
+    /* position: absolute; */
     padding: 14px;
     text-align: center;
     top: 0px;
-    left: 5px;
     /* border: 5px solid green; */
     width: 30px;
     height: 30px;
