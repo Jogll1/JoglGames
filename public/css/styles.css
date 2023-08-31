@@ -121,8 +121,8 @@ img.noHighlightOrDrag {
 
     /* width: 250px;
     height: 250px; */
-    width: 16vw;
-    height: 16vw;
+    width: 15vw;
+    height: 15vw;
 
     color: white;
     font-size: 20px;
@@ -136,9 +136,9 @@ img.noHighlightOrDrag {
 }
 
 .gameContainer:hover {
-    margin: -25px;
-    width: 19.2vw;
-    height: 19.2vw;
+    margin: -1.5vw;
+    width: 18vw;
+    height: 18vw;
     font-size: 23px;
 }
 
