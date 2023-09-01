@@ -160,22 +160,6 @@ img.noHighlightOrDrag {
     position: relative;
     transform: translate(0%, -115%);
 }
-
-/* change for mobile */
-@media (max-width: 768px) {
-    .flexContainer {
-        flex-direction: column;
-        height: 100%;
-        padding: 50px 0;
-    }
-
-    .gameContainer {
-        width: 200px;
-        height: 200px;
-        border-radius: 45px;
-        border: 15px solid #333333;
-    }
-}
 /*#endregion */
 
 /*#region Animated menu icon */
@@ -214,8 +198,8 @@ transform: translate(0, -11px) rotate(45deg);
 /*#region Play options menu */
 /* add a transparent background behind menu */
 .menuBackground {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
 
     position: absolute;
 
@@ -585,4 +569,30 @@ transform: translate(0, -11px) rotate(45deg);
     transform: translate(5%, -50%);
 }
 /*#endregion*/
+/*#endregion*/
+
+/*#region Mobile changes */
+/* change for mobile */
+@media (max-width: 768px) {
+    .flexContainer {
+        flex-direction: column;
+        height: 100%;
+        padding: 50px 0;
+        gap: 15vw;
+    }
+
+    .gameContainer {
+        width: 165px;
+        height: 165px;
+        border-radius: 45px;
+        border: 14px solid #333333;
+    }
+
+    .gameContainer:hover {
+        width: 175px;
+        height: 175px;
+        border-radius: 45px;
+        border: 15px solid #333333;
+    }
+}
 /*#endregion*/

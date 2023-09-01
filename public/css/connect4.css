@@ -151,3 +151,12 @@
     border: 7.5px solid white;
 }
 /*#endregion*/
+
+/*#region Mobile changes */
+/* @media (max-width: 768px) {
+    #board {
+        width: 41.93vw;
+        height: 35.9vw;
+    }
+} */
+/*#endregion*/
