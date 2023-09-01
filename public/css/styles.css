@@ -165,6 +165,7 @@ img.noHighlightOrDrag {
 @media (max-width: 768px) {
     .flexContainer {
         flex-direction: column;
+        height: 100%;
     }
 
     .gameContainer {
