@@ -162,7 +162,7 @@ img.noHighlightOrDrag {
 }
 
 /* when height is smaller than width (horizontal) */
-@media (max-height: 800px) {
+@media (max-height: 900px) {
     .flexContainer {
         flex-direction: row;
     }
@@ -176,7 +176,7 @@ img.noHighlightOrDrag {
 }
 
 /* when height is greater than width (vertical) */
-@media (min-height: 800px) {
+@media (min-height: 900px) {
     .flexContainer {
         flex-direction: column;
     }
