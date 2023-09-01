@@ -116,8 +116,8 @@ img.noHighlightOrDrag {
 
 .gameContainer {
     background-color: #333333;
-    border-radius: 40px;
-    border: 15px solid #333333;
+    border-radius: 3vw;
+    border: 1vw solid #333333;
 
     /* width: 250px;
     height: 250px; */
