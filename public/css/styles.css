@@ -161,22 +161,8 @@ img.noHighlightOrDrag {
     transform: translate(0%, -115%);
 }
 
-/* when height is smaller than width (horizontal) */
-@media (max-height: 900px) {
-    .flexContainer {
-        flex-direction: row;
-    }
-
-    .gameContainer {
-        width: 15vw;
-        height: 15vw;
-        border-radius: 3vw;
-        border: 1vw solid #333333;
-    }
-}
-
-/* when height is greater than width (vertical) */
-@media (min-height: 900px) {
+/* change for mobile */
+@media (max-width: 768px) {
     .flexContainer {
         flex-direction: column;
     }
