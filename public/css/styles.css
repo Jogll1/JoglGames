@@ -160,6 +160,34 @@ img.noHighlightOrDrag {
     position: relative;
     transform: translate(0%, -115%);
 }
+
+/* when height is smaller than width (horizontal) */
+@media (max-height: 800px) {
+    .flexContainer {
+        flex-direction: row;
+    }
+
+    .gameContainer {
+        width: 15vw;
+        height: 15vw;
+        border-radius: 3vw;
+        border: 1vw solid #333333;
+    }
+}
+
+/* when height is greater than width (vertical) */
+@media (min-height: 800px) {
+    .flexContainer {
+        flex-direction: column;
+    }
+
+    .gameContainer {
+        width: 200px;
+        height: 200px;
+        border-radius: 45px;
+        border: 15px solid #333333;
+    }
+}
 /*#endregion */
 
 /*#region Animated menu icon */
