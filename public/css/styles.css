@@ -166,6 +166,7 @@ img.noHighlightOrDrag {
     .flexContainer {
         flex-direction: column;
         height: 100%;
+        padding: 50px 0;
     }
 
     .gameContainer {
