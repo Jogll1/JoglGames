@@ -2,6 +2,13 @@
     width: 99vw;
     height: 99vh;
 
+    /* flexbox */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 175px;
+
     /* centre div */
     position: absolute;
     top: 50%;
@@ -40,18 +47,7 @@
     width: 450px; 
     height: 450px;
 
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    background-color:#1a1a1a; 
-}
-
-#myBoardContainer{
-    transform: translate(-120%, -50%); 
-}
-
-#oppBoardContainer{
-    transform: translate(20%, -50%);
+    background-color:#1a1a1a;
 }
 
 .board {
