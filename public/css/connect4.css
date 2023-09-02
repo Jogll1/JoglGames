@@ -116,10 +116,6 @@
     box-sizing: border-box; */
 }
 
-.sqTileHovered {
-    background-color: #444444;
-}
-
 .tile{
     position: relative;
     height: 75px;
@@ -170,6 +166,10 @@
 
     .boardColumnHoverLeft, .boardColumnHoverRight, .boardColumnHover {
         display: none;
+    }
+
+    .winningTile {
+        border: 5px solid white;
     }
 }
 /*#endregion*/
