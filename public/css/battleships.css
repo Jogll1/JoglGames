@@ -219,6 +219,8 @@
         width: 60vw;
         height: 60vw;
         margin: 10% 0;
+
+        transform: translateY(10%);
     }
 
     /*#region Tile */
