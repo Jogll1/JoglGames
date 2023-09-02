@@ -106,15 +106,14 @@
 /*#region Tiles */
 .squareTile { 
     position: relative;
-    /* height: 65px;
-    width: 65px; */
     height: 90px;
     width: 90px;
 
     margin: 0px;
     /* background-color: #ffffff; */
     border: none;
-    /* border: 1px solid white; */
+    /* border: 1px solid white;
+    box-sizing: border-box; */
 }
 
 .sqTileHovered {
@@ -153,10 +152,24 @@
 /*#endregion*/
 
 /*#region Mobile changes */
-/* @media (max-width: 768px) {
-    #board {
-        width: 41.93vw;
-        height: 35.9vw;
+@media (max-width: 768px) {
+    #board, #boardColumnHoversParent {
+        width: calc(77vw + 12px);
+        height: calc(66vw + 10px);
     }
-} */
+
+    .squareTile {
+        width: 11vw;
+        height: 11vw;
+    }
+
+    .tile {
+        width: 8.33vw;
+        height: 8.33vw;
+    }
+
+    .boardColumnHoverLeft, .boardColumnHoverRight, .boardColumnHover {
+        display: none;
+    }
+}
 /*#endregion*/

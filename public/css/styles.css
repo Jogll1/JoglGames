@@ -623,6 +623,12 @@ transform: translate(0, -11px) rotate(45deg);
         width: 70vw;
         height: 38vw;
     }
+
+    /*#region Player icons and score */
+    .nameText {
+        display: none;
+    }
+    /*#endregion*/
     /*#endregion*/
 }
 /*#endregion*/
