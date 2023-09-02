@@ -568,8 +568,6 @@ transform: translate(0, -11px) rotate(45deg);
 /*#region Mobile changes */
 /* change for mobile */
 @media (max-width: 768px) {
-    html, body {margin: 0; height: 100%; overflow: hidden}
-
     /*#region flexContainer */
     .flexContainer {
         flex-direction: column;

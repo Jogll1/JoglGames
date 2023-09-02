@@ -33,11 +33,6 @@
     /* rotate board so black is at the bottom */
     transform: rotate(180deg);
 }
-
-.rotatePiece {
-    /* rotate pieces so they are right way up */
-    transform: rotate(180deg);
-}
 /*#endregion*/
 
 /*#region Tiles */
@@ -129,5 +124,45 @@
     transform: translate(-50%, -50%);
 
     z-index: 500;
+}
+
+.rotatePiece {
+    /* rotate pieces so they are right way up */
+    transform: rotate(180deg);
+}
+/*#endregion*/
+
+/*#region Mobile changes */
+@media (max-width: 768px) {
+    /* disable scroll */
+    html, body {margin: 0; height: 100%; overflow: hidden}
+
+    #board {
+        width: 80vw;
+        height: 80vw;
+    }
+
+    .squareTile {
+        width: 10vw;
+        height: 10vw;
+    }
+
+    .lightSelected {
+        border: 3px white solid;
+    }
+    
+    .darkSelected {
+        border: 3px white solid;
+    }
+
+    .validTile {
+        height: 2.7vw;
+        width: 2.7vw;
+    }
+
+    .validTakeTile {
+        height: 6vw;
+        width: 6vw;
+    }
 }
 /*#endregion*/

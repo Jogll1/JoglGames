@@ -149,6 +149,9 @@
 
 /*#region Mobile changes */
 @media (max-width: 768px) {
+    /* disable scroll */
+    html, body {margin: 0; height: 100%; overflow: hidden}
+
     #board, #boardColumnHoversParent {
         width: calc(77vw + 12px);
         height: calc(66vw + 10px);
