@@ -566,7 +566,6 @@ transform: translate(0, -11px) rotate(45deg);
 /*#endregion*/
 
 /*#region Mobile changes */
-/* change for mobile */
 @media (max-width: 768px) {
     /*#region flexContainer */
     .flexContainer {
