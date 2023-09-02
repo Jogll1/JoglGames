@@ -212,6 +212,7 @@
 @media (max-width: 768px) {
     #mainContainer {
         flex-direction: column;
+        padding: 50px 0;
         gap: 120px
     }
 
@@ -241,10 +242,5 @@
         width: 1.5vw;
         height: 1.5vw;
     }
-
-    /* .splashEffect {
-        width: 3vw;
-        height: 3vw;
-    } */
     /*#endregion*/
 }
