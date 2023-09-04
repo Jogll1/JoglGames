@@ -329,10 +329,51 @@ function placeRandomBoat(_player, _length, _i, _colour, _placeOnBoard) {
 //check for valid boat placement
 function isValidPlacement(_gridArray, _vertOrHor, _length, _ranX, _ranY) {
     for (let i = 0; i < _length; i++) {
+        console.log(_length);
         if(_vertOrHor === 0) {
+            if(i === 0) {
+                if(_ranX - 1 >= 0) {
+                    if(_gridArray[_ranX - 1][_ranY] !== ' ') return false;
+                }
+            }
+            else if(i === _length - 1) {
+                if(_ranX + i + 1 <= 9) {
+                    if(_gridArray[_ranX + i + 1][_ranY] !== ' ') return false;
+                }
+            }
+            else {
+                if(_ranY + 1 <= 9) {
+                    if(_gridArray[_ranX + i][_ranY + 1] !== ' ') return false;
+                }
+
+                if(_ranY - 1 >= 0) {
+                    if(_gridArray[_ranX + i][_ranY - 1] !== ' ') return false;
+                }
+            }
+
             if(_gridArray[_ranX + i][_ranY] !== ' ') return false;
         }
         else {
+            if(i === 0) {
+                if(_ranY + 1 <= 9) {
+                    if(_gridArray[_ranX][_ranY + 1] !== ' ') return false;
+                }
+            }
+            else if(i === _length - 1) {
+                if(_ranY - i - 1 >= 0) {
+                    if(_gridArray[_ranX][_ranY - i - 1] !== ' ') return false;
+                }
+            }
+            else {
+                if(_ranX + 1 <= 9) {
+                    if(_gridArray[_ranX + 1][_ranY - i] !== ' ') return false;
+                }
+
+                if(_ranX - 1 >= 0) {
+                    if(_gridArray[_ranX - 1][_ranY - i] !== ' ') return false;
+                }
+            }
+
             if(_gridArray[_ranX][_ranY - i] !== ' ') return false;
         }
     }
