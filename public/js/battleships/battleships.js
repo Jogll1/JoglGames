@@ -329,84 +329,35 @@ function placeRandomBoat(_player, _length, _i, _colour, _placeOnBoard) {
 //check for valid boat placement
 function isValidPlacement(_gridArray, _vertOrHor, _length, _ranX, _ranY) {
     for (let i = 0; i < _length; i++) {
-        console.log(_length);
-        if(_vertOrHor === 0) {
-            if(i === 0) {
-                if(_ranX - 1 >= 0) {
-                    if(_gridArray[_ranX - 1][_ranY] !== ' ') return false;
-
-                    if(_ranY + 1 <= 9) {
-                        if(_gridArray[_ranX - 1][_ranY + 1] !== ' ') return false;
-                    }
-
-                    if(_ranY - 1 >= 0) {
-                        if(_gridArray[_ranX - 1][_ranY - 1] !== ' ') return false;
-                    }
-                }
-            }
-            else if(i === _length - 1) {
-                if(_ranX + i + 1 <= 9) {
-                    if(_gridArray[_ranX + i + 1][_ranY] !== ' ') return false;
-                    
-                    if(_ranY + 1 <= 9) {
-                        if(_gridArray[_ranX + i + 1][_ranY + 1] !== ' ') return false;
-                    }
-
-                    if(_ranY - 1 >= 0) {
-                        if(_gridArray[_ranX + i + 1][_ranY - 1] !== ' ') return false;
-                    }
-                }
-            }
-            else {
-                if(_ranY + 1 <= 9) {
-                    if(_gridArray[_ranX + i][_ranY + 1] !== ' ') return false;
-                }
-
-                if(_ranY - 1 >= 0) {
-                    if(_gridArray[_ranX + i][_ranY - 1] !== ' ') return false;
-                }
-            }
-
-            if(_gridArray[_ranX + i][_ranY] !== ' ') return false;
+        const x = _vertOrHor === 0 ? _ranX + i : _ranX;
+        const y = _vertOrHor === 0 ? _ranY : _ranY - i;
+    
+        if (x < 0 || x > 9 || y < 0 || y > 9 || _gridArray[x][y] !== ' ') {
+            return false;
         }
-        else {
-            if(i === 0) {
-                if(_ranY + 1 <= 9) {
-                    if(_gridArray[_ranX][_ranY + 1] !== ' ') return false;
-
-                    if(_ranX + 1 <= 9) {
-                        if(_gridArray[_ranX + 1][_ranY + 1] !== ' ') return false;
-                    }
     
-                    if(_ranX - 1 >= 0) {
-                        if(_gridArray[_ranX - 1][_ranY + 1] !== ' ') return false;
-                    }
-                }
+        if (_vertOrHor === 0) {
+            if (i === 0) {
+                if (y + 1 <= 9 && _gridArray[x - 1][y + 1] !== ' ') return false;
+                if (y - 1 >= 0 && _gridArray[x - 1][y - 1] !== ' ') return false;
+            } else if (i === _length - 1) {
+                if (y + 1 <= 9 && _gridArray[x + 1][y + 1] !== ' ') return false;
+                if (y - 1 >= 0 && _gridArray[x + 1][y - 1] !== ' ') return false;
             }
-            else if(i === _length - 1) {
-                if(_ranY - i - 1 >= 0) {
-                    if(_gridArray[_ranX][_ranY - i - 1] !== ' ') return false;
-
-                    if(_ranX + 1 <= 9) {
-                        if(_gridArray[_ranX + 1][_ranY - i - 1] !== ' ') return false;
-                    }
     
-                    if(_ranX - 1 >= 0) {
-                        if(_gridArray[_ranX - 1][_ranY - i - 1] !== ' ') return false;
-                    }
-                }
+            if (y + 1 <= 9 && _gridArray[x][y + 1] !== ' ') return false;
+            if (y - 1 >= 0 && _gridArray[x][y - 1] !== ' ') return false;
+        } else {
+            if (i === 0) {
+                if (x + 1 <= 9 && _gridArray[x + 1][y + 1] !== ' ') return false;
+                if (x - 1 >= 0 && _gridArray[x - 1][y + 1] !== ' ') return false;
+            } else if (i === _length - 1) {
+                if (x + 1 <= 9 && _gridArray[x + 1][y - 1] !== ' ') return false;
+                if (x - 1 >= 0 && _gridArray[x - 1][y - 1] !== ' ') return false;
             }
-            else {
-                if(_ranX + 1 <= 9) {
-                    if(_gridArray[_ranX + 1][_ranY - i] !== ' ') return false;
-                }
-
-                if(_ranX - 1 >= 0) {
-                    if(_gridArray[_ranX - 1][_ranY - i] !== ' ') return false;
-                }
-            }
-
-            if(_gridArray[_ranX][_ranY - i] !== ' ') return false;
+    
+            if (x + 1 <= 9 && _gridArray[x + 1][y] !== ' ') return false;
+            if (x - 1 >= 0 && _gridArray[x - 1][y] !== ' ') return false;
         }
     }
 
