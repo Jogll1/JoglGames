@@ -2336,9 +2336,10 @@ const EXACT = 0;
 const UPPERBOUND = 1; //alpha
 const LOWERBOUND = 2; //beta
 
+// const ch_TT = new Array(TABLE_SIZE);
 const ch_TT = [];
 
-let USING_TT = false;
+let USING_TT = true;
 
 //function to add to the tt
 function addToTT(_hash, _data){
@@ -2373,7 +2374,7 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
     let bestMove = {};
 
     //initial hash
-    CURRENT_HASH = hashBoard(_chess);
+    if(USING_TT) CURRENT_HASH = hashBoard(_chess);
 
     for (let i = 0; i < moves.length; i++) {
         const move = moves[i];
@@ -2381,22 +2382,8 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
         //perform move
         _chess.move(move.san);
 
-        //#region transposition table
         //update hash
-        CURRENT_HASH = updateHash(CURRENT_HASH, move); 
-        
-        //check if hash is in TT
-        if(USING_TT && hashIn(CURRENT_HASH)) {
-            //return value
-            // const cachedEntry = getData(CURRENT_HASH);
-            // if (cachedEntry.depth >= _depth) {
-            //     console.log(`already checked ${CURRENT_HASH}, ${move.san}`);
-            //     _chess.undo();
-            //     //return the value already defined
-            //     return cachedEntry.move;
-            // }
-        }
-        //#endregion
+        if(USING_TT) CURRENT_HASH = updateHash(CURRENT_HASH, move); 
 
         //start minimax search
         const eval = minimax2(_chess, _colourToMove, _depth - 1, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, !_maximisingPlayer);
@@ -2423,8 +2410,28 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
 }
 
 function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlayer) {
-    // if(_depth === 0) return -evaluateBoard(_chess.board(), _colourToMove);
-    if(_depth === 0) return -evaluateBoardSimple(_chess.board());
+    if(_depth === 0) {
+        return -evaluateBoardSimple(_chess.board());
+    }
+    else if(USING_TT && hashIn(CURRENT_HASH)) {
+        //#region transposition table
+        const ttData = getData(CURRENT_HASH);
+
+        if (ttData && ttData.depth >= _depth) {
+            if (ttData.flag === EXACT) {
+                return ttData.value;
+            } else if (ttData.flag === LOWERBOUND && ttData.value > _alpha) {
+                _alpha = ttData.value;
+            } else if (ttData.flag === UPPERBOUND && ttData.value < _beta) {
+                _beta = ttData.value;
+            }
+
+            if (_alpha >= _beta) {
+                return ttData.value;
+            }
+        }
+        //#endregion
+    }
 
     let moves = _chess.moves({ verbose: true });
     moves = orderMoves(_chess, moves);
@@ -2436,29 +2443,24 @@ function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlaye
 
         //#region transposition table
         //update hash
-        CURRENT_HASH = updateHash(CURRENT_HASH, moves[i]); 
-        
-        //check if hash is in TT
-        if(USING_TT && hashIn(CURRENT_HASH)) {
-            //return value
-            // const cachedEntry = getData(CURRENT_HASH);
-            // if (cachedEntry.depth >= _depth) {
-            //     if (cachedEntry.flag === EXACT) {
-            //         _chess.undo();
-            //         return cachedEntry.value;
-            //     } 
-            //     else if (cachedEntry.flag === LOWERBOUND) {
-            //         _alpha = Math.max(_alpha, cachedEntry.value);
-            //     } 
-            //     else if (cachedEntry.flag === UPPERBOUND) {
-            //         _beta = Math.min(_beta, cachedEntry.value);
-            //     }
+        CURRENT_HASH = updateHash(CURRENT_HASH, moves[i]);
 
-            //     if(_beta <= _alpha) {
-            //         _chess.undo();
-            //         return cachedEntry.value;
-            //     }
-            // }
+        if(USING_TT && hashIn(CURRENT_HASH)) {
+            const ttData = getData(CURRENT_HASH);
+    
+            if (ttData && ttData.depth >= _depth) {
+                if (ttData.flag === EXACT) {
+                    return ttData.value;
+                } else if (ttData.flag === LOWERBOUND && ttData.value > _alpha) {
+                    _alpha = ttData.value;
+                } else if (ttData.flag === UPPERBOUND && ttData.value < _beta) {
+                    _beta = ttData.value;
+                }
+    
+                if (_alpha >= _beta) {
+                    return ttData.value;
+                }
+            }
         }
         //#endregion
 
