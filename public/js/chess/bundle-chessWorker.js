@@ -2336,19 +2336,30 @@ const EXACT = 0;
 const UPPERBOUND = 1; //alpha
 const LOWERBOUND = 2; //beta
 
-const ch_TT = new Map(); //TODO - change to queue structure so addToTT is much faster
+const ch_TT = [];
 
 let USING_TT = false;
 
 //function to add to the tt
 function addToTT(_hash, _data){
-    if (ch_TT.size >= TABLE_SIZE) {
-        //get the first key
-        const oldestKey = ch_TT.keys().next().value;
-        //remove the entry with the oldest key
-        ch_TT.delete(oldestKey); 
+    const data = {hash: _hash, data: _data};
+    if (ch_TT.length >= TABLE_SIZE) {
+        //pop first item
+        ch_TT.shift();
+        //push new item
+        ch_TT.push(data);
     }
-    ch_TT.set(_hash, _data);
+    ch_TT.push(data);
+}
+
+//function to check if a hash is in the table
+function hashIn(_hash) {
+    return ch_TT.some(item => item.hash === _hash);
+}
+
+//function to retrieve data from hash
+function getData(_hash) {
+    return ch_TT.find(item => item.hash === _hash).data;
 }
 //#endregion
 
@@ -2371,20 +2382,20 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
         _chess.move(move.san);
 
         //#region transposition table
-        // //update hash
-        // CURRENT_HASH = updateHash(CURRENT_HASH, move); 
+        //update hash
+        CURRENT_HASH = updateHash(CURRENT_HASH, move); 
         
-        // //check if hash is in TT
-        // if(USING_TT && ch_TT.has(CURRENT_HASH)) {
-        //     //return value
-        //     const cachedEntry = ch_TT.get(CURRENT_HASH);
-        //     if (cachedEntry.depth >= _depth) {
-        //         console.log(`already checked ${CURRENT_HASH}, ${move.san}`);
-        //         _chess.undo();
-        //         //return the value already defined
-        //         return cachedEntry.move;
-        //     }
-        // }
+        //check if hash is in TT
+        if(USING_TT && hashIn(CURRENT_HASH)) {
+            //return value
+            // const cachedEntry = getData(CURRENT_HASH);
+            // if (cachedEntry.depth >= _depth) {
+            //     console.log(`already checked ${CURRENT_HASH}, ${move.san}`);
+            //     _chess.undo();
+            //     //return the value already defined
+            //     return cachedEntry.move;
+            // }
+        }
         //#endregion
 
         //start minimax search
@@ -2399,13 +2410,13 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
         }
 
         //add hash to TT
-        // const hashData = {
-        //     depth: _depth,
-        //     value: bestEval,
-        //     move: move.san,
-        //     flag: EXACT,
-        // };
-        // if(USING_TT) addToTT(CURRENT_HASH, hashData);
+        const hashData = {
+            depth: _depth,
+            value: bestEval,
+            move: move.san,
+            flag: EXACT,
+        };
+        if(USING_TT) addToTT(CURRENT_HASH, hashData);
     }
 
     return bestMove;
@@ -2424,32 +2435,31 @@ function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlaye
         _chess.move(moves[i].san);
 
         //#region transposition table
-        // //update hash
-        // CURRENT_HASH = updateHash(CURRENT_HASH, moves[i]); 
+        //update hash
+        CURRENT_HASH = updateHash(CURRENT_HASH, moves[i]); 
         
-        // //check if hash is in TT
-        // if(USING_TT && ch_TT.has(CURRENT_HASH)) {
-        //     // console.log(`already checked ${CURRENT_HASH}`);
-        //     //return value
-        //     const cachedEntry = ch_TT.get(CURRENT_HASH);
-        //     if (cachedEntry.depth >= _depth) {
-        //         if (cachedEntry.flag === EXACT) {
-        //             _chess.undo();
-        //             return cachedEntry.value;
-        //         } 
-        //         else if (cachedEntry.flag === LOWERBOUND) {
-        //             _alpha = Math.max(_alpha, cachedEntry.value);
-        //         } 
-        //         else if (cachedEntry.flag === UPPERBOUND) {
-        //             _beta = Math.min(_beta, cachedEntry.value);
-        //         }
+        //check if hash is in TT
+        if(USING_TT && hashIn(CURRENT_HASH)) {
+            //return value
+            // const cachedEntry = getData(CURRENT_HASH);
+            // if (cachedEntry.depth >= _depth) {
+            //     if (cachedEntry.flag === EXACT) {
+            //         _chess.undo();
+            //         return cachedEntry.value;
+            //     } 
+            //     else if (cachedEntry.flag === LOWERBOUND) {
+            //         _alpha = Math.max(_alpha, cachedEntry.value);
+            //     } 
+            //     else if (cachedEntry.flag === UPPERBOUND) {
+            //         _beta = Math.min(_beta, cachedEntry.value);
+            //     }
 
-        //         if(_beta <= _alpha) {
-        //             _chess.undo();
-        //             return cachedEntry.value;
-        //         }
-        //     }
-        // }
+            //     if(_beta <= _alpha) {
+            //         _chess.undo();
+            //         return cachedEntry.value;
+            //     }
+            // }
+        }
         //#endregion
 
         const eval = minimax2(_chess, _colourToMove == "White" ? "Black" : "White", _depth - 1, _alpha, _beta, !_maximisingPlayer);
@@ -2464,13 +2474,13 @@ function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlaye
         }
 
         //add hash to TT
-        // const hashData = {
-        //     depth: _depth,
-        //     value: bestEval,
-        //     move: moves[i].san,
-        //     flag: (bestEval <= _alpha) ? UPPERBOUND : (bestEval >= _beta) ? LOWERBOUND : EXACT,
-        // };
-        // if(USING_TT) addToTT(CURRENT_HASH, hashData);
+        const hashData = {
+            depth: _depth,
+            value: bestEval,
+            move: moves[i].san,
+            flag: (bestEval <= _alpha) ? UPPERBOUND : (bestEval >= _beta) ? LOWERBOUND : EXACT,
+        };
+        if(USING_TT) addToTT(CURRENT_HASH, hashData);
     }
 
     return bestEval;
@@ -2483,7 +2493,7 @@ function getBestMove(_fenString, _board, _depth, _colourToMove) {
     const timeBefore = performance.now();
     const bestMove = minimaxRoot(chess, _colourToMove, _depth, true);
     console.log(`time: ${performance.now() - timeBefore}`);
-    console.log(ch_TT.size);
+    console.log(ch_TT.length);
 
     if(bestMove != null) {
         //convert best move into valid parameters for movePiece()
@@ -2534,7 +2544,6 @@ function init2dArray(rows, columns, initialValue) {
     }
     return array;
 }
-
 //#endregion
 
 //#region -----------Web Worker stuff-----------
