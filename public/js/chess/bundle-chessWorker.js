@@ -2350,7 +2350,7 @@ function addToTT(_hash, _data){
         //push new item
         ch_TT.push(data);
     }
-    ch_TT.push(data);
+    else { ch_TT.push(data); }
 }
 
 //function to check if a hash is in the table
@@ -2413,25 +2413,6 @@ function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlaye
     if(_depth === 0) {
         return -evaluateBoardSimple(_chess.board());
     }
-    else if(USING_TT && hashIn(CURRENT_HASH)) {
-        //#region transposition table
-        const ttData = getData(CURRENT_HASH);
-
-        if (ttData && ttData.depth >= _depth) {
-            if (ttData.flag === EXACT) {
-                return ttData.value;
-            } else if (ttData.flag === LOWERBOUND && ttData.value > _alpha) {
-                _alpha = ttData.value;
-            } else if (ttData.flag === UPPERBOUND && ttData.value < _beta) {
-                _beta = ttData.value;
-            }
-
-            if (_alpha >= _beta) {
-                return ttData.value;
-            }
-        }
-        //#endregion
-    }
 
     let moves = _chess.moves({ verbose: true });
     moves = orderMoves(_chess, moves);
@@ -2441,28 +2422,8 @@ function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlaye
     for (let i = 0; i < moves.length; i++) {
         _chess.move(moves[i].san);
 
-        //#region transposition table
         //update hash
         CURRENT_HASH = updateHash(CURRENT_HASH, moves[i]);
-
-        if(USING_TT && hashIn(CURRENT_HASH)) {
-            const ttData = getData(CURRENT_HASH);
-    
-            if (ttData && ttData.depth >= _depth) {
-                if (ttData.flag === EXACT) {
-                    return ttData.value;
-                } else if (ttData.flag === LOWERBOUND && ttData.value > _alpha) {
-                    _alpha = ttData.value;
-                } else if (ttData.flag === UPPERBOUND && ttData.value < _beta) {
-                    _beta = ttData.value;
-                }
-    
-                if (_alpha >= _beta) {
-                    return ttData.value;
-                }
-            }
-        }
-        //#endregion
 
         const eval = minimax2(_chess, _colourToMove == "White" ? "Black" : "White", _depth - 1, _alpha, _beta, !_maximisingPlayer);
         bestEval = _maximisingPlayer ? Math.max(bestEval, eval) : Math.min(bestEval, eval);
