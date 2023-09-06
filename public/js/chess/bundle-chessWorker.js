@@ -2337,7 +2337,7 @@ const UPPERBOUND = 1; //alpha
 const LOWERBOUND = 2; //beta
 
 // const ch_TT = new Array(TABLE_SIZE);
-const ch_TT = [];
+let ch_TT = [];
 
 let USING_TT = true;
 
@@ -2359,8 +2359,13 @@ function hashIn(_hash) {
 }
 
 //function to retrieve data from hash
-function getData(_hash) {
+function getHashData(_hash) {
     return ch_TT.find(item => item.hash === _hash).data;
+}
+
+//function to clear the table
+function clearTT() {
+    ch_TT = [];
 }
 //#endregion
 
@@ -2383,7 +2388,7 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
         _chess.move(move.san);
 
         //update hash
-        if(USING_TT) CURRENT_HASH = updateHash(CURRENT_HASH, move); 
+        if(USING_TT) CURRENT_HASH = updateHash(CURRENT_HASH, move);
 
         //start minimax search
         const eval = minimax2(_chess, _colourToMove, _depth - 1, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, !_maximisingPlayer);
@@ -2413,6 +2418,26 @@ function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlaye
     if(_depth === 0) {
         return -evaluateBoardSimple(_chess.board());
     }
+
+    //#region transposition table
+    if(USING_TT && hashIn(CURRENT_HASH)) {
+        const hashData = getHashData(CURRENT_HASH);
+
+        if(hashData.flag === EXACT) {
+            return hashData.value;
+        }
+        else if(hashData.flag === LOWERBOUND) {
+            _alpha = Math.max(_alpha, hashData.value);
+        }
+        else if(hashData.flag === UPPERBOUND) {
+            _beta = Math.min(_beta, hashData.value);
+        }
+
+        if(_beta <= _alpha) {
+            return hashData.value;
+        }
+    }
+    //#endregion
 
     let moves = _chess.moves({ verbose: true });
     moves = orderMoves(_chess, moves);
@@ -2453,10 +2478,12 @@ function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlaye
 function getBestMove(_fenString, _board, _depth, _colourToMove) {
     const chess = new Chess(_fenString);
 
+    //clear tt
+    clearTT();
+
     const timeBefore = performance.now();
     const bestMove = minimaxRoot(chess, _colourToMove, _depth, true);
     console.log(`time: ${performance.now() - timeBefore}`);
-    console.log(ch_TT.length);
 
     if(bestMove != null) {
         //convert best move into valid parameters for movePiece()
