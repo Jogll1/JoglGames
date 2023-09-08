@@ -195,6 +195,38 @@ transform: translate(0, -11px) rotate(45deg);
 }
 /*#endregion*/
 
+/*#region Sidebar */
+.sidebar {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    padding-top: 60px;
+    transition: 0.5s; 
+}
+
+.sidebarBackground {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    opacity: 0%;
+    background-color: #c1c1c1;
+
+    /* centre div */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    z-index: 1;
+    transition: 0.5s; 
+}
+/*#endregion*/
+
 /*#region Play options menu */
 /* add a transparent background behind menu */
 .menuBackground {
@@ -629,5 +661,10 @@ transform: translate(0, -11px) rotate(45deg);
     }
     /*#endregion*/
     /*#endregion*/
+}
+
+@media screen and (max-height: 450px) {
+    .sidebar {padding-top: 15px;}
+    /* .sidebar a {font-size: 18px;} */
 }
 /*#endregion*/
