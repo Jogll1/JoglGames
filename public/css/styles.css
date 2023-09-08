@@ -225,6 +225,10 @@ transform: translate(0, -11px) rotate(45deg);
     z-index: 1;
     transition: 0.5s; 
 }
+
+.sidebarText {
+    z-index: 22;
+}
 /*#endregion*/
 
 /*#region Play options menu */

@@ -1,13 +1,13 @@
 function toggleMenu(x) 
 {
-    toggleSidebar();
+    toggleSidebar(x);
 }
 
 $(document).ready(function() {
     $(".sidebarBackground").click(function() { toggleSidebar() });
 });
 
-function toggleSidebar() {
+function toggleSidebar(x) {
     let sidebarWidth = $(".sidebar").css("width");
     $(".sidebar").css({ width: (sidebarWidth === "0px") ? "25vw" : "0px" });
     
@@ -16,5 +16,5 @@ function toggleSidebar() {
     let sidebarBgOpacity = $(".sidebarBackground").css("opacity");
     $(".sidebarBackground").css({ opacity: (sidebarBgOpacity == "0") ? "40%" : "0" });
 
-    x.classList.toggle("change");
+    // x.classList.toggle("change");
 }
