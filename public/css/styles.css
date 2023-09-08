@@ -200,7 +200,7 @@ transform: translate(0, -11px) rotate(45deg);
     height: 100%;
     width: 0;
     position: fixed;
-    z-index: 2;
+    z-index: 20;
     top: 0;
     left: 0;
     background-color: #111;
