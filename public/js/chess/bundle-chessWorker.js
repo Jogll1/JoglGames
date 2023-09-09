@@ -2278,7 +2278,7 @@ function evaluateBoardSimple(_board) {
         }
     }
 
-    const mWt = 1; //mobility weight
+    const mWt = 10; //mobility weight
     // let mW = ; //white mobility
     // let bW = ; //white mobility
 
@@ -2379,6 +2379,8 @@ function clearTT() {
 function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
     let moves = _chess.moves({ verbose: true });
     moves = orderMoves(_chess, moves);
+
+    console.log(chess.moves({ color: 'w' }).length);
 
     let bestEval = Number.NEGATIVE_INFINITY;
     let bestMove = {};

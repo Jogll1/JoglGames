@@ -200,7 +200,7 @@ transform: translate(0, -11px) rotate(45deg);
     height: 100%;
     width: 0;
     position: fixed;
-    z-index: 20;
+    z-index: 22;
     top: 0;
     left: 0;
     background-color: #111;
@@ -213,7 +213,8 @@ transform: translate(0, -11px) rotate(45deg);
     width: 100vw;
     height: 100vh;
     position: absolute;
-    opacity: 0%;
+    opacity: 40%;
+    display: none;
     background-color: #c1c1c1;
 
     /* centre div */
@@ -222,8 +223,7 @@ transform: translate(0, -11px) rotate(45deg);
     left: 50%;
     transform: translate(-50%, -50%);
 
-    z-index: 1;
-    transition: 0.5s; 
+    z-index: 20;
 }
 
 .sidebarText {

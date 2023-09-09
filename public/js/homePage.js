@@ -1,20 +1,30 @@
 function toggleMenu(x) 
 {
-    toggleSidebar(x);
+    toggleSidebar();
 }
 
 $(document).ready(function() {
-    $(".sidebarBackground").click(function() { toggleSidebar() });
+    $(".mIconContainer").click(function() {
+        openSidebar(); 
+    });
+
+    $(".sidebarBackground").click(function() {
+        if($(".sidebarBackground").css("opacity") != "0") {
+            closeSidebar();
+        }
+    });
 });
 
-function toggleSidebar(x) {
-    let sidebarWidth = $(".sidebar").css("width");
-    $(".sidebar").css({ width: (sidebarWidth === "0px") ? "25vw" : "0px" });
+function openSidebar() {
+    $(".sidebar").css({ width: "25vw" });
     
-    $(".sidebarBackground").show();
+    $(".sidebarBackground").stop(); //stop fade out
+    $(".sidebarBackground").fadeIn(500);
+}
 
-    let sidebarBgOpacity = $(".sidebarBackground").css("opacity");
-    $(".sidebarBackground").css({ opacity: (sidebarBgOpacity == "0") ? "40%" : "0" });
-
-    // x.classList.toggle("change");
+function closeSidebar() {
+    $(".sidebar").css({ width: "0vw" });
+    
+    $(".sidebarBackground").stop(); //stop fade in
+    $(".sidebarBackground").fadeOut(500);
 }
