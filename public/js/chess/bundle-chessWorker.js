@@ -2262,11 +2262,13 @@ function getPieceAndTableValue(_pieceId, _square, _isWhite) {
 
 //#region Evaluating the board
 //test
-function evaluateBoardSimple(_board) {
+function evaluateBoardSimple(_chess) {
     let eval = 0;
-    for (let i = 0; i < _board.length; i++) {
-        for (let j = 0; j < _board[i].length; j++) {
-            const piece = _board[i][j];
+    const board = _chess.board();
+
+    for (let i = 0; i < board.length; i++) {
+        for (let j = 0; j < board[i].length; j++) {
+            const piece = board[i][j];
             if(piece !== null) {
                 if(piece.color == 'w') {
                     eval += getPieceAndTableValue(piece.type, piece.square, true);
@@ -2279,8 +2281,10 @@ function evaluateBoardSimple(_board) {
     }
 
     const mWt = 10; //mobility weight
-    // let mW = ; //white mobility
-    // let bW = ; //white mobility
+    const mW = _chess.moves({ color: 'w' }).length; //white mobility
+    const mB = _chess.moves({ color: 'b' }).length; //black mobility
+
+    const mobility = mWt * (mW - mB); //this might only work for negamax ? tweak based on whos go its is, not by subtracting
 
     return eval;
 }
@@ -2380,8 +2384,6 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
     let moves = _chess.moves({ verbose: true });
     moves = orderMoves(_chess, moves);
 
-    console.log(chess.moves({ color: 'w' }).length);
-
     let bestEval = Number.NEGATIVE_INFINITY;
     let bestMove = {};
 
@@ -2423,7 +2425,7 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
 
 function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlayer) {
     if(_depth === 0) {
-        return -evaluateBoardSimple(_chess.board());
+        return -evaluateBoardSimple(_chess);
     }
 
     //#region transposition table

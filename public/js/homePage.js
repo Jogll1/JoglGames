@@ -1,8 +1,3 @@
-function toggleMenu(x) 
-{
-    toggleSidebar();
-}
-
 $(document).ready(function() {
     $(".mIconContainer").click(function() {
         openSidebar(); 
