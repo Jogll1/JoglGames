@@ -2277,6 +2277,11 @@ function evaluateBoardSimple(_board) {
             }
         }
     }
+
+    const mWt = 1; //mobility weight
+    // let mW = ; //white mobility
+    // let bW = ; //white mobility
+
     return eval;
 }
 //#endregion
