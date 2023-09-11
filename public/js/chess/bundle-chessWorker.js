@@ -2280,11 +2280,12 @@ function evaluateBoardSimple(_chess) {
         }
     }
 
-    const mWt = 10; //mobility weight
-    const mW = _chess.moves({ color: 'w' }).length; //white mobility
-    const mB = _chess.moves({ color: 'b' }).length; //black mobility
+    // const mWt = 50; //mobility weight
+    // const mW = _chess.moves({ color: 'w' }).length; //white mobility
+    // const mB = _chess.moves({ color: 'b' }).length; //black mobility
 
-    const mobility = mWt * (mW - mB); //this might only work for negamax ? tweak based on whos go its is, not by subtracting
+    // const turnW = _chess.turn() == 'w' ? 1 : -1;
+    // const mobility = mWt * (mW - mB) * turnW; //this might only work for negamax ? tweak based on whos go its is, not by subtracting
 
     return eval;
 }
