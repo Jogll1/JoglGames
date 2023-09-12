@@ -200,13 +200,16 @@ transform: translate(0, -11px) rotate(45deg);
     height: 100%;
     width: 0;
     position: fixed;
-    z-index: 22;
+    z-index: 9;
     top: 0;
     left: 0;
-    background-color: #111;
+    background-color: #111111;
     overflow-x: hidden;
     padding-top: 60px;
-    transition: 0.5s; 
+    transition: 0.5s;
+
+    /* text */
+    color: white;
 }
 
 .sidebarBackground {
@@ -223,7 +226,7 @@ transform: translate(0, -11px) rotate(45deg);
     left: 50%;
     transform: translate(-50%, -50%);
 
-    z-index: 20;
+    z-index: 8;
 }
 
 .sidebarText {

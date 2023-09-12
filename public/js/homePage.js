@@ -1,6 +1,8 @@
+let openStatus = false;
+
 $(document).ready(function() {
     $(".mIconContainer").click(function() {
-        openSidebar(); 
+        openStatus ? closeSidebar() : openSidebar(); 
     });
 
     $(".sidebarBackground").click(function() {
@@ -15,6 +17,9 @@ function openSidebar() {
     
     $(".sidebarBackground").stop(); //stop fade out
     $(".sidebarBackground").fadeIn(500);
+
+    $(".mIconContainer").addClass("change");
+    openStatus = true;
 }
 
 function closeSidebar() {
@@ -22,4 +27,7 @@ function closeSidebar() {
     
     $(".sidebarBackground").stop(); //stop fade in
     $(".sidebarBackground").fadeOut(500);
+
+    $(".mIconContainer").removeClass("change");
+    openStatus = false;
 }
