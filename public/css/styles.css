@@ -208,6 +208,13 @@ transform: translate(0, -11px) rotate(45deg);
     padding-top: 60px;
     transition: 0.5s;
 
+    /* flexbox */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
     /* text */
     color: white;
 }
@@ -229,8 +236,11 @@ transform: translate(0, -11px) rotate(45deg);
     z-index: 8;
 }
 
-.sidebarText {
-    z-index: 22;
+.gameLink {
+    width: 200px;
+    color: white;
+    font-size: 22px;
+    position: absolute;
 }
 /*#endregion*/
 
