@@ -214,6 +214,7 @@ transform: translate(0, -11px) rotate(45deg);
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    flex-grow: 0;
 
     /* text */
     color: white;
@@ -237,10 +238,14 @@ transform: translate(0, -11px) rotate(45deg);
 }
 
 .gameLink {
-    width: 200px;
+    width: 2000px;
+    height: 50px;
     color: white;
     font-size: 22px;
     position: absolute;
+    border: 5px solid white;
+
+    z-index: 20;
 }
 /*#endregion*/
 
