@@ -240,12 +240,20 @@ transform: translate(0, -11px) rotate(45deg);
 .sidebar a {
     padding: 8px 8px 8px 32px;
     text-decoration: none;
-    font-size: 25px;
+    font-size: 35px;
     color: #818181;
     display: block;
     transition: 0.3s;
+    font-weight: bold;
 
+    background-color: black;
     
+    /* stop words wrapping over */
+    white-space: nowrap;
+}
+
+.sidebar a:hover {
+    background-color: #222222;
 }
 /*#endregion*/
 
