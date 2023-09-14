@@ -13,7 +13,7 @@ $(document).ready(function() {
 });
 
 function openSidebar() {
-    $(".sidebar").css({ width: "25vw" });
+    $(".sidebar").css({ width: "20vw" });
     
     $(".sidebarBackground").stop(); //stop fade out
     $(".sidebarBackground").fadeIn(500);
