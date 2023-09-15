@@ -208,14 +208,6 @@ transform: translate(0, -11px) rotate(45deg);
     padding-top: 60px;
     transition: 0.5s;
 
-    /* flexbox */
-    /* display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    flex-grow: 0; */
-
     /* text */
     color: white;
 }
@@ -238,7 +230,7 @@ transform: translate(0, -11px) rotate(45deg);
 }
 
 .sidebar a {
-    padding: 8px 8px 8px 32px;
+    padding: 1.3vw 0 1.3vw 1.3vw; /*t r b l*/
     text-decoration: none;
     font-size: 35px;
     color: #818181;
@@ -690,6 +682,12 @@ transform: translate(0, -11px) rotate(45deg);
         display: none;
     }
     /*#endregion*/
+    /*#endregion*/
+    
+    /*#region Sidebar*/
+    .sidebar a {
+        padding: 4vw 0 4vw 6vw; /*t r b l*/
+    }
     /*#endregion*/
 }
 

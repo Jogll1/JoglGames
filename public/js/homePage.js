@@ -1,6 +1,7 @@
 let openStatus = false;
 
 $(document).ready(function() {
+    console.log($(window).width());
     $(".mIconContainer").click(function() {
         openStatus ? closeSidebar() : openSidebar(); 
     });
@@ -13,7 +14,12 @@ $(document).ready(function() {
 });
 
 function openSidebar() {
-    $(".sidebar").css({ width: "20vw" });
+    if($(window).width() < 768) {
+        $(".sidebar").css({ width: "80vw" });
+    }
+    else {
+        $(".sidebar").css({ width: "20vw" });
+    }
     
     $(".sidebarBackground").stop(); //stop fade out
     $(".sidebarBackground").fadeIn(500);
