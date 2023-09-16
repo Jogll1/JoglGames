@@ -15,10 +15,11 @@ $(document).ready(function() {
 
 function openSidebar() {
     if($(window).width() < 768) {
+        //mobile
         $(".sidebar").css({ width: "80vw" });
     }
     else {
-        $(".sidebar").css({ width: "20vw" });
+        $(".sidebar").css({ width: "22vw" });
     }
     
     $(".sidebarBackground").stop(); //stop fade out
