@@ -148,7 +148,7 @@ $(document).ready(function() {
 
     //help button
     $('.helpIconContainer').click(function() {
-        // $('.helpMenu').show();
+        $('.helpMenu').show();
     });
 
     //close help menu button
