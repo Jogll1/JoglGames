@@ -13,7 +13,7 @@ async function aiRandomMove(_playerGrid) {
     let plays = 1;
     let consecutiveHits = 0;
 
-    let attackCoords = ranCoords;
+    let attackCoords = ranCoords; //[a, b]
 
     for (let i = 0; i < plays; i++) {
         await sleep(1000);
@@ -27,6 +27,7 @@ async function aiRandomMove(_playerGrid) {
             const dirsToTry = [dir, [-dir[0], -dir[1]], [dir[1], dir[0]], [-dir[1], -dir[0]]];
 
             iLoop: for (let i = aiHitSquares.length - 1; i >= 0; i--) {
+                console.log(`hit square: ${aiHitSquares[i]}`);
                 for (let j = 0; j < dirsToTry.length; j++) {
                     const lastHitSquare = aiHitSquares[i].split('-');
                     if(parseInt(lastHitSquare[0]) + dirsToTry[j][0] <= 9 && parseInt(lastHitSquare[0]) + dirsToTry[j][0] >= 0 && parseInt(lastHitSquare[1]) + dirsToTry[j][1] <= 9 && parseInt(lastHitSquare[1]) + dirsToTry[j][1] >= 0) {
