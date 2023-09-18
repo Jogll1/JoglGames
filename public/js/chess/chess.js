@@ -219,7 +219,7 @@ $(document).ready(function() {
         $('.menuBackground').hide();
         $('.friendOrAIMenu').hide();
 
-        setUpGame(true, "Player1");
+        setUpGame(true, "Player");
     });
 
     //play friend

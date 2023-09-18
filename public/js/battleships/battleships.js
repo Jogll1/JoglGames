@@ -89,7 +89,7 @@ $(document).ready(function() {
         $('.menuBackground').hide();
         $('.friendOrAIMenu').hide();
 
-        setUpGame(true, "Player1");
+        setUpGame(true, "Player");
     });
 
     //play friend
@@ -148,7 +148,7 @@ $(document).ready(function() {
 
     //help button
     $('.helpIconContainer').click(function() {
-        // $('.helpMenu').show();
+        $('.helpMenu').show();
     });
 
     //close help menu button
@@ -347,14 +347,14 @@ function isValidPlacement(_gridArray, _vertOrHor, _length, _ranX, _ranY) {
         }
 
         if(_vertOrHor === 0) {
-            if(i === 0) {
+            if(i === 0) { //if first ship piece
                 if(x - 1 >= 0) {
                     if(_gridArray[x - 1][y] !== ' ') return false;
                     if(y + 1 <= 9 && _gridArray[x - 1][y + 1] !== ' ') return false;
                     if(y - 1 >= 0 && _gridArray[x - 1][y - 1] !== ' ') return false;
                 }
             }
-            else if(i === _length - 1) {
+            else if(i === _length - 1) { //if last ship piece
                 if(x + 1 <= 9) {
                     if(_gridArray[x + 1][y] !== ' ') return false;
                     if(y + 1 <= 9 && _gridArray[x + 1][y + 1] !== ' ') return false;
@@ -369,14 +369,14 @@ function isValidPlacement(_gridArray, _vertOrHor, _length, _ranX, _ranY) {
             if(_gridArray[x][y] !== ' ') return false;
         }
         else {
-            if(i === 0) {
+            if(i === 0) { //if first ship piece
                 if(y + 1 <= 9) {
                     if(_gridArray[x][y + 1] !== ' ') return false;
                     if(x + 1 <= 9 && _gridArray[x + 1][y + 1] !== ' ') return false;
                     if(x - 1 >= 0 && _gridArray[x - 1][y + 1] !== ' ') return false;
                 }
             }
-            else if(i === _length - 1) {
+            else if(i === _length - 1) { //if last ship piece
                 if(y - 1 >= 0) {
                     if(_gridArray[x][y - 1] !== ' ') return false;
                     if(x + 1 <= 9 && _gridArray[x + 1][y - 1] !== ' ') return false;

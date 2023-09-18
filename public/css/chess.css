@@ -21,6 +21,8 @@
 #board {
     width: 572px;
     height: 572px;
+    /* width: 37.2vw;
+    height: 37.2vw; */
 
     /* background-color:#333333;  */
 
@@ -40,6 +42,8 @@
     position: relative;
     height: 71.5px;
     width: 71.5px;
+    /* height: 4.65vw;
+    width: 4.65vw; */
 
     margin: 0px;
     background-color: #ffffff;

@@ -17,8 +17,10 @@ async function aiRandomMove(_playerGrid) {
 
     for (let i = 0; i < plays; i++) {
         await sleep(1000);
+        console.log(aiHitSquares);
 
         if(aiHitSquares.length > 0) {
+            console.log("yorp");
             //if we are currently attacking squares
             const dir = LAST_DIR;
 
@@ -102,7 +104,7 @@ async function aiRandomMove(_playerGrid) {
             //check if boat sunk
             const boatSunk = isBoatSunk(ba_myBoard.getBoard(), "my", attackGrid[attackCoords[0]][attackCoords[1]][0]);
 
-            //update attack coords
+            //update attack coords if boat sunk
             if(boatSunk.status) {
                 //remove squares sunk from aiHitSquares
                 for (let i = 0; i < boatSunk.boatCoords.length; i++) {
@@ -111,7 +113,9 @@ async function aiRandomMove(_playerGrid) {
                 }
 
                 //reset attack if boat sunk and ai hit squares empty
-                if(aiHitSquares.length <= 0) attackCoords = getRanCoords();
+                if(aiHitSquares.length <= 0) {
+                    attackCoords = getRanCoords();
+                }
             }
 
             if(boatSunk.gameOver) return;

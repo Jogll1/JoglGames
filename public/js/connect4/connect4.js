@@ -116,21 +116,21 @@ $(document).ready(function() {
         $('.menuBackground').hide();
         $('.robotDifficultyMenu').hide();
 
-        setUpGame(true, 'Player1', 3);
+        setUpGame(true, 'Player', 3);
     });
 
     $('#mediumButton').click(function() {
         $('.menuBackground').hide();
         $('.robotDifficultyMenu').hide();
 
-        setUpGame(true, 'Player1', 6);
+        setUpGame(true, 'Player', 6);
     });
 
     $('#hardButton').click(function() {
         $('.menuBackground').hide();
         $('.robotDifficultyMenu').hide();
 
-        setUpGame(true, 'Player1', 7);
+        setUpGame(true, 'Player', 7);
     });
     //#endregion
 
@@ -347,14 +347,14 @@ function setBoardHovers() {
 }
 
 //function to set up the game
-function setUpGame(isPlayingRobot, playerName, botDif) {
+function setUpGame(_isPlayingRobot, _playerName, _botDif) {
     $('.scoreAndIconParent').show();
 
     //set player name
-    $('#playerNameText').text(playerName);
+    $('#playerNameText').text(_playerName);
 
     //set icons and player names
-    if(isPlayingRobot) {  
+    if(_isPlayingRobot) {  
         //set player first
         $('#playerIcon').addClass('currentGo');
            
@@ -369,7 +369,7 @@ function setUpGame(isPlayingRobot, playerName, botDif) {
         c4_isMyTurn.setState(true);
         c4_isPlayingRobot.setState(true);
 
-        c4_botDif.setState(botDif);
+        c4_botDif.setState(_botDif);
     }
     else {
         //set opponent name
