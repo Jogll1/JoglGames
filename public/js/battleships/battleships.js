@@ -148,7 +148,7 @@ $(document).ready(function() {
 
     //help button
     $('.helpIconContainer').click(function() {
-        $('.helpMenu').show();
+        // $('.helpMenu').show();
     });
 
     //close help menu button
@@ -294,7 +294,6 @@ function placeRandomBoat(_player, _length, _i, _colour, _placeOnBoard) {
             if(i === 0) {
                 //update array
                 gridArray[ranX][ranY] = _i;
-                // logArray(gridArray);
 
                 if(_placeOnBoard) {
                     $(`#${_player}${ranX}-${ranY}`).addClass(`boatTile ${vertOrHor === 0 ? "boatTopTile" : "boatRightTile"}`);
@@ -348,22 +347,16 @@ function isValidPlacement(_gridArray, _vertOrHor, _length, _ranX, _ranY) {
 
         if(_vertOrHor === 0) {
             if(i === 0) { //if first ship piece
-                if(x - 1 >= 0 && x + 1 <= 9) {
-                    if(_gridArray[x - 1][y] !== ' ') return false;
-                    if(y + 1 <= 9 && _gridArray[x - 1][y + 1] !== ' ') return false;
-                    if(y - 1 >= 0 && _gridArray[x - 1][y - 1] !== ' ') return false;
-                    if(y + 1 <= 9 && _gridArray[x + 1][y + 1] !== ' ') return false;
-                    if(y - 1 >= 0 && _gridArray[x + 1][y - 1] !== ' ') return false;
-                }
+                if(x - 1 >= 0 && _gridArray[x - 1][y] !== ' ') return false;
+                if(x + 1 <= 9 && _gridArray[x + 1][y] !== ' ') return false;
+                if(y - 1 >= 0 && _gridArray[x][y - 1] !== ' ') return false;
+                if(y + 1 <= 9 && _gridArray[x][y + 1] !== ' ') return false;
             }
             else if(i === _length - 1) { //if last ship piece
-                if(x + 1 <= 9 && x - 1 >= 0) {
-                    if(_gridArray[x + 1][y] !== ' ') return false;
-                    if(y + 1 <= 9 && _gridArray[x + 1][y + 1] !== ' ') return false;
-                    if(y - 1 >= 0 && _gridArray[x + 1][y - 1] !== ' ') return false;
-                    if(y + 1 <= 9 && _gridArray[x - 1][y + 1] !== ' ') return false;
-                    if(y - 1 >= 0 && _gridArray[x - 1][y - 1] !== ' ') return false;
-                }
+                if(x + 1 <= 9 && _gridArray[x + 1][y] !== ' ') return false;
+                if(x - 1 >= 0 && _gridArray[x - 1][y] !== ' ') return false;
+                if(y - 1 >= 0 && _gridArray[x][y - 1] !== ' ') return false;
+                if(y + 1 <= 9 && _gridArray[x][y + 1] !== ' ') return false;
             }
             else {
                 if(y + 1 <= 9 && _gridArray[x][y + 1] !== ' ') return false;
@@ -374,22 +367,16 @@ function isValidPlacement(_gridArray, _vertOrHor, _length, _ranX, _ranY) {
         }
         else {
             if(i === 0) { //if first ship piece
-                if(y + 1 <= 9 && y - 1 >= 0) {
-                    if(_gridArray[x][y + 1] !== ' ') return false;
-                    if(x + 1 <= 9 && _gridArray[x + 1][y + 1] !== ' ') return false;
-                    if(x - 1 >= 0 && _gridArray[x - 1][y + 1] !== ' ') return false;
-                    if(x + 1 <= 9 && _gridArray[x + 1][y - 1] !== ' ') return false;
-                    if(x - 1 >= 0 && _gridArray[x - 1][y - 1] !== ' ') return false;
-                }
+                if(y + 1 <= 9 && _gridArray[x][y + 1] !== ' ') return false;
+                if(y - 1 >= 0 && _gridArray[x][y - 1] !== ' ') return false;
+                if(x + 1 <= 9 && _gridArray[x + 1][y] !== ' ') return false;
+                if(x - 1 >= 0 && _gridArray[x - 1][y] !== ' ') return false;
             }
             else if(i === _length - 1) { //if last ship piece
-                if(y - 1 >= 0 && y + 1 <= 9) {
-                    if(_gridArray[x][y - 1] !== ' ') return false;
-                    if(x + 1 <= 9 && _gridArray[x + 1][y - 1] !== ' ') return false;
-                    if(x - 1 >= 0 && _gridArray[x - 1][y - 1] !== ' ') return false;
-                    if(x + 1 <= 9 && _gridArray[x + 1][y + 1] !== ' ') return false;
-                    if(x - 1 >= 0 && _gridArray[x - 1][y + 1] !== ' ') return false;
-                }
+                if(y - 1 >= 0 && _gridArray[x][y - 1] !== ' ') return false;
+                if(y + 1 <= 9 && _gridArray[x][y + 1] !== ' ') return false;
+                if(x - 1 >= 0 && _gridArray[x - 1][y] !== ' ') return false;
+                if(x + 1 <= 9 && _gridArray[x + 1][y] !== ' ') return false;
             }
             else {
                 if(x + 1 <= 9 && _gridArray[x + 1][y] !== ' ') return false;
@@ -582,6 +569,7 @@ function isBoatSunk(_gridArray, _player, _index) {
     }
 
     //sink the boat
+    console.log(`boat coords: ${boatCoords}`);
     for (let i = 0; i < boatCoords.length; i++) {
         const tile = $(`#${_player}${boatCoords[i][0]}-${boatCoords[i][2]}`);
         tile.empty();

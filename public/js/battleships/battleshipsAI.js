@@ -20,14 +20,12 @@ async function aiRandomMove(_playerGrid) {
         console.log(aiHitSquares);
 
         if(aiHitSquares.length > 0) {
-            console.log("yorp");
             //if we are currently attacking squares
             const dir = LAST_DIR;
 
             const dirsToTry = [dir, [-dir[0], -dir[1]], [dir[1], dir[0]], [-dir[1], -dir[0]]];
 
             iLoop: for (let i = aiHitSquares.length - 1; i >= 0; i--) {
-                console.log(`hit square: ${aiHitSquares[i]}`);
                 for (let j = 0; j < dirsToTry.length; j++) {
                     const lastHitSquare = aiHitSquares[i].split('-');
                     if(parseInt(lastHitSquare[0]) + dirsToTry[j][0] <= 9 && parseInt(lastHitSquare[0]) + dirsToTry[j][0] >= 0 && parseInt(lastHitSquare[1]) + dirsToTry[j][1] <= 9 && parseInt(lastHitSquare[1]) + dirsToTry[j][1] >= 0) {
@@ -68,7 +66,6 @@ async function aiRandomMove(_playerGrid) {
         }
 
         const attackTile = $(`#my${attackCoords[0]}-${attackCoords[1]}`);
-        // console.log(`atk coords: ${attackCoords}`);
         if(attackGrid[attackCoords[0]][attackCoords[1]] !== ' ') {
             //hit
             aiAttack(attackCoords, attackTile, "hitMark");
