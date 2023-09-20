@@ -726,6 +726,13 @@ transform: translate(0, -11px) rotate(45deg);
         padding: 4vw 0 4vw 6vw; /*t r b l*/
     }
     /*#endregion*/
+
+    /*#region Help menu*/
+    .helpMenu {
+        width: 70vw;
+        height: 55vh;
+    }
+    /*#endregion*/
 }
 
 @media screen and (max-height: 450px) {
