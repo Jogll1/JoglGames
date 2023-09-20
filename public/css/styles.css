@@ -731,6 +731,8 @@ transform: translate(0, -11px) rotate(45deg);
     .helpMenu {
         width: 70vw;
         height: 55vh;
+
+        font-size: 16px;
     }
     /*#endregion*/
 }
