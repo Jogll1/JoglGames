@@ -276,6 +276,16 @@ $(document).ready(function() {
     $('#homeButton').click(function() {
         window.location.href = './index.html';
     });
+
+    //help button
+    $('.helpIconContainer').click(function() {
+        $('.helpMenu').show();
+    });
+
+    //close help menu button
+    $('#closeButton').click(function() {
+        $('.helpMenu').hide();
+    });
     //#endregion
 
     //#region Tile functions

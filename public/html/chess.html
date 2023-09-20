@@ -60,6 +60,7 @@
     <!-- Play Friend Settings -->
     <div class="onlinePlayMenu">
         <h2>Play Chess with a friend</h2>
+        <br>
         <p id="infoText1">To play with a friend, enter a room name. If the room does not exist, it will be created. If the room exists, you will join it.</p>
         <form id="onlinePlayMenuForm" action="">
             <input type="text" id="usernameInput" name="username" class="onlineMenuInputs" placeholder="Your name"><br><br>
@@ -80,6 +81,22 @@
         <img src="/images/webp/HelpIcon.webp">
     </div>
     <!-- #endregion -->
+
+    <!-- Help Menu -->
+    <div class="helpMenu">
+        <h2>How to play Chess</h2>
+        <br>
+        <p>In Chess, you aim to checkmate your opponent's king. If playing against a friend, just type your name and the room name and click play.</p>
+        <br>
+        <p>On your turn, move a piece by clicking the piece and clicking a valid square or by dragging the piece to a valid square.
+        If your piece can capture, a circle will appear around the opponent's piece. To castle, drag the king over the rook or click
+        the square next to the rook.</p>
+        <br>
+        <p>Once a player has their opponent's king in checkmate, the winner will get 1 point and the game will end. If the game ends by stalemate
+        both players will get 1 point. To rematch your opponent, just click 'Rematch' and a rematch will start for both players. 
+        To quit, just click 'Home' on the rematch menu or the house icon in the top left corner.</p>
+        <button id="closeButton" class="playButton">Close</button>
+    </div>
 
     <!-- Play Again Menu -->
     <div class="rematchMenu">
