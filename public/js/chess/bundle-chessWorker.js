@@ -2353,6 +2353,7 @@ function sortMovesByScore(_moves, _moveScores) {
 
 //#region Transposition table
 const TABLE_SIZE = 838860; //838860
+const noHashEntry = 100000;
 
 //flags
 const EXACT = 0;
@@ -2425,12 +2426,12 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
         }
 
         //add hash to TT
-        // const hashData = {
-        //     depth: _depth,
-        //     value: bestEval,
-        //     move: move.san,
-        //     flag: EXACT,
-        // };
+        const hashData = {
+            depth: _depth,
+            value: bestEval,
+            move: move.san,
+            flag: EXACT,
+        };
         if(USING_TT) addToTT(CURRENT_HASH, hashData);
     }
 
@@ -2485,12 +2486,12 @@ function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlaye
         }
 
         //add hash to TT
-        // const hashData = {
-        //     depth: _depth,
-        //     value: bestEval,
-        //     move: moves[i].san,
-        //     flag: (bestEval <= _alpha) ? UPPERBOUND : (bestEval >= _beta) ? LOWERBOUND : EXACT,
-        // };
+        const hashData = {
+            depth: _depth,
+            value: bestEval,
+            move: moves[i].san,
+            flag: (bestEval <= _alpha) ? UPPERBOUND : (bestEval >= _beta) ? LOWERBOUND : EXACT,
+        };
         if(USING_TT) addToTT(CURRENT_HASH, hashData);
     }
 
