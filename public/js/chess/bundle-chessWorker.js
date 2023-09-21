@@ -1962,16 +1962,22 @@ const PIECE_INTS = {
     k: 11
 };
 
-const PIECES_KEYS = new Array(64 * 12);
+// const PIECES_KEYS = new Array(64 * 12);
+const PIECES_KEYS = init2dArray(64, 12, 0);
 const CASTLING_RIGHTS = new Array(4);
 const EN_PASSANT_FILES = new Array(8);
 const SIDE_TO_MOVE = new Array(1);
 
 function initZobrist() {
     //pieces
-    for (let i = 0; i < 64 * 12; i++) {
-        PIECES_KEYS[i] = Math.floor(Math.random() * 2**64);
+    for (let i = 0; i < PIECES_KEYS.length; i++) {
+        for (let j = 0; j < PIECES_KEYS[i].length; j++) {
+            PIECES_KEYS[i][j] = Math.floor(Math.random() * 2**64);
+        }
     }
+    // for (let i = 0; i < 64 * 12; i++) {
+    //     PIECES_KEYS[i] = Math.floor(Math.random() * 2**64);
+    // }
 
     //castling rights
     for (let i = 0; i < 4; i++) {
@@ -2000,7 +2006,8 @@ function hashBoard(_chess) {
                 //get the piece in the board
                 const type = board[i].color == 'w' ? board[i][j].type.toUpperCase() : board[i][j].type;
                 const p = PIECE_INTS[type];
-                hash ^= PIECES_KEYS[64 * (i * 8 + j) + p];
+                // hash ^= PIECES_KEYS[64 * (i * 8 + j) + p];
+                hash ^= PIECES_KEYS[i * 8 + j][p];
             }
         }
     }
@@ -2028,19 +2035,22 @@ function updateHash(_oldHash, _move) {
 
     //xor out value of the piece that just moved in its old square
     const p = PIECE_INTS[_move.color == 'w' ? _move.piece.toUpperCase() : _move.piece];
-    const oldPieceToMoveValue = PIECES_KEYS[64 * (RANKS.indexOf(parseInt(_move.from[1])) * 8 + FILES.indexOf(_move.from[0])) + p];
+    // const oldPieceToMoveValue = PIECES_KEYS[64 * (RANKS.indexOf(parseInt(_move.from[1])) * 8 + FILES.indexOf(_move.from[0])) + p];
+    const oldPieceToMoveValue = PIECES_KEYS[RANKS.indexOf(parseInt(_move.from[1])) * 8 + FILES.indexOf(_move.from[0])][p];
     newHash ^= oldPieceToMoveValue;
     // console.log(`xor out value of piece that moved in its old square: ${newHash}`);
 
     //xor in value of the piece that just moved in its new square
-    const newPieceToMoveValue = PIECES_KEYS[64 * (RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])) + p];
+    // const newPieceToMoveValue = PIECES_KEYS[64 * (RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])) + p];
+    const newPieceToMoveValue = PIECES_KEYS[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])][p];
     newHash ^= newPieceToMoveValue;
     // console.log(`xor in value of the piece that just moved in its new square: ${newHash}`);
 
     //if we captured a piece, xor out the value of that piece
     if(flags.includes('c')) {
         const capturedPieceIndex = PIECE_INTS[_move.color == 'w' ? _move.captured.toUpperCase() : _move.captured]; //why does this work?
-        const capturedPieceValue = PIECES_KEYS[64 * (RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])) + capturedPieceIndex];
+        // const capturedPieceValue = PIECES_KEYS[64 * (RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])) + capturedPieceIndex];
+        const capturedPieceValue = PIECES_KEYS[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])][capturedPieceIndex];
         newHash ^= capturedPieceValue;
     }
 
@@ -2048,9 +2058,9 @@ function updateHash(_oldHash, _move) {
     if(flags.includes('e')) {
         const capturedPiece = PIECE_INTS[_move.color == 'w' ? 'p' : 'P'];
         const epRow = parseInt(_move.to[0]) + parseInt(_move.color == 'w' ? -1 : 1);
-        const capturedPieceValue = PIECES_KEYS[64 * (parseInt(RANKS.indexOf(parseInt(_move.to[1]))) * 8 + parseInt(FILES.indexOf(epRow))) + capturedPiece];
+        // const capturedPieceValue = PIECES_KEYS[64 * (parseInt(RANKS.indexOf(parseInt(_move.to[1]))) * 8 + parseInt(FILES.indexOf(epRow))) + capturedPiece];
+        const capturedPieceValue = PIECES_KEYS[parseInt(RANKS.indexOf(parseInt(_move.to[1]))) * 8 + parseInt(FILES.indexOf(epRow))][capturedPiece];
         newHash ^= capturedPieceValue;
-        // console.log(`en passant capture: ${newHash}`);
     }
 
     //xor out or in en passant file
@@ -2068,12 +2078,14 @@ function updateHash(_oldHash, _move) {
     if(flags.includes('k')) {
         //xor out old rook position
         const r = PIECE_INTS[_move.color === 'w' ? 'R' : 'r'];
-        const oldRookValue = (_move.color === 'w') ? PIECES_KEYS[64 * 63 + r] : PIECES_KEYS[64 * 7 + r];
+        // const oldRookValue = (_move.color === 'w') ? PIECES_KEYS[64 * 63 + r] : PIECES_KEYS[64 * 7 + r];
+        const oldRookValue = (_move.color === 'w') ? PIECES_KEYS[63][r] : PIECES_KEYS[7][r];
         newHash ^= oldRookValue;
         // console.log(`xor out old rook position K: ${newHash}`);
 
         //xor in new rook position value
-        const newRookValue = (_move.color === 'w') ? PIECES_KEYS[64 * 61 + r] : PIECES_KEYS[64 * 5 + r];
+        // const newRookValue = (_move.color === 'w') ? PIECES_KEYS[64 * 61 + r] : PIECES_KEYS[64 * 5 + r];
+        const newRookValue = (_move.color === 'w') ? PIECES_KEYS[61][r] : PIECES_KEYS[5][r];
         newHash ^= newRookValue;
         // console.log(`xor in new rook position K: ${newHash}`);
     }
@@ -2081,12 +2093,14 @@ function updateHash(_oldHash, _move) {
     if(flags.includes('q')) {
         //xor out old rook position
         const r = PIECE_INTS[_move.color === 'w' ? 'R' : 'r'];
-        const oldRookValue = (_move.color === 'w') ? PIECES_KEYS[64 * 56 + r] : PIECES_KEYS[64 * 0 + r];
+        // const oldRookValue = (_move.color === 'w') ? PIECES_KEYS[64 * 56 + r] : PIECES_KEYS[64 * 0 + r];
+        const oldRookValue = (_move.color === 'w') ? PIECES_KEYS[56][r] : PIECES_KEYS[0][r];
         newHash ^= oldRookValue;
         // console.log(`xor out old rook position Q: ${newHash}`);
 
         //xor in new rook position value
-        const newRookValue = (_move.color === 'w') ? PIECES_KEYS[64 * 59 + r] : PIECES_KEYS[64 * 3 + r];
+        // const newRookValue = (_move.color === 'w') ? PIECES_KEYS[64 * 59 + r] : PIECES_KEYS[64 * 3 + r];
+        const newRookValue = (_move.color === 'w') ? PIECES_KEYS[59][r] : PIECES_KEYS[3][r];
         newHash ^= newRookValue;
         // console.log(`xor in new rook position K: ${newHash}`);
     }
@@ -2121,13 +2135,15 @@ function updateHash(_oldHash, _move) {
     if(flags.includes('p')) {
         //xor out old pawn position
         const p = PIECE_INTS[_move.color === 'w' ? 'P' : 'p'];
-        const oldPawnValue = PIECES_KEYS[64 * (RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])) + p];
+        // const oldPawnValue = PIECES_KEYS[64 * (RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])) + p];
+        const oldPawnValue = PIECES_KEYS[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])][p];
         newHash ^= oldPawnValue;
         // console.log(`xor out old pawn value: ${newHash}`);
 
         //xor in new rook position value
         const promPiece = PIECE_INTS[_move.color === 'w' ? _move.promotion.toUpperCase() : _move.promotion];
-        const newRookValue = PIECES_KEYS[64 * (RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])) + promPiece];
+        // const newRookValue = PIECES_KEYS[64 * (RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])) + promPiece];
+        const newRookValue = PIECES_KEYS[RANKS.indexOf(parseInt(_move.to[1])) * 8 + FILES.indexOf(_move.to[0])][promPiece];
         newHash ^= newRookValue;
         // console.log(`xor in new promoted piece value: ${newHash}`);
     }
@@ -2336,8 +2352,7 @@ function sortMovesByScore(_moves, _moveScores) {
 //#endregion
 
 //#region Transposition table
-// const TABLE_SIZE = 838860;
-const TABLE_SIZE = 83886;
+const TABLE_SIZE = 838860; //838860
 
 //flags
 const EXACT = 0;
@@ -2347,7 +2362,7 @@ const LOWERBOUND = 2; //beta
 // const ch_TT = new Array(TABLE_SIZE);
 let ch_TT = [];
 
-let USING_TT = true;
+let USING_TT = false;
 
 //function to add to the tt
 function addToTT(_hash, _data){
@@ -2410,12 +2425,12 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
         }
 
         //add hash to TT
-        const hashData = {
-            depth: _depth,
-            value: bestEval,
-            move: move.san,
-            flag: EXACT,
-        };
+        // const hashData = {
+        //     depth: _depth,
+        //     value: bestEval,
+        //     move: move.san,
+        //     flag: EXACT,
+        // };
         if(USING_TT) addToTT(CURRENT_HASH, hashData);
     }
 
@@ -2470,12 +2485,12 @@ function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlaye
         }
 
         //add hash to TT
-        const hashData = {
-            depth: _depth,
-            value: bestEval,
-            move: moves[i].san,
-            flag: (bestEval <= _alpha) ? UPPERBOUND : (bestEval >= _beta) ? LOWERBOUND : EXACT,
-        };
+        // const hashData = {
+        //     depth: _depth,
+        //     value: bestEval,
+        //     move: moves[i].san,
+        //     flag: (bestEval <= _alpha) ? UPPERBOUND : (bestEval >= _beta) ? LOWERBOUND : EXACT,
+        // };
         if(USING_TT) addToTT(CURRENT_HASH, hashData);
     }
 

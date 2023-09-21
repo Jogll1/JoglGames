@@ -522,7 +522,7 @@ function sendMove(_pieceToMoveId, _tileToMoveToId) {
             //if not playing robot, send move to opponent, else get robot move
             if(ch_isPlayingRobot.getState()) {
                 //send the board state to the aiworker for it to calculate its move
-                let depth = 3; 
+                let depth = 3; //3
                         
                 //set the message to be sent
                 const message = {
