@@ -17,7 +17,6 @@ async function aiRandomMove(_playerGrid) {
 
     for (let i = 0; i < plays; i++) {
         await sleep(1000);
-        console.log(aiHitSquares);
 
         if(aiHitSquares.length > 0) {
             //if we are currently attacking squares

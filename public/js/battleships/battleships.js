@@ -1,4 +1,7 @@
 const ba_SIZE = 10; //10x10 grid
+const ba_BOAT_COLOURS = ["#ec5124", "#4ea9d0", "limegreen", "#f6ae2d", "#ef2ac9"]; //#ec5124 c91847
+const ba_BOAT_LENGTHS = [5, 4, 3, 3, 2];
+
 
 //#region globals
 var ba_gameStarted = (function(){ 
@@ -393,14 +396,10 @@ function isValidPlacement(_gridArray, _vertOrHor, _length, _ranX, _ranY) {
 //function to place all 5 boats
 function placeBoats(_player, _placeOnBoard) {
     //_player is either "my" or "op"
-
-    const boatLengths = [5, 4, 3, 3, 2]
-    const boatColours = ["#ec5124", "#4ea9d0", "limegreen", "#f6ae2d", "#ef2ac9"]; //#ec5124 c91847
-
-    for (let i = 0; i < boatLengths.length; i++) {
-        let canPlace = placeRandomBoat(_player, boatLengths[i], i + 1, boatColours[i], _placeOnBoard);
+    for (let i = 0; i < ba_BOAT_LENGTHS.length; i++) {
+        let canPlace = placeRandomBoat(_player, ba_BOAT_LENGTHS[i], i + 1, ba_BOAT_COLOURS[i], _placeOnBoard);
         while(!canPlace) {
-            canPlace = placeRandomBoat(_player, boatLengths[i], i + 1, boatColours[i], _placeOnBoard);
+            canPlace = placeRandomBoat(_player, ba_BOAT_LENGTHS[i], i + 1, ba_BOAT_COLOURS[i], _placeOnBoard);
         }
     }
 
@@ -569,7 +568,6 @@ function isBoatSunk(_gridArray, _player, _index) {
     }
 
     //sink the boat
-    console.log(`boat coords: ${boatCoords}`);
     for (let i = 0; i < boatCoords.length; i++) {
         const tile = $(`#${_player}${boatCoords[i][0]}-${boatCoords[i][2]}`);
         tile.empty();
@@ -630,6 +628,9 @@ function setWinner(_player) {
 
 //function to end the game and allow for another game
 function endGame(winnerString) {
+    //reveal opponent's ships
+    revealOppShips();
+
     //remove blue circle from icons
     $('#playerIcon').removeClass('currentGo');
     $('#opponentIcon').removeClass('currentGo');
@@ -680,4 +681,46 @@ function resetGame() {
         //send grid to opponent
         sendGridToOpponent();
     }  
+}
+
+//function to reveal opponent's ships
+function revealOppShips() {
+    const board = ba_oppBoard.getBoard();
+    let foundShips = new Map();
+    let shipCounts = []
+
+    for (let i = 0; i < ba_SIZE; i++) {
+        for (let j = 0; j < ba_SIZE; j++) {
+            if(board[i][j] !== ' ') {
+                const index = `${board[i][j]}`.includes('h') ? (board[i][j]).slice(0, -1) : board[i][j];
+                
+                if(!foundShips.has(index)) {
+                    const vertOrHor = `${board[i][j + 1]}`.includes(index) ? 'h' : 'v';
+                    foundShips.set(index, vertOrHor);
+                }
+                shipCounts.push(index);
+
+                const colour = ba_BOAT_COLOURS[index - 1];
+                $(`#op${i}-${j}`).addClass(`boatTile`);
+                $(`#op${i}-${j}`).css("background-color", colour);
+
+                //count instances of ships
+                let count = 0;
+                for (let i = 0; i < shipCounts.length; i++) {
+                    if(shipCounts[i] === index) {
+                        count++;
+                    }
+                }
+                console.log(`index: ${index}, count: ${count}`);
+                
+                //set end tiles
+                if(count === 1) {
+                    $(`#op${i}-${j}`).addClass(foundShips.get(index) === 'h' ? "boatLeftTile" : "boatTopTile");
+                }
+                else if (count === ba_BOAT_LENGTHS[index - 1]) {
+                    $(`#op${i}-${j}`).addClass(foundShips.get(index) === 'h' ? "boatRightTile" : "boatBottomTile");
+                }
+            }
+        }
+    }
 }
