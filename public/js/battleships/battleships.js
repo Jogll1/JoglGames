@@ -402,8 +402,6 @@ function placeBoats(_player, _placeOnBoard) {
             canPlace = placeRandomBoat(_player, ba_BOAT_LENGTHS[i], i + 1, ba_BOAT_COLOURS[i], _placeOnBoard);
         }
     }
-
-    // logArray(_player === "my" ? ba_myBoard.getBoard() : ba_oppBoard.getBoard());
 }
 
 //function to reset all the boars
@@ -687,18 +685,18 @@ function resetGame() {
 function revealOppShips() {
     const board = ba_oppBoard.getBoard();
     let foundShips = new Map();
-    let shipCounts = []
+    let shipCounts = [];
 
     for (let i = 0; i < ba_SIZE; i++) {
         for (let j = 0; j < ba_SIZE; j++) {
             if(board[i][j] !== ' ') {
                 const index = `${board[i][j]}`.includes('h') ? (board[i][j]).slice(0, -1) : board[i][j];
                 
+                shipCounts.push(index);
                 if(!foundShips.has(index)) {
                     const vertOrHor = `${board[i][j + 1]}`.includes(index) ? 'h' : 'v';
                     foundShips.set(index, vertOrHor);
                 }
-                shipCounts.push(index);
 
                 const colour = ba_BOAT_COLOURS[index - 1];
                 $(`#op${i}-${j}`).addClass(`boatTile`);
@@ -707,7 +705,7 @@ function revealOppShips() {
                 //count instances of ships
                 let count = 0;
                 for (let i = 0; i < shipCounts.length; i++) {
-                    if(shipCounts[i] === index) {
+                    if(shipCounts[i] == index) {
                         count++;
                     }
                 }
@@ -723,4 +721,8 @@ function revealOppShips() {
             }
         }
     }
+
+    // if(!$(".gridTile").hasClass("checkedTile")) {
+    //     $(".gridTile").addClass("checkedTile");
+    // }
 }
