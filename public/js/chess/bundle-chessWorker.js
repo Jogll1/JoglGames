@@ -2378,20 +2378,12 @@ function initHashTable() {
             bestMove: 0
         }
     }
+
+    // console.log("initialised tt");
 }
 
 //function to add to the tt
 function writeToTT(_score, _bestMove, _depth, _hashFlag){
-    // old
-    // const data = {hash: _hash, data: _data};
-    // if (ch_TT.length >= TABLE_SIZE) {
-    //     //pop first item
-    //     ch_TT.shift();
-    //     //push new item
-    //     ch_TT.push(data);
-    // }
-    // else { ch_TT.push(data); }
-
     // init hash entry
     const hashEntry = ch_TT[(CURRENT_HASH & 0x7fffffff) % TABLE_SIZE];
 
@@ -2403,16 +2395,8 @@ function writeToTT(_score, _bestMove, _depth, _hashFlag){
     hashEntry.bestMove = _bestMove;
 }
 
-//function to check if a hash is in the table
-function hashIn(_hash) {
-    return ch_TT.some(item => item.hash === _hash);
-}
-
 //function to retrieve data from hash
 function getHashData(_alpha, _beta, _depth) {
-    // old
-    // return ch_TT.find(item => item.hash === _hash).data;
-
     // init hash entry
     var hashEntry = ch_TT[(CURRENT_HASH & 0x7fffffff) % TABLE_SIZE];
 
@@ -2434,11 +2418,6 @@ function getHashData(_alpha, _beta, _depth) {
 
     // if hash entry doesn't exist
     return NO_HASH_ENTRY;
-}
-
-//function to clear the table
-function clearTT() {
-    ch_TT = [];
 }
 
 initHashTable();
@@ -2484,7 +2463,10 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
 }
 
 function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlayer) {
-    if(_depth === 0) {
+    if(_chess.isCheckmate()) {
+        return 1000000000;
+    }
+    else if(_depth === 0) {
         return -evaluateBoardSimple(_chess);
     }
 
@@ -2533,11 +2515,11 @@ function getBestMove(_fenString, _board, _depth, _colourToMove) {
     const chess = new Chess(_fenString);
 
     //clear tt
-    clearTT();
+    // clearTT();
 
-    const timeBefore = performance.now();
+    // const timeBefore = performance.now();
     const bestMove = minimaxRoot(chess, _colourToMove, _depth, true);
-    console.log(`time: ${performance.now() - timeBefore}`);
+    // console.log(`time: ${performance.now() - timeBefore}`);
 
     if(bestMove != null) {
         //convert best move into valid parameters for movePiece()

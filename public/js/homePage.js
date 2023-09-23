@@ -1,7 +1,7 @@
 let openStatus = false;
 
 $(document).ready(function() {
-    console.log($(window).width());
+    // console.log($(window).width());
     $(".mIconContainer").click(function() {
         openStatus ? closeSidebar() : openSidebar(); 
     });
