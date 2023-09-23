@@ -2353,7 +2353,7 @@ function sortMovesByScore(_moves, _moveScores) {
 
 //#region Transposition table
 const TABLE_SIZE = 838860; //838860
-const noHashEntry = 100000;
+const NO_HASH_ENTRY = 100000;
 
 //flags
 const EXACT = 0;
@@ -2365,16 +2365,42 @@ let ch_TT = [];
 
 let USING_TT = false;
 
-//function to add to the tt
-function addToTT(_hash, _data){
-    const data = {hash: _hash, data: _data};
-    if (ch_TT.length >= TABLE_SIZE) {
-        //pop first item
-        ch_TT.shift();
-        //push new item
-        ch_TT.push(data);
+//clear TT and initialise
+function initHashTable() {
+    // loop over TT elements
+    for (let i = 0; i < TABLE_SIZE; i++) {
+        // reset TT inner fields
+        ch_TT[i] = {
+            hashKey: 0,
+            depth: 0,
+            flag: 0,
+            score: 0,
+            bestMove: 0
+        }
     }
-    else { ch_TT.push(data); }
+}
+
+//function to add to the tt
+function writeToTT(_score, _bestMove, _depth, _hashFlag){
+    // old
+    // const data = {hash: _hash, data: _data};
+    // if (ch_TT.length >= TABLE_SIZE) {
+    //     //pop first item
+    //     ch_TT.shift();
+    //     //push new item
+    //     ch_TT.push(data);
+    // }
+    // else { ch_TT.push(data); }
+
+    // init hash entry
+    const hashEntry = ch_TT[(CURRENT_HASH & 0x7fffffff) % TABLE_SIZE];
+
+    // write hash entry data 
+    hashEntry.hashKey = CURRENT_HASH;
+    hashEntry.score = _score;
+    hashEntry.flag = _hashFlag;
+    hashEntry.depth = _depth;
+    hashEntry.bestMove = _bestMove;
 }
 
 //function to check if a hash is in the table
@@ -2383,14 +2409,39 @@ function hashIn(_hash) {
 }
 
 //function to retrieve data from hash
-function getHashData(_hash) {
-    return ch_TT.find(item => item.hash === _hash).data;
+function getHashData(_alpha, _beta, _depth) {
+    // old
+    // return ch_TT.find(item => item.hash === _hash).data;
+
+    // init hash entry
+    var hashEntry = ch_TT[(CURRENT_HASH & 0x7fffffff) % TABLE_SIZE];
+
+    // match hash key
+    if (hashEntry.hashKey == CURRENT_HASH) {
+        if (hashEntry.depth >= _depth) {
+            // init score
+            let score = hashEntry.score;
+
+            // match hash flag
+            if (hashEntry.flag == HASH_EXACT) return score;
+            if ((hashEntry.flag == HASH_ALPHA) && (score <= _alpha)) return _alpha;
+            if ((hashEntry.flag == HASH_BETA) && (score >= _beta)) return _beta;
+        }
+
+        // store best move
+        // _bestMove.value = hashEntry.bestMove;
+    }
+
+    // if hash entry doesn't exist
+    return NO_HASH_ENTRY;
 }
 
 //function to clear the table
 function clearTT() {
     ch_TT = [];
 }
+
+initHashTable();
 //#endregion
 
 //#region Getting the best move
@@ -2426,13 +2477,7 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
         }
 
         //add hash to TT
-        const hashData = {
-            depth: _depth,
-            value: bestEval,
-            move: move.san,
-            flag: EXACT,
-        };
-        if(USING_TT) addToTT(CURRENT_HASH, hashData);
+        if(USING_TT) writeToTT(bestEval, move.san, _depth, EXACT);
     }
 
     return bestMove;
@@ -2444,21 +2489,11 @@ function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlaye
     }
 
     //#region transposition table
-    if(USING_TT && hashIn(CURRENT_HASH)) {
-        const hashData = getHashData(CURRENT_HASH);
+    if(USING_TT) {
+        let score = getHashData(_alpha, _beta, _depth);
 
-        if(hashData.flag === EXACT) {
-            return hashData.value;
-        }
-        else if(hashData.flag === LOWERBOUND) {
-            _alpha = Math.max(_alpha, hashData.value);
-        }
-        else if(hashData.flag === UPPERBOUND) {
-            _beta = Math.min(_beta, hashData.value);
-        }
-
-        if(_beta <= _alpha) {
-            return hashData.value;
+        if(score != NO_HASH_ENTRY) {
+            return score;
         }
     }
     //#endregion
@@ -2486,13 +2521,8 @@ function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlaye
         }
 
         //add hash to TT
-        const hashData = {
-            depth: _depth,
-            value: bestEval,
-            move: moves[i].san,
-            flag: (bestEval <= _alpha) ? UPPERBOUND : (bestEval >= _beta) ? LOWERBOUND : EXACT,
-        };
-        if(USING_TT) addToTT(CURRENT_HASH, hashData);
+        const flag = (bestEval <= _alpha) ? UPPERBOUND : (bestEval >= _beta) ? LOWERBOUND : EXACT;
+        if(USING_TT) writeToTT(bestEval, moves[i].san, _depth, flag);
     }
 
     return bestEval;
