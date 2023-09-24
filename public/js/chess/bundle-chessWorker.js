@@ -2275,7 +2275,6 @@ function getPieceAndTableValue(_pieceId, _square, _isWhite) {
 //#endregion
 
 //#region Evaluating the board
-//test
 function evaluateBoardSimple(_chess) {
     let eval = 0;
     const board = _chess.board();
@@ -2360,16 +2359,15 @@ const EXACT = 0;
 const UPPERBOUND = 1; //alpha
 const LOWERBOUND = 2; //beta
 
-// const ch_TT = new Array(TABLE_SIZE);
 let ch_TT = [];
 
 let USING_TT = false;
 
 //clear TT and initialise
 function initHashTable() {
-    // loop over TT elements
+    //loop over TT elements
     for (let i = 0; i < TABLE_SIZE; i++) {
-        // reset TT inner fields
+        //reset TT inner fields
         ch_TT[i] = {
             hashKey: 0,
             depth: 0,
@@ -2378,8 +2376,6 @@ function initHashTable() {
             bestMove: 0
         }
     }
-
-    // console.log("initialised tt");
 }
 
 //function to add to the tt
@@ -2400,20 +2396,17 @@ function getHashData(_alpha, _beta, _depth) {
     // init hash entry
     var hashEntry = ch_TT[(CURRENT_HASH & 0x7fffffff) % TABLE_SIZE];
 
-    // match hash key
+    //match hash key
     if (hashEntry.hashKey == CURRENT_HASH) {
         if (hashEntry.depth >= _depth) {
-            // init score
+            //init score
             let score = hashEntry.score;
 
-            // match hash flag
+            //match hash flag
             if (hashEntry.flag == HASH_EXACT) return score;
             if ((hashEntry.flag == HASH_ALPHA) && (score <= _alpha)) return _alpha;
             if ((hashEntry.flag == HASH_BETA) && (score >= _beta)) return _beta;
         }
-
-        // store best move
-        // _bestMove.value = hashEntry.bestMove;
     }
 
     // if hash entry doesn't exist
@@ -2464,6 +2457,7 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
 
 function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlayer) {
     if(_chess.isCheckmate()) {
+        //return high score if a checkmate is possible to promote it
         return 1000000000;
     }
     else if(_depth === 0) {

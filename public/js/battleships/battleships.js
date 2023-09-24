@@ -686,18 +686,26 @@ function revealOppShips() {
     const board = ba_oppBoard.getBoard();
     let foundShips = new Map();
     let shipCounts = [];
-
+    
+    //loop through opponent's board
     for (let i = 0; i < ba_SIZE; i++) {
         for (let j = 0; j < ba_SIZE; j++) {
+            //if tile has a boat in (is not empty)
             if(board[i][j] !== ' ') {
+                //get the index of the boat
                 const index = `${board[i][j]}`.includes('h') ? (board[i][j]).slice(0, -1) : board[i][j];
                 
+                //add an instance to the array 
                 shipCounts.push(index);
+
+                //check if we've checked this ship before
                 if(!foundShips.has(index)) {
+                    //if not, check if it's vertical or horizontal and add it to foundShips
                     const vertOrHor = `${board[i][j + 1]}`.includes(index) ? 'h' : 'v';
                     foundShips.set(index, vertOrHor);
                 }
-
+                
+                //add correct classes
                 const colour = ba_BOAT_COLOURS[index - 1];
                 $(`#op${i}-${j}`).addClass(`boatTile`);
                 $(`#op${i}-${j}`).css("background-color", colour);
@@ -713,16 +721,14 @@ function revealOppShips() {
                 
                 //set end tiles
                 if(count === 1) {
+                    //if first tile of ship add left or top tile
                     $(`#op${i}-${j}`).addClass(foundShips.get(index) === 'h' ? "boatLeftTile" : "boatTopTile");
                 }
                 else if (count === ba_BOAT_LENGTHS[index - 1]) {
+                    //if last tile of ship add right or bottom tile
                     $(`#op${i}-${j}`).addClass(foundShips.get(index) === 'h' ? "boatRightTile" : "boatBottomTile");
                 }
             }
         }
     }
-
-    // if(!$(".gridTile").hasClass("checkedTile")) {
-    //     $(".gridTile").addClass("checkedTile");
-    // }
 }
