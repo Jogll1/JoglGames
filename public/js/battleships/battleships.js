@@ -341,14 +341,16 @@ function placeRandomBoat(_player, _length, _i, _colour, _placeOnBoard) {
 //check for valid boat placement
 function isValidPlacement(_gridArray, _vertOrHor, _length, _ranX, _ranY) {
     for (let i = 0; i < _length; i++) {
+        //set x and y
         const x = _vertOrHor === 0 ? _ranX + i : _ranX;
         const y = _vertOrHor === 0 ? _ranY : _ranY - i;
-    
+        
+        //make sure gridtile is not empty
         if (x < 0 || x > 9 || y < 0 || y > 9 || _gridArray[x][y] !== ' ') {
             return false;
         }
 
-        if(_vertOrHor === 0) {
+        if(_vertOrHor === 0) { //vertical
             if(i === 0) { //if first ship piece
                 if(x - 1 >= 0 && _gridArray[x - 1][y] !== ' ') return false;
                 if(x + 1 <= 9 && _gridArray[x + 1][y] !== ' ') return false;
@@ -368,7 +370,7 @@ function isValidPlacement(_gridArray, _vertOrHor, _length, _ranX, _ranY) {
 
             if(_gridArray[x][y] !== ' ') return false;
         }
-        else {
+        else { //horizontal
             if(i === 0) { //if first ship piece
                 if(y + 1 <= 9 && _gridArray[x][y + 1] !== ' ') return false;
                 if(y - 1 >= 0 && _gridArray[x][y - 1] !== ' ') return false;
