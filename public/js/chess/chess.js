@@ -243,7 +243,7 @@ $(document).ready(function() {
         }
         else {
             //connect to socket - or at least attempt to
-            connectToSocket(roomName, username);
+            connectToSocket(roomName.trim(), username.trim());
         }
 
         //reset input fields
