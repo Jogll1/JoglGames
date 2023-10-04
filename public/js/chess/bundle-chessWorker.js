@@ -2380,7 +2380,7 @@ function initHashTable() {
 
 //function to add to the tt
 function writeToTT(_score, _bestMove, _depth, _hashFlag){
-    // init hash entry
+    // init hash entry with unique index
     const hashEntry = ch_TT[(CURRENT_HASH & 0x7fffffff) % TABLE_SIZE];
 
     // write hash entry data 
@@ -2393,7 +2393,7 @@ function writeToTT(_score, _bestMove, _depth, _hashFlag){
 
 //function to retrieve data from hash
 function getHashData(_alpha, _beta, _depth) {
-    // init hash entry
+    // init hash entry with unique index
     var hashEntry = ch_TT[(CURRENT_HASH & 0x7fffffff) % TABLE_SIZE];
 
     //match hash key
@@ -2461,6 +2461,7 @@ function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlaye
         return 1000000000;
     }
     else if(_depth === 0) {
+        //return board evaluation
         return -evaluateBoardSimple(_chess);
     }
 
