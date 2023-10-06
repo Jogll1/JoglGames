@@ -2458,7 +2458,7 @@ function minimaxRoot(_chess, _colourToMove, _depth, _maximisingPlayer) {
 function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlayer) {
     if(_chess.isCheckmate()) {
         //return high score if a checkmate is possible to promote it
-        return 1000000000;
+        return 10000000000000;
     }
     else if(_depth === 0) {
         //return board evaluation
@@ -2508,9 +2508,6 @@ function minimax2(_chess, _colourToMove, _depth, _alpha, _beta, _maximisingPlaye
 //function to generate the best move from minimax
 function getBestMove(_fenString, _board, _depth, _colourToMove) {
     const chess = new Chess(_fenString);
-
-    //clear tt
-    // clearTT();
 
     // const timeBefore = performance.now();
     const bestMove = minimaxRoot(chess, _colourToMove, _depth, true);
@@ -2582,5 +2579,8 @@ self.addEventListener('message', function(event) {
     const bestMove = getBestMove(fenString, board, depth, toMove);
 
     setTimeout(this.self.postMessage(bestMove), 2000);
+
+    //clear tt
+    initHashTable();
 });
 //#endregion

@@ -8,7 +8,8 @@ async function aiRandomMove(_playerGrid) {
     const deltas = [[-1, 0], [1, 0], [0, 1], [0, -1]]; //deltas to check when attacking a ship
     let attackGrid = copy2DArray(_playerGrid);
 
-    let ranCoords = getRanCoords(); //[a, b]
+    // let ranCoords = getRanCoords(); //[a, b]
+    let ranCoords = getAwareRanCoords(); //[a, b]
 
     let plays = 1;
     let consecutiveHits = 0;
@@ -115,7 +116,8 @@ async function aiRandomMove(_playerGrid) {
 
                 //reset attack if boat sunk and ai hit squares empty
                 if(aiHitSquares.length <= 0) {
-                    attackCoords = getRanCoords();
+                    // attackCoords = getRanCoords();
+                    attackCoords = getAwareRanCoords();
                 }
             }
 
@@ -129,7 +131,8 @@ async function aiRandomMove(_playerGrid) {
             aiAttack(attackCoords, attackTile, "missMark");
 
             //reset attack
-            attackCoords = getRanCoords();
+            // attackCoords = getRanCoords();
+            attackCoords = getAwareRanCoords();
 
             if(consecutiveHits > 0) {
                 LAST_CONSECUTIVE_HITS = consecutiveHits;
@@ -160,6 +163,30 @@ function getRanCoords() {
         do {
             ranX = getRandomInt(0, 9);
             ranY = getRandomInt(0, 9);
+        }
+        while(aiAttackedSquares.includes(`${ranX}-${ranY}`)); //make sure don't already attack squares
+
+        return [ranX, ranY];
+    }
+    else {
+        return "all moves used up"; //this should be impossible for the second player
+    }
+}
+
+//function to get random coords based on space around it
+function getAwareRanCoords() {
+    if(aiAttackedSquares.length < 100) {
+        let ranX, ranY;
+
+        do {
+            ranX = getRandomInt(0, 9);
+            ranY = getRandomInt(0, 9);
+
+            //if these ran + deltas = hit square, skip
+            let deltas = [[0, 1], [0, -1], [1, 0], [-1, 0]];
+            for (let i = 0; i < deltas.length; i++) {
+                
+            }
         }
         while(aiAttackedSquares.includes(`${ranX}-${ranY}`)); //make sure don't already attack squares
 
