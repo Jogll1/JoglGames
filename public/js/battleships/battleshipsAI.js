@@ -178,19 +178,34 @@ function getAwareRanCoords() {
     if(aiAttackedSquares.length < 100) {
         let ranX, ranY;
 
-        do {
-            ranX = getRandomInt(0, 9);
-            ranY = getRandomInt(0, 9);
-
-            //if these ran + deltas = hit square, skip
-            let deltas = [[0, 1], [0, -1], [1, 0], [-1, 0]];
-            for (let i = 0; i < deltas.length; i++) {
+        let counter = 0; //counter in case board has no available spaces
+        while(true) {
+            if(counter < 30) {
+                ranX = getRandomInt(0, 9);
+                ranY = getRandomInt(0, 9);
+    
+                //if these ran + deltas = hit square, skip
+                let checked = 0;
+                let deltas = [[0, 1], [0, -1], [1, 0], [-1, 0]];
+                for (let i = 0; i < deltas.length; i++) {
+                    if(aiAttackedSquares.includes(`${ranX + deltas[i][0]}-${ranY + deltas[i][1]}`)) {
+                        continue;
+                    }
+                    checked++;
+                }
                 
+                if(checked == 4) {
+                    return [ranX, ranY];
+                }
+    
+                counter++;
+            }
+            else {
+                break;
             }
         }
-        while(aiAttackedSquares.includes(`${ranX}-${ranY}`)); //make sure don't already attack squares
 
-        return [ranX, ranY];
+        return getRanCoords(); //if cant find one quick enough return random coords
     }
     else {
         return "all moves used up"; //this should be impossible for the second player
