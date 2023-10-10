@@ -194,7 +194,7 @@ function getAwareRanCoords() {
                     checked++;
                 }
                 
-                if(checked == 4) {
+                if(!aiAttackedSquares.includes(`${ranX}-${ranY}`) && checked == 4) {
                     return [ranX, ranY];
                 }
     
@@ -204,7 +204,7 @@ function getAwareRanCoords() {
                 break;
             }
         }
-
+        //sometimes attacks already hit coords?
         return getRanCoords(); //if cant find one quick enough return random coords
     }
     else {

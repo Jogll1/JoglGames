@@ -719,7 +719,6 @@ function revealOppShips() {
                         count++;
                     }
                 }
-                console.log(`index: ${index}, count: ${count}`);
                 
                 //set end tiles
                 if(count === 1) {
