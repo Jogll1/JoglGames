@@ -178,9 +178,10 @@ function getAwareRanCoords() {
     if(aiAttackedSquares.length < 100) {
         let ranX, ranY;
 
+        let maxChecks = 35;
         let counter = 0; //counter in case board has no available spaces
         while(true) {
-            if(counter < 30) {
+            if(counter < maxChecks) {
                 ranX = getRandomInt(0, 9);
                 ranY = getRandomInt(0, 9);
     
