@@ -213,7 +213,7 @@ function getAwareRanCoords() {
     }
 }
 
-//function to validate updated attack coord
+//function to validate updated attack c poo rd
 function validateAttackCoord(_coords) {
     //_coords in format [a, b]
     //returns true if aiAttackedSquares doesn't include _coords

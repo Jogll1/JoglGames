@@ -550,6 +550,7 @@ function sendMove(_pieceToMoveId, _tileToMoveToId) {
     }
 }
 
+
 //function to create a piece on the board
 function createPiece(board, isWhite, type, notation, i, row, col) {
     //type has to be the same as the image file name
