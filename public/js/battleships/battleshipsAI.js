@@ -178,7 +178,7 @@ function getAwareRanCoords() {
     if(aiAttackedSquares.length < 100) {
         let ranX, ranY;
 
-        let maxChecks = 40; //should be 34?
+        let maxChecks = 50; //should be 34?
         let counter = 0; //counter in case board has no available spaces
         while(true) {
             if(counter < maxChecks) {
@@ -205,7 +205,7 @@ function getAwareRanCoords() {
                 break;
             }
         }
-        //sometimes attacks already hit coords?
+
         return getRanCoords(); //if cant find one quick enough return random coords
     }
     else {
