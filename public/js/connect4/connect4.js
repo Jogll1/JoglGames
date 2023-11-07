@@ -143,18 +143,28 @@ $(document).ready(function() {
     $('#onlinePlayMenuForm').submit(function(e) {
         e.preventDefault(); //prevent form submission
 
-        let username = $('#usernameInput').val();
-        let roomName = $('#roomNameInput').val();
+        let username = $('#usernameInput').val().trim();
+        let roomName = $('#roomNameInput').val().trim();
 
         //if both input fields are empty, display an error
-        if (username.trim() === '' || roomName.trim() === '') {
+        if (username === '' || roomName === '') {
             e.preventDefault(); //prevent form submission
             //display an error message
             alert('Please fill in both input fields');
         }
+        else if (username.length < 5 || username.length > 25) {
+            e.preventDefault(); //prevent form submission
+            //display an error message
+            alert('Username must be between 5 and 25 characters long');
+        }
+        else if (roomName.length < 5 || roomName.length > 25) {
+            e.preventDefault(); //prevent form submission
+            //display an error message
+            alert('Room name must be between 5 and 25 characters long');
+        }
         else {
             //connect to socket - or at least attempt to
-            connectToSocket(roomName.trim(), username.trim());
+            connectToSocket(roomName, username);
         }
 
         //reset input fields
