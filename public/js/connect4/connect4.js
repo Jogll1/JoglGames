@@ -152,15 +152,15 @@ $(document).ready(function() {
             //display an error message
             alert('Please fill in both input fields');
         }
-        else if (username.length < 5 || username.length > 25) {
+        else if (username.length > 25) {
             e.preventDefault(); //prevent form submission
             //display an error message
-            alert('Username must be between 5 and 25 characters long');
+            alert('Username must be shorter than 25 characters long');
         }
-        else if (roomName.length < 5 || roomName.length > 25) {
+        else if (roomName.length > 25) {
             e.preventDefault(); //prevent form submission
             //display an error message
-            alert('Room name must be between 5 and 25 characters long');
+            alert('Room name must be shorter than 25 characters long');
         }
         else {
             //connect to socket - or at least attempt to
