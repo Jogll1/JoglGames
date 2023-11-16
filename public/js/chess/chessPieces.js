@@ -27,25 +27,25 @@ class Pattern {
             }
 
             //capturing
+            //get our colour
+            let ourColour = (board[startRow][startCol].includes(("w"))) ? "White" : "Black";
+            //define check row
             let checkRow = startRow + parseInt((isWhite) ? -1 : 1);
             if (checkRow >= 0 && checkRow <= 7) {
-                //right
-                let checkCol = startCol + 1;
-                if (checkCol <= 7) {
-                    let oppColour = (board[checkRow][checkCol].includes('w')) ? "White" : "Black";
-                    //if piece in place and its not our colour
-                    if (board[checkRow][checkCol] != ' ' && ourColour != oppColour) {
-                        pawnValidMoves.push(checkRow + "-" + checkCol);
-                    }
-                }
-
-                //left
-                checkCol = startCol - 1;
-                if (checkCol >= 0) {
-                    let oppColour = (board[checkRow][checkCol].includes('w')) ? "White" : "Black";
-                    //if piece in place and its not our colour
-                    if (board[checkRow][checkCol] != ' ' && ourColour != oppColour) {
-                        pawnValidMoves.push(checkRow + "-" + checkCol);
+                //right diagonal - column is one to the right
+                //left diagonal - column is one to the left
+                const deltas = [1, -1];
+                for (let i = 0; i < 2; i++) {
+                    const checkCol = startCol + deltas[i];
+                    if (checkCol <= 7 && checkCol >= 0 && board[checkRow][checkCol] != ' ') { //if valid column
+                        //get colour of piece in capture position
+                        let oppColour = (board[checkRow][checkCol].includes(("w"))) ? "White" : "Black";
+                        //if capture piece is a different colour
+                        if (ourColour != oppColour) {
+                            //add to valid moves
+                            validMoves.push(checkRow + "-" + checkCol);
+                            console.log("take");
+                        }
                     }
                 }
             }
@@ -60,7 +60,7 @@ class Pattern {
                     const oppColour = (board[startRow][checkCol].includes('w')) ? "White" : "Black";
                     if (oppColour != ourColour && board[startRow][checkCol].includes('p')) {
                         //check the pawn we are checking has only moved once
-                        instances = 0;
+                        let instances = 0;
                         for (let j = 0; j < ch_movedPieces.get().length; j++) {
                             if (ch_movedPieces.get()[j] == board[startRow][checkCol]) {
                                 instances += 1;
