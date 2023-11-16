@@ -43,8 +43,7 @@ class Pattern {
                         //if capture piece is a different colour
                         if (ourColour != oppColour) {
                             //add to valid moves
-                            validMoves.push(checkRow + "-" + checkCol);
-                            console.log("take");
+                            pawnValidMoves.push(checkRow + "-" + checkCol);
                         }
                     }
                 }
