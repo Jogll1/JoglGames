@@ -1850,7 +1850,8 @@ function readTable(_table, _square, _isWhite) {
     const file = FILES.indexOf(_square[0]);
 
     let index = rank * 8 + file;
-    const returnArray = (_isWhite) ? _table : _table.slice().reverse();
+    // const returnArray = (_isWhite) ? _table : _table.slice().reverse(); //is this needed?
+    const returnArray = _table;
 
     return returnArray[index];
 }
