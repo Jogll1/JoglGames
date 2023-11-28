@@ -162,11 +162,13 @@ $(document).ready(function() {
     //help button
     $('.helpIconContainer').click(function() {
         $('.helpMenu').show();
+        $('.menuBackground').show();
     });
 
     //close help menu button
     $('#closeButton').click(function() {
         $('.helpMenu').hide();
+        $('.menuBackground').hide();
     });
     //#endregion
 
