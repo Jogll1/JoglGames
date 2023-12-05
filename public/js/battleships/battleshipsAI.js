@@ -37,20 +37,28 @@ async function aiRandomMove(_playerGrid) {
                         
                         //#region to make sure ai attacks boats after finishing a line
                         if(j === 1 && aiHitSquares.includes(`${attackCoords[0]}-${attackCoords[1]}`)) {
+                            //copy the attack coordinates to modify them without modifying attackCoords
                             const testCoords = attackCoords;
+                            //define new loop to loop a maximum of 5 times
                             kLoop: for (let k = 1; k < 6; k++) {
+                                //store a reference to the test coordinates + the direction vector
                                 const a = testCoords[0] + dirsToTry[j][0] * i;
                                 const b = testCoords[1] + dirsToTry[j][1] * i;
+                                //store these in an array
                                 const newTestCoords = [a, b];
-
+                                //make sure these values are on the board
                                 if(a <= 9 && a >= 0 && b <= 9 && b >= 0) {
+                                    //if the AI has already attacked this square, continue to keep going in this direction
                                     if(aiHitSquares.includes(`${newTestCoords[0]}-${newTestCoords[1]}`)) {
                                         continue;
                                     }
                                     else {
+                                        //if not, check if it has attacked these coordinates before
                                         if(!aiAttackedSquares.includes(`${newTestCoords[0]}-${newTestCoords[1]}`)) {
+                                            //if it has, update the attack coords to this new value
                                             attackCoords = newTestCoords;
                                         }
+                                        //if not, break this loop as its an empty tile to attack
                                         break kLoop;
                                     }
                                 }
